@@ -1,0 +1,28 @@
+{
+  "errors": {
+    "404": "Wait, where did you go?",
+    "emptyArticle": "Wait, what are you looking for?"
+  },
+  "header": {
+    "title": "EyKettle's Product Manual",
+    "shortTitle": "Manual"
+  },
+  "home": {
+    "title": "EyKettle's Product Manual",
+    "description": "View Materials by Purpose",
+    "card1": {
+      "title": "Learn",
+      "description": "Study to go"
+    },
+    "card2": {
+      "title": "Read",
+      "description": "Browse Related Articles"
+    }
+  },
+  "learning": {
+    "title": "EyKettle's Learning Resources"
+  },
+  "reading": {
+    "title": "EyKettle's Reading List"
+  }
+}

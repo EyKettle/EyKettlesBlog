@@ -1,0 +1,30 @@
+{
+  "name": "eykettles-manual",
+  "version": "0.0.1",
+  "description": "Kettle's blog website.",
+  "type": "module",
+  "scripts": {
+    "start": "vite",
+    "dev": "vite",
+    "build": "vite build",
+    "serve": "vite preview"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "^5.7.2",
+    "vite": "^6.0.0",
+    "vite-plugin-solid": "^2.11.0"
+  },
+  "dependencies": {
+    "@solid-primitives/i18n": "^2.1.1",
+    "@solidjs/router": "^0.15.3",
+    "motion": "^12.0.1",
+    "remark-gfm": "^4.0.0",
+    "solid-js": "^1.9.3",
+    "solid-markdown": "^2.0.14",
+    "solid-transition-group": "^0.2.3",
+    "virtua": "^0.39.3"
+  },
+  "main": "index.js",
+  "author": "EyKettle"
+}

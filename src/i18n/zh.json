@@ -1,0 +1,28 @@
+{
+  "errors": {
+    "404": "等等，这是哪里?",
+    "emptyArticle": "等等，这是哪篇？"
+  },
+  "header": {
+    "title": "电水壶的产品说明书",
+    "shortTitle": "说明书"
+  },
+  "home": {
+    "title": "电水壶使用手册",
+    "description": "从目的看资料",
+    "card1": {
+      "title": "学习",
+      "description": "了解操作教程"
+    },
+    "card2": {
+      "title": "阅读",
+      "description": "翻阅相关文章"
+    }
+  },
+  "learning": {
+    "title": "电水壶的教学现场"
+  },
+  "reading": {
+    "title": "电水壶的阅读室"
+  }
+}
