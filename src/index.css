@@ -37,6 +37,8 @@ body {
   --surface-color: #f2f2f2;
   --surface-hover: #ffffff;
   --surface-active: #e2e2e2;
+  --surface-glass: rgba(255, 255, 255, 0.7);
+
   --shadow-color: rgba(0, 0, 0, 0.1);
 
   --icon-font: "Segoe Fluent Icons";
@@ -80,6 +82,8 @@ html {
     --surface-color: #222;
     --surface-hover: #2a2a2a;
     --surface-active: #262626;
+    --surface-glass: rgba(42, 42, 42, 0.7);
+
     --shadow-color: rgba(0, 0, 0, 0.3);
   }
 }
@@ -100,37 +104,54 @@ html {
     list-style: none;
     padding-left: 0;
     margin-inline: 1.5rem;
-  }
 
-  li {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    line-height: 1.5rem;
-  }
+    li {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      line-height: 1.5rem;
+    }
 
-  input[type="checkbox"] {
-    appearance: none;
-    flex-shrink: 0;
-    translate: 0 0.0625rem;
-    height: 1rem;
-    width: 1rem;
-    margin: 0;
-    background-color: var(--surface-color);
-    border: var(--border-active) solid 0.0625rem;
-    border-radius: 0.25rem;
-  }
+    li:has(ul) {
+      display: grid;
+      grid-template-columns: 1rem auto;
+      row-gap: 0;
+      * {
+        width: fit-content;
+      }
+      p {
+        display: flex;
+        flex-direction: row;
+        padding-bottom: 0 !important;
+      }
+      ul {
+        grid-column: span 2;
+      }
+    }
 
-  input[type="checkbox"]:checked::before {
-    color: var(--theme-onActive);
-    font-family: var(--icon-font);
-    content: "\e001";
-    font-weight: bold;
-  }
-  input[type="checkbox"]:checked {
-    display: flex;
-    justify-content: center;
-    background-color: var(--switch-active);
+    input[type="checkbox"] {
+      appearance: none;
+      flex-shrink: 0;
+      translate: 0 0.0625rem;
+      height: 1rem;
+      width: 1rem;
+      margin: 0;
+      background-color: var(--surface-color);
+      border: var(--border-active) solid 0.0625rem;
+      border-radius: 0.25rem;
+    }
+
+    input[type="checkbox"]:checked::before {
+      color: var(--theme-onActive);
+      font-family: var(--icon-font);
+      content: "\e001";
+      font-weight: bold;
+    }
+    input[type="checkbox"]:checked {
+      display: flex;
+      justify-content: center;
+      background-color: var(--switch-active);
+    }
   }
 
   pre {

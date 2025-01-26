@@ -42,7 +42,7 @@ export const PageContainer: Component<PageContainerProps> = (props) => {
           },
           {
             duration: 0.3,
-            ease: [0, 0, 0, 1],
+            ease: [0.5, 0, 0, 1],
           }
         );
         animateMini(
@@ -54,7 +54,7 @@ export const PageContainer: Component<PageContainerProps> = (props) => {
           },
           {
             duration: 0.3,
-            ease: [0, 0, 0, 1],
+            ease: [0.5, 0, 0, 1],
           }
         );
         const previous = frontIndex;
@@ -94,7 +94,7 @@ export const PageContainer: Component<PageContainerProps> = (props) => {
             },
             {
               duration: 0.3,
-              ease: [0, 0, 0, 1],
+              ease: [0.5, 0, 0, 1],
             }
           );
           frontIndex = target;
