@@ -1,4 +1,10 @@
-import { Component, createEffect, createSignal, Show } from "solid-js";
+import {
+  Component,
+  createEffect,
+  createSignal,
+  Show,
+  Suspense,
+} from "solid-js";
 import { Article } from "../articles/methods";
 import { Button } from "../components/button";
 import { SolidMarkdown } from "solid-markdown";
@@ -45,12 +51,15 @@ const ArticlePage: Component<ArticlePageProps> = (props) => {
         onClick={props.operations.back}
       />
       <div>
-        <Show when={content()} fallback={<div>{t("errors.emptyArticle")}</div>}>
+        <Show
+          when={props.info}
+          fallback={<div>{t("errors.emptyArticle")}</div>}
+        >
           <Card
             disabled={true}
-            width="80vw"
+            width="90vw"
             extraStyle={{
-              "padding-inline": "min(3rem, 2vw)",
+              "padding-inline": "min(3rem, 1vw)",
               "padding-block": "1rem 3rem",
               "user-select": "text",
               "justify-content": "start",
@@ -59,11 +68,13 @@ const ArticlePage: Component<ArticlePageProps> = (props) => {
               "text-wrap": "wrap",
             }}
           >
-            <SolidMarkdown
-              class="markdown-body"
-              remarkPlugins={[remarkGfm]}
-              children={content()}
-            />
+            <Suspense fallback={false}>
+              <SolidMarkdown
+                class="markdown-body"
+                remarkPlugins={[remarkGfm]}
+                children={content()}
+              />
+            </Suspense>
           </Card>
         </Show>
       </div>

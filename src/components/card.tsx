@@ -181,7 +181,7 @@ export const Card: Component<CardProps> = (props) => {
       <Show when={props.description}>
         <div style={getTextStyle("1.2")}>{props.description}</div>
       </Show>
-      {props.children}
+      <Show when={typeof props.children !== "boolean"}>{props.children}</Show>
     </div>
   );
 };
