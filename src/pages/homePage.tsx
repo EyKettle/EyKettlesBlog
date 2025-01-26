@@ -1,9 +1,10 @@
-import { Component } from "solid-js";
+import { Component, Show } from "solid-js";
 import { Card } from "../components/card";
 import { Pages } from "../App";
 
 interface HomePageProps {
   translator: any;
+  showDarkModeTip: boolean;
   operations: {
     handleSwitch: (target: number) => void;
   };
@@ -24,7 +25,6 @@ const HomePage: Component<HomePageProps> = (props) => {
         "flex-direction": "column",
         "justify-content": "center",
         "align-items": "center",
-        "padding-bottom": "8rem",
         gap: "1rem",
       }}
     >
@@ -50,9 +50,19 @@ const HomePage: Component<HomePageProps> = (props) => {
           onClick={handleCard2}
         />
       </div>
-      <div style={{ opacity: 0.5, "font-size": "1.5rem", translate: "0 2em" }}>
-        {t("home.description")}
-      </div>
+      <Show when={props.showDarkModeTip}>
+        <div
+          style={{
+            opacity: 0.5,
+            "font-size": "1.5rem",
+            translate: "0 2em",
+            "text-wrap": "wrap",
+            "padding-inline": "2rem",
+          }}
+        >
+          {t("home.description")}
+        </div>
+      </Show>
     </div>
   );
 };

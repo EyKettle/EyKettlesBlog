@@ -124,7 +124,27 @@ const App: Component = () => {
     }
   });
 
+  let [isExistDarkModePlugin, setDarkModeCheckState] = createSignal(false);
+  const checkDarkMode = () => {
+    new Promise((resolve) => {
+      setTimeout(() => {
+        const cssChecker = document.getElementById("css-checker");
+        if (cssChecker)
+          setDarkModeCheckState(
+            getComputedStyle(cssChecker).backgroundColor !==
+              "rgb(255, 255, 255)"
+          );
+        resolve(null);
+      }, 400);
+    });
+  };
+
+  const darkModeMediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+  darkModeMediaQuery.addEventListener("change", checkDarkMode);
+
   onMount(() => {
+    checkDarkMode();
+
     header.style.top = "1rem";
 
     window.addEventListener("popstate", handlePopState);
@@ -232,7 +252,11 @@ const App: Component = () => {
               translator={t}
               operations={{ back: () => handleSwitch(Pages.Home) }}
             />
-            <HomePage translator={t} operations={{ handleSwitch }} />
+            <HomePage
+              translator={t}
+              operations={{ handleSwitch }}
+              showDarkModeTip={isExistDarkModePlugin()}
+            />
             <ReadingPage
               translator={t}
               operations={{ back: () => handleSwitch(Pages.Home), loadArticle }}
