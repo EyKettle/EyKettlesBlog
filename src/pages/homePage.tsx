@@ -23,9 +23,13 @@ const HomePage: Component<HomePageProps> = (props) => {
       style={{
         display: "flex",
         "flex-direction": "column",
-        "justify-content": "center",
+        // "justify-content": "center",
         "align-items": "center",
         gap: "1rem",
+        "padding-top": "max(8rem, 30vh)",
+        "padding-bottom": "6rem",
+        overflow: "scroll",
+        width: "100%",
       }}
     >
       <div
@@ -56,7 +60,8 @@ const HomePage: Component<HomePageProps> = (props) => {
             opacity: 0.5,
             "font-size": "1.5rem",
             translate: "0 2em",
-            "text-wrap": "wrap",
+            "text-wrap": "balance",
+            "white-space": "break-spaces",
             "padding-inline": "2rem",
           }}
         >

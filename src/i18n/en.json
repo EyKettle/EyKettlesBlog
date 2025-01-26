@@ -9,7 +9,7 @@
   },
   "home": {
     "title": "EyKettle's Product Manual",
-    "description": "Disable the dark mode plugin for this website to get a better experience.",
+    "description": "Plugin cannot recognize dark mode, disable it for better experience.",
     "card1": {
       "title": "Learn",
       "description": "Study to go"

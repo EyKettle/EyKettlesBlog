@@ -3,6 +3,7 @@ import { Card } from "../components/card";
 import { Button } from "../components/button";
 import { VirtualizerHandle, VList } from "virtua/solid";
 import { Article, getInfos } from "../articles/methods";
+import Blocker from "../components/blocker";
 
 interface ReadingPageProps {
   translator: any;
@@ -59,7 +60,7 @@ const ReadingPage: Component<ReadingPageProps> = (props) => {
         if (index === 0) {
           return (
             <>
-              <div style={{ height: "12rem" }} />
+              <Blocker style={{ height: "12rem" }} />
               <div
                 style={{
                   "justify-self": "center",
@@ -95,7 +96,7 @@ const ReadingPage: Component<ReadingPageProps> = (props) => {
                 effect="none"
               />
               {index === articleInfos().length - 1 ? (
-                <div style={{ height: "6rem" }} />
+                <Blocker style={{ height: "6rem" }} />
               ) : null}
             </div>
           );

@@ -9,7 +9,7 @@
   },
   "home": {
     "title": "电水壶使用手册",
-    "description": "对该网站关闭深色模式插件以获得更好的体验",
+    "description": "插件未能识别深色模式，\n请关闭以获得最佳体验。",
     "card1": {
       "title": "学习",
       "description": "了解操作教程"
