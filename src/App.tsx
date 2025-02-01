@@ -174,7 +174,6 @@ const App: Component = () => {
       >
         <Suspense>
           <PageContainer
-          fakeRouter={true}
             pageInfos={[
               {
                 name: Pages[Pages.NotFound],
