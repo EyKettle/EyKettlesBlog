@@ -30,14 +30,16 @@ export const Card: Component<CardProps> = (props) => {
   };
 
   const resetStyle = () => {
-    if (!element) return;
-    element.style.scale = "1";
-    element.style.boxShadow =
-      "0 0.0625rem 0.125rem var(--shadow-color), 0 0 0 0.0625rem var(--border-default)";
-    element.style.zIndex = "1";
-    element.style.backgroundColor = "var(--surface-color)";
-    element.style.transform = "rotateY(0deg) rotateX(0deg)";
-    element.style.perspective = "unset";
+    requestAnimationFrame(() => {
+      if (!element) return;
+      element.style.scale = "1";
+      element.style.boxShadow =
+        "0 0.0625rem 0.125rem var(--shadow-color), 0 0 0 0.0625rem var(--border-default)";
+      element.style.zIndex = "1";
+      element.style.backgroundColor = "var(--surface-color)";
+      element.style.transform = "rotateY(0deg) rotateX(0deg)";
+      element.style.perspective = "unset";
+    });
   };
 
   let element: HTMLDivElement | null = null;
@@ -82,16 +84,23 @@ export const Card: Component<CardProps> = (props) => {
   });
 
   const rotateDelta = 10;
-
+  let isFrameScheduled = false;
   const handleRotate = (element: HTMLDivElement, e: MouseEvent) => {
-    const { width, height } = element.getBoundingClientRect();
-    const { halfWidth, halfHeight } = {
-      halfWidth: width / 2,
-      halfHeight: height / 2,
-    };
-    const rotateY = ((e.offsetX - halfWidth) / halfWidth) * rotateDelta;
-    const rotateX = ((e.offsetY - halfHeight) / halfHeight) * rotateDelta * -1;
-    element.style.transform = `rotateY(${rotateY}deg) rotateX(${rotateX}deg)`;
+    if (isFrameScheduled) return;
+    isFrameScheduled = true;
+    requestAnimationFrame(() => {
+      const rect = element.getBoundingClientRect();
+      const { halfWidth, halfHeight } = {
+        halfWidth: rect.width / 2,
+        halfHeight: rect.height / 2,
+      };
+      const offsetX = e.clientX - rect.left;
+      const offsetY = e.clientY - rect.top;
+      const rotateY = ((offsetX - halfWidth) / halfWidth) * rotateDelta;
+      const rotateX = ((offsetY - halfHeight) / halfHeight) * rotateDelta * -1;
+      element.style.transform = `rotateY(${rotateY}deg) rotateX(${rotateX}deg)`;
+      isFrameScheduled = false;
+    });
   };
 
   return (

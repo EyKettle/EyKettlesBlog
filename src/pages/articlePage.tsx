@@ -11,6 +11,8 @@ import { SolidMarkdown } from "solid-markdown";
 import { Card } from "../components/card";
 import remarkGfm from "remark-gfm";
 
+import "../components/markdown.css";
+
 interface ArticlePageProps {
   translator: any;
   info?: Article;
@@ -66,7 +68,7 @@ const ArticlePage: Component<ArticlePageProps> = (props) => {
               "align-items": "stretch",
               "text-align": "left",
               "text-wrap": "wrap",
-              "background-color": "var(--surface-hover)"
+              "background-color": "var(--surface-hover)",
             }}
           >
             <Suspense fallback={false}>

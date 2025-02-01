@@ -20,6 +20,7 @@ import ReadingPage from "./pages/readingPage";
 import { Article, getInfos } from "./articles/methods";
 import ArticlePage from "./pages/articlePage";
 import NotFoundPage from "./pages/notFoundPage";
+import { animateMini } from "motion";
 
 export enum Pages {
   NotFound = 0,
@@ -29,7 +30,7 @@ export enum Pages {
 }
 
 const App: Component = () => {
-  const [locale, setLocale] = createSignal<Locale>("zh");
+  const [locale, setLocale] = createSignal<Locale>("zh-CN");
 
   const [dict] = createResource(locale, fetchDictionary);
 
@@ -38,7 +39,10 @@ const App: Component = () => {
   const [duringTransition, startTransition] = useTransition();
 
   function switchLocale(locale: Locale) {
-    startTransition(() => setLocale(locale));
+    startTransition(() => {
+      setLocale(locale);
+      document.documentElement.lang = locale;
+    });
   }
 
   let header: HTMLElement;
@@ -159,9 +163,9 @@ const App: Component = () => {
             {[
               {
                 label: "English",
-                callback: () => switchLocale("en"),
+                callback: () => switchLocale("en-US"),
               },
-              { label: "中文", callback: () => switchLocale("zh") },
+              { label: "中文", callback: () => switchLocale("zh-CN") },
             ]}
           </Switch>
         </div>
@@ -208,6 +212,55 @@ const App: Component = () => {
             ]}
             defaultIndex={Pages.Home}
             getMethods={(s) => (switchTo = s)}
+            switchMotion={(oldPage, newPage, isForward) => {
+              newPage.style.scale = isForward ? "0.8" : "1.4";
+              newPage.style.opacity = "0";
+              newPage.style.filter = "blur(1rem)";
+              animateMini(
+                newPage,
+                {
+                  scale: 1,
+                  opacity: 1,
+                  filter: "blur(0)",
+                },
+                {
+                  duration: 0.3,
+                  ease: [0.5, 0, 0, 1],
+                }
+              );
+              animateMini(
+                oldPage,
+                {
+                  scale: isForward ? "1.4" : "0.8",
+                  opacity: 0,
+                  filter: "blur(1rem)",
+                },
+                {
+                  duration: 0.3,
+                  ease: [0.5, 0, 0, 1],
+                }
+              );
+              return 300;
+            }}
+            loadedMotion={(defaultPage) => {
+              defaultPage.style.transform = "translateY(12rem)";
+              defaultPage.style.opacity = "0";
+              defaultPage.style.filter = "blur(1rem)";
+              setTimeout(() => {
+                animateMini(
+                  defaultPage,
+                  {
+                    transform: "translateY(0)",
+                    opacity: 1,
+                    filter: "blur(0)",
+                  },
+                  {
+                    duration: 0.3,
+                    ease: [0.5, 0, 0, 1],
+                  }
+                );
+              }, 200);
+            }}
           >
             <NotFoundPage
               translator={t}

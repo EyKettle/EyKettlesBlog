@@ -1,4 +1,3 @@
-import { animateMini } from "motion";
 import { Component, JSXElement, onCleanup, onMount } from "solid-js";
 import { render } from "solid-js/web";
 
@@ -12,6 +11,12 @@ type PageInfo = {
 interface PageContainerProps {
   children: JSXElement[];
   pageInfos: PageInfo[];
+  loadedMotion?: (defaultPage: HTMLDivElement) => void;
+  switchMotion?: (
+    oldPage: HTMLDivElement,
+    newPage: HTMLDivElement,
+    isForward: boolean
+  ) => number;
   defaultIndex: number;
   fakeRouter?: boolean;
   getMethods: (
@@ -32,67 +37,32 @@ export const PageContainer: Component<PageContainerProps> = (props) => {
         if (target === frontIndex) return;
         const isForward = target > frontIndex;
         const newPage = container.appendChild(pages[target]);
-        newPage.style.scale = isForward ? "0.8" : "1.4";
-        newPage.style.opacity = "0";
-        newPage.style.filter = "blur(1rem)";
-        animateMini(
-          newPage,
-          {
-            scale: 1,
-            opacity: 1,
-            filter: "blur(0)",
-          },
-          {
-            duration: 0.3,
-            ease: [0.5, 0, 0, 1],
-          }
-        );
-        animateMini(
-          pages[frontIndex],
-          {
-            scale: isForward ? "1.4" : "0.8",
-            opacity: 0,
-            filter: "blur(1rem)",
-          },
-          {
-            duration: 0.3,
-            ease: [0.5, 0, 0, 1],
-          }
-        );
         const previous = frontIndex;
         frontIndex = target;
-
-        new Promise((resolve) =>
-          setTimeout(() => {
-            if (frontIndex !== previous) {
-              if (props.pageInfos[previous].onLeave)
-                props.pageInfos[previous].onLeave();
-              container.removeChild(pages[previous]);
-            }
-            resolve(null);
-          }, 300)
-        );
+        const removeOldPage = () => {
+          if (frontIndex !== previous) {
+            if (props.pageInfos[previous].onLeave)
+              props.pageInfos[previous].onLeave();
+            container.removeChild(pages[previous]);
+          }
+        };
+        if (props.switchMotion) {
+          const duration = props.switchMotion(
+            pages[previous],
+            newPage,
+            isForward
+          );
+          new Promise((resolve) =>
+            setTimeout(() => {
+              removeOldPage();
+              resolve(null);
+            }, duration)
+          );
+        } else removeOldPage();
       } else {
         frontIndex = target;
         const newPage = container.appendChild(pages[target]);
-        newPage.style.transform = "translateY(12rem)";
-        newPage.style.opacity = "0";
-        newPage.style.filter = "blur(1rem)";
-        setTimeout(() => {
-          animateMini(
-            newPage,
-            {
-              transform: "translateY(0)",
-              opacity: 1,
-              filter: "blur(0)",
-            },
-            {
-              duration: 0.3,
-              ease: [0.5, 0, 0, 1],
-            }
-          );
-          frontIndex = target;
-        }, 200);
+        if (props.loadedMotion) props.loadedMotion(newPage);
       }
       if (props.pageInfos[target].onPrepare)
         props.pageInfos[target].onPrepare!();
@@ -130,11 +100,8 @@ export const PageContainer: Component<PageContainerProps> = (props) => {
     const path = window.location.pathname.slice(1);
     const param = window.location.hash.slice(1);
     if (!first && path === "") return;
-    const index = first
-      ? props.defaultIndex
-      : props.pageInfos.findIndex((page) => page.name === path);
+    const index = props.pageInfos.findIndex((page) => page.name === path);
     if (!index) return;
-    // TODO: 思考如何解决刷新页面后被替换url的问题
     handleSwitch(index, param === "" ? undefined : param, replace);
   };
 
@@ -174,7 +141,11 @@ export const PageContainer: Component<PageContainerProps> = (props) => {
 
     window.addEventListener("popstate", handlePopState);
     if (props.fakeRouter) handleLocationChange(true, true);
-    else handleSwitch(props.defaultIndex, undefined, true);
+    else {
+      handleSwitch(props.defaultIndex, undefined, true);
+      if (window.location.pathname.slice(1) !== "")
+        window.history.replaceState(null, "", "/");
+    }
   });
 
   onCleanup(() => {
