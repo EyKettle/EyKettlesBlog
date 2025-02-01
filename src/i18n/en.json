@@ -3,6 +3,9 @@
     "404": "Wait, where did you go?",
     "emptyArticle": "Wait, what are you looking for?"
   },
+  "notFound": {
+    "title": "Page Not Found"
+  },
   "header": {
     "title": "EyKettle's Product Manual",
     "shortTitle": "Manual"

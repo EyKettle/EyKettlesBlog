@@ -6,7 +6,7 @@ interface HomePageProps {
   translator: any;
   showDarkModeTip: boolean;
   operations: {
-    handleSwitch: (target: number) => void;
+    switchTo: (target: number) => void;
   };
 }
 
@@ -14,7 +14,7 @@ const HomePage: Component<HomePageProps> = (props) => {
   const t = props.translator;
 
   const handleCard2 = () => {
-    props.operations.handleSwitch(Pages.Reading);
+    props.operations.switchTo(Pages.Reading);
     return true;
   };
 

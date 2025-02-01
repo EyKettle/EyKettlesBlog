@@ -66,6 +66,7 @@ const ArticlePage: Component<ArticlePageProps> = (props) => {
               "align-items": "stretch",
               "text-align": "left",
               "text-wrap": "wrap",
+              "background-color": "var(--surface-hover)"
             }}
           >
             <Suspense fallback={false}>

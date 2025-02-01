@@ -1,20 +1,22 @@
 import { animateMini } from "motion";
-import { Component, JSXElement, onMount } from "solid-js";
+import { Component, JSXElement, onCleanup, onMount } from "solid-js";
 import { render } from "solid-js/web";
 
-type UpdateEvent = {
-  index: number;
-  enter?: () => void;
-  leave?: () => void;
+type PageInfo = {
+  name: string;
+  onPrepare?: () => void;
+  onRouted?: (path: string, param?: string) => void;
+  onLeave?: () => void;
 };
 
 interface PageContainerProps {
   children: JSXElement[];
-  titles?: string[];
-  defaultTitle?: string;
-  updateEvents?: UpdateEvent[];
+  pageInfos: PageInfo[];
   defaultIndex: number;
-  getMethods: (switchTo: (page: number) => void) => void;
+  fakeRouter?: boolean;
+  getMethods: (
+    switchTo: (index: number, param?: string, replace?: boolean) => void
+  ) => void;
 }
 
 export const PageContainer: Component<PageContainerProps> = (props) => {
@@ -23,9 +25,9 @@ export const PageContainer: Component<PageContainerProps> = (props) => {
   let frontIndex: number = props.defaultIndex;
   let pages: HTMLDivElement[] = [];
 
-  const switchTo = (target: number) => {
-    if (target < 0 || target >= pages.length) target = 0;
+  const updateFrontPage = (target: number) => {
     if (pages.length > 0) {
+      if (target < 0 || target >= pages.length) target = 0;
       if (container.children.length > 0) {
         if (target === frontIndex) return;
         const isForward = target > frontIndex;
@@ -60,24 +62,16 @@ export const PageContainer: Component<PageContainerProps> = (props) => {
         const previous = frontIndex;
         frontIndex = target;
 
-        if (props.titles && props.titles[target].trim() !== "")
-          document.title = props.titles[target];
-        if (props.updateEvents) {
-          props.updateEvents.forEach((event) => {
-            if (event.index === target && event.enter) event.enter();
-          });
-        }
-
-        setTimeout(() => {
-          if (frontIndex !== previous) {
-            if (props.updateEvents) {
-              props.updateEvents.forEach((event) => {
-                if (event.index === previous && event.leave) event.leave();
-              });
+        new Promise((resolve) =>
+          setTimeout(() => {
+            if (frontIndex !== previous) {
+              if (props.pageInfos[previous].onLeave)
+                props.pageInfos[previous].onLeave();
+              container.removeChild(pages[previous]);
             }
-            container.removeChild(pages[previous]);
-          }
-        }, 300);
+            resolve(null);
+          }, 300)
+        );
       } else {
         frontIndex = target;
         const newPage = container.appendChild(pages[target]);
@@ -100,19 +94,73 @@ export const PageContainer: Component<PageContainerProps> = (props) => {
           frontIndex = target;
         }, 200);
       }
+      if (props.pageInfos[target].onPrepare)
+        props.pageInfos[target].onPrepare!();
     }
   };
-  props.getMethods(switchTo);
+
+  let indexHistory: number[] = [];
+  let historyPosition = 0;
+
+  const handleSwitch = (index: number, param?: string, replace = false) => {
+    updateFrontPage(index);
+    if (props.fakeRouter) {
+      if (historyPosition < indexHistory.length - 1)
+        indexHistory.splice(historyPosition + 1);
+      indexHistory.push(index);
+      historyPosition = indexHistory.length - 1;
+      let url = props.pageInfos[index].name;
+      if (param) url += "#" + param;
+      if (replace) {
+        window.history.replaceState(historyPosition, "", "/" + url);
+      } else {
+        window.history.pushState(historyPosition, "", "/" + url);
+      }
+      if (props.pageInfos[index].onRouted)
+        props.pageInfos[index].onRouted(props.pageInfos[index].name, param);
+    }
+  };
+  props.getMethods(handleSwitch);
+
+  const handleLocationChange = (first = false, replace?: boolean) => {
+    if (!props.fakeRouter) {
+      console.warn("LocationChange triggered without FakeRouter.");
+      return;
+    }
+    const path = window.location.pathname.slice(1);
+    const param = window.location.hash.slice(1);
+    if (!first && path === "") return;
+    const index = first
+      ? props.defaultIndex
+      : props.pageInfos.findIndex((page) => page.name === path);
+    if (!index) return;
+    // TODO: 思考如何解决刷新页面后被替换url的问题
+    handleSwitch(index, param === "" ? undefined : param, replace);
+  };
+
+  const goBackward = () => {
+    if (historyPosition > 0) {
+      historyPosition--;
+      updateFrontPage(indexHistory[historyPosition]);
+    }
+  };
+  const goForward = () => {
+    if (historyPosition < indexHistory.length - 1) {
+      historyPosition++;
+      updateFrontPage(indexHistory[historyPosition]);
+    }
+  };
+
+  const handlePopState = (event: PopStateEvent) => {
+    if (event.state === null) {
+      handleLocationChange(true, true);
+    } else {
+      if (event.state > historyPosition) goForward();
+      else if (event.state < historyPosition) goBackward();
+    }
+  };
 
   onMount(() => {
-    if (props.titles && props.titles.length < props.children.length) {
-      props.titles.push(
-        ...Array(props.children.length - props.titles.length).fill(
-          props.defaultTitle ?? ""
-        )
-      );
-    }
-
     pages = props.children.map((content) => {
       const page = document.createElement("div");
       page.style.position = "absolute";
@@ -123,7 +171,14 @@ export const PageContainer: Component<PageContainerProps> = (props) => {
       render(() => content, page);
       return page;
     });
-    switchTo(props.defaultIndex);
+
+    window.addEventListener("popstate", handlePopState);
+    if (props.fakeRouter) handleLocationChange(true, true);
+    else handleSwitch(props.defaultIndex, undefined, true);
+  });
+
+  onCleanup(() => {
+    window.removeEventListener("popstate", handlePopState);
   });
 
   return (

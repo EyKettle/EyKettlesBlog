@@ -3,6 +3,9 @@
     "404": "等等，这是哪里?",
     "emptyArticle": "等等，这是哪篇？"
   },
+  "notFound": {
+    "title": "找不到页面"
+  },
   "header": {
     "title": "电水壶的产品说明书",
     "shortTitle": "说明书"

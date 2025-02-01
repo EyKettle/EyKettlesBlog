@@ -69,53 +69,21 @@ const App: Component = () => {
     }
   };
 
-  window.addEventListener("resize", onResize);
-
-  let [defaultIndex, setDefaultIndex] = createSignal(1);
-  let history: number[] = [1];
-  let historyIndex = 0;
-  let switchPage = (_target: number) => {
-    console.warn("Not initialized");
-  };
-
-  const goBackward = () => {
-    if (historyIndex >= 0) {
-      historyIndex--;
-      switchPage(history[historyIndex]);
-    }
-  };
-  const goForward = () => {
-    if (historyIndex < history.length - 1) {
-      historyIndex++;
-      switchPage(history[historyIndex]);
-    }
-  };
-  const handlePopState = (event: PopStateEvent) => {
-    if (event.state > historyIndex) goForward();
-    else if (event.state < historyIndex) goBackward();
-  };
-
-  const handleSwitch = (pageIndex: number, extra?: string) => {
-    switchPage(pageIndex);
-    if (historyIndex < history.length - 1) history.splice(historyIndex + 1);
-    history.push(pageIndex);
-    let url = `${Pages[pageIndex]}`;
-    if (extra) url += `#${extra}`;
-    window.history.pushState(pageIndex, "", url);
-    historyIndex = history.length - 1;
+  let switchTo = (_index: number, _param?: string) => {
+    console.error("Not initialized");
   };
 
   let savePosition = () => {
-    console.warn("Not initialized");
+    console.error("Not initialized");
   };
   let loadPosition = () => {
-    console.warn("Not initialized");
+    console.error("Not initialized");
   };
 
   const [articleInfo, setArticleInfo] = createSignal<Article>();
   const loadArticle = (article: Article) => {
     setArticleInfo(article);
-    handleSwitch(Pages.Article, article.fileName);
+    switchTo(Pages.Article, article.fileName);
   };
 
   createEffect(() => {
@@ -140,33 +108,16 @@ const App: Component = () => {
   };
 
   const darkModeMediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
-  darkModeMediaQuery.addEventListener("change", checkDarkMode);
-
   onMount(() => {
+    window.addEventListener("resize", onResize);
     checkDarkMode();
-
+    darkModeMediaQuery.addEventListener("change", checkDarkMode);
     header.style.top = "1rem";
-
-    window.addEventListener("popstate", handlePopState);
-    const path = window.location.pathname.substring(1);
-    const param = window.location.hash.substring(1);
-    if (path === "") return;
-    const defaultIndex = Object.values(Pages).indexOf(path);
-    if (!defaultIndex) return;
-    setDefaultIndex(defaultIndex);
-    if (param !== "" && path === Pages[3]) {
-      new Promise(async () => {
-        const fileName = param;
-        const articles = await getInfos();
-        const article = articles.find((a) => a.fileName === fileName);
-        if (article) setArticleInfo(article);
-      });
-    }
   });
 
   onCleanup(() => {
     window.removeEventListener("resize", onResize);
-    window.removeEventListener("popstate", handlePopState);
+    darkModeMediaQuery.removeEventListener("change", checkDarkMode);
   });
 
   return (
@@ -223,43 +174,54 @@ const App: Component = () => {
       >
         <Suspense>
           <PageContainer
-            defaultIndex={defaultIndex()}
-            getMethods={(switchTo) => (switchPage = switchTo)}
-            updateEvents={[
+          fakeRouter={true}
+            pageInfos={[
               {
-                index: Pages.Home,
-                enter: () => {
-                  document.title = t("home.title") || "";
+                name: Pages[Pages.NotFound],
+                onPrepare: () => {
+                  document.title = t("notFound.title") || "";
                 },
               },
               {
-                index: Pages.Reading,
-                enter: () => {
+                name: Pages[Pages.Home],
+                onPrepare: () => {
+                  document.title = t("home.title") || "电水壶使用手册";
+                },
+              },
+              {
+                name: Pages[Pages.Reading],
+                onPrepare: () => {
                   loadPosition();
                   document.title = t("reading.title") || "";
                 },
-                leave: () => savePosition(),
+                onLeave: () => savePosition(),
               },
               {
-                index: Pages.Article,
-                enter: () => {
-                  document.title = articleInfo()!.title;
-                },
+                name: Pages[Pages.Article],
+                onPrepare: () =>
+                  new Promise((resolve) => {
+                    setTimeout(() => {
+                      document.title = articleInfo()?.title || "未知的文章";
+                    }, 10);
+                    resolve(null);
+                  }),
               },
             ]}
+            defaultIndex={Pages.Home}
+            getMethods={(s) => (switchTo = s)}
           >
             <NotFoundPage
               translator={t}
-              operations={{ back: () => handleSwitch(Pages.Home) }}
+              operations={{ back: () => switchTo(Pages.Home) }}
             />
             <HomePage
               translator={t}
-              operations={{ handleSwitch }}
+              operations={{ switchTo }}
               showDarkModeTip={isExistDarkModePlugin()}
             />
             <ReadingPage
               translator={t}
-              operations={{ back: () => handleSwitch(Pages.Home), loadArticle }}
+              operations={{ back: () => switchTo(Pages.Home), loadArticle }}
               getMethods={(save, load) => {
                 savePosition = save;
                 loadPosition = load;
@@ -268,7 +230,7 @@ const App: Component = () => {
             <ArticlePage
               translator={t}
               info={articleInfo()}
-              operations={{ back: () => handleSwitch(Pages.Reading) }}
+              operations={{ back: () => switchTo(Pages.Reading) }}
             />
           </PageContainer>
         </Suspense>
