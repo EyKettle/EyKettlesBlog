@@ -29,7 +29,7 @@ const SwitchItem: Component<SwitchItemProps> = (props) => {
 
   onMount(() => {
     if (props.active) {
-      element.style.color = "var(--theme-onActive)";
+      element.style.color = "var(--switch-onActive)";
       element.style.backgroundColor = "var(--switch-active)";
       element.style.boxShadow = "inset 0 0.0625rem 0 var(--shadow-color)";
       element.style.cursor = "auto";
@@ -43,6 +43,7 @@ const SwitchItem: Component<SwitchItemProps> = (props) => {
 
   const handleClick = () => {
     if (props.active) return;
+    element.style.cursor = "auto";
     props.callback(props.index);
     props.event();
   };
@@ -59,6 +60,8 @@ const SwitchItem: Component<SwitchItemProps> = (props) => {
     <button
       ref={(e) => (element = e)}
       style={{
+        display: "flex",
+        "align-items": "center",
         outline: "none",
         border: "none",
         "border-radius": "0.5rem",
@@ -83,10 +86,16 @@ const SwitchItem: Component<SwitchItemProps> = (props) => {
       on:mousedown={(e) => {
         if (e.button === 0) {
           if (props.active) return;
-          element.style.color = "var(--theme-onActive)";
+          element.style.backgroundColor = "var(--switch-press)";
+          element.style.boxShadow = "inset 0 0.0625rem 0 var(--border-down)";
+        }
+      }}
+      on:mouseup={e => {
+        if (e.button === 0) {
+          if (props.active) return;
+          element.style.color = "var(--switch-onActive)";
           element.style.backgroundColor = "var(--switch-active)";
           element.style.boxShadow = "inset 0 0.0625rem 0 var(--border-down)";
-          element.style.cursor = "auto";
         }
       }}
       on:touchstart={() => {
@@ -111,7 +120,7 @@ const SwitchItem: Component<SwitchItemProps> = (props) => {
 };
 
 export const Switch: Component<SwitchProps> = (props) => {
-  const [activeIndex, setActiveIndex] = createSignal(props.current || 0);
+  const [activeIndex, setActiveIndex] = createSignal(props.current ?? 0);
   const handleSwitch = (index: number) => {
     const prev = activeIndex();
     setActiveIndex(index);
@@ -135,7 +144,7 @@ export const Switch: Component<SwitchProps> = (props) => {
         "border-bottom": "0.0625rem solid var(--border-default-down)",
         padding: "0.5rem",
         overflow: "hidden",
-        "background-color": "var(--surface-color)",
+        "background-color": "var(--surface-default)",
         "box-shadow": "0 0.0625rem 0.125rem var(--shadow-color)",
       }}
     >

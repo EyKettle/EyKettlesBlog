@@ -59,13 +59,13 @@
       height: 1rem;
       width: 1rem;
       margin: 0;
-      background-color: var(--surface-color);
+      background-color: var(--surface-default);
       border: var(--border-active) solid 0.0625rem;
       border-radius: 0.25rem;
     }
 
     input[type="checkbox"]:checked::before {
-      color: var(--theme-onActive);
+      color: var(--switch-onActive);
       font-family: var(--icon-font);
       content: "\e001";
       font-weight: bold;

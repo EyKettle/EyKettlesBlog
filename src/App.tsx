@@ -21,12 +21,14 @@ import { Article, getInfos } from "./articles/methods";
 import ArticlePage from "./pages/articlePage";
 import NotFoundPage from "./pages/notFoundPage";
 import { animateMini } from "motion";
+import ComponentsPage from "./pages/componentsPage";
 
 export enum Pages {
   NotFound = 0,
   Home = 1,
   Reading = 2,
   Article = 3,
+  ComponentLibrary = 4,
 }
 
 const App: Component = () => {
@@ -42,6 +44,9 @@ const App: Component = () => {
     startTransition(() => {
       setLocale(locale);
       document.documentElement.lang = locale;
+      setTimeout(() => {
+        updateTitle();
+      }, 10);
     });
   }
 
@@ -73,8 +78,35 @@ const App: Component = () => {
     }
   };
 
-  let switchTo = (_index: number, _param?: string) => {
+  let switchTo = (_index: number, _param?: string) =>
     console.error("Not initialized");
+  let getFrontIndex = (): number => {
+    throw new Error("Not initialized");
+  };
+
+  const updateTitle = (frontPage?: Pages) => {
+    if (!frontPage) {
+      frontPage = getFrontIndex() ?? Pages.Home;
+    }
+    switch (frontPage) {
+      case Pages.NotFound:
+        document.title = t("notFound.title") || "";
+        break;
+      case Pages.Home:
+        document.title = t("home.title") || "电水壶使用手册";
+        break;
+      case Pages.Reading:
+        document.title = t("reading.title") || "";
+        break;
+      case Pages.Article:
+        document.title = articleInfo()?.title || "未知的文章";
+        break;
+      case Pages.ComponentLibrary:
+        document.title = t("library.title") || "";
+        break;
+      default:
+        break;
+    }
   };
 
   let savePosition = () => {
@@ -181,21 +213,17 @@ const App: Component = () => {
             pageInfos={[
               {
                 name: Pages[Pages.NotFound],
-                onPrepare: () => {
-                  document.title = t("notFound.title") || "";
-                },
+                onPrepare: () => updateTitle(Pages.NotFound),
               },
               {
                 name: Pages[Pages.Home],
-                onPrepare: () => {
-                  document.title = t("home.title") || "电水壶使用手册";
-                },
+                onPrepare: () => updateTitle(Pages.Home),
               },
               {
                 name: Pages[Pages.Reading],
                 onPrepare: () => {
                   loadPosition();
-                  document.title = t("reading.title") || "";
+                  updateTitle(Pages.Reading);
                 },
                 onLeave: () => savePosition(),
               },
@@ -204,14 +232,21 @@ const App: Component = () => {
                 onPrepare: () =>
                   new Promise((resolve) => {
                     setTimeout(() => {
-                      document.title = articleInfo()?.title || "未知的文章";
+                      updateTitle(Pages.Article);
                     }, 10);
                     resolve(null);
                   }),
               },
+              {
+                name: Pages[Pages.ComponentLibrary],
+                onPrepare: () => updateTitle(Pages.ComponentLibrary),
+              },
             ]}
             defaultIndex={Pages.Home}
-            getMethods={(s) => (switchTo = s)}
+            getMethods={(s, i) => {
+              switchTo = s;
+              getFrontIndex = i;
+            }}
             switchMotion={(oldPage, newPage, isForward) => {
               newPage.style.scale = isForward ? "0.8" : "1.4";
               newPage.style.opacity = "0";
@@ -283,6 +318,10 @@ const App: Component = () => {
               translator={t}
               info={articleInfo()}
               operations={{ back: () => switchTo(Pages.Reading) }}
+            />
+            <ComponentsPage
+              translator={t}
+              operations={{ back: () => switchTo(Pages.Home) }}
             />
           </PageContainer>
         </Suspense>

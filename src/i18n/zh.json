@@ -20,12 +20,31 @@
     "card2": {
       "title": "阅读",
       "description": "翻阅相关文章"
-    }
+    },
+    "enterLibrary": "组件库"
   },
   "learning": {
     "title": "电水壶的教学现场"
   },
   "reading": {
     "title": "电水壶的阅读室"
+  },
+  "library": {
+    "title": "组件库",
+    "card": {
+      "name": "卡片",
+      "effect": {
+        "all": "包含浮动和3D效果",
+        "float": "仅包含浮动效果",
+        "none": "无效果"
+      }
+    },
+    "button": {
+      "normal": "普通按钮",
+      "ghost": "幽灵按钮"
+    },
+    "switch": "开关",
+    "input": "输入框",
+    "pageContainer": "页面容器"
   }
 }

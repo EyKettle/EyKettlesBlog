@@ -1,4 +1,4 @@
-import { Component, JSXElement, onCleanup, onMount } from "solid-js";
+import { Component, JSX, JSXElement, onCleanup, onMount } from "solid-js";
 import { render } from "solid-js/web";
 
 type PageInfo = {
@@ -11,6 +11,8 @@ type PageInfo = {
 interface PageContainerProps {
   children: JSXElement[];
   pageInfos: PageInfo[];
+  extraStyle?: JSX.CSSProperties;
+  pageInit?: (page: HTMLDivElement) => void;
   loadedMotion?: (defaultPage: HTMLDivElement) => void;
   switchMotion?: (
     oldPage: HTMLDivElement,
@@ -20,17 +22,19 @@ interface PageContainerProps {
   defaultIndex: number;
   fakeRouter?: boolean;
   getMethods: (
-    switchTo: (index: number, param?: string, replace?: boolean) => void
+    switchTo: (index: number, param?: string, replace?: boolean) => void,
+    getFrontIndex: () => number
   ) => void;
 }
 
 export const PageContainer: Component<PageContainerProps> = (props) => {
-  let container: HTMLDivElement;
+  let container: HTMLDivElement | null = null;
 
   let frontIndex: number = props.defaultIndex;
   let pages: HTMLDivElement[] = [];
 
   const updateFrontPage = (target: number) => {
+    if (!container) return;
     if (pages.length > 0) {
       if (target < 0 || target >= pages.length) target = 0;
       if (container.children.length > 0) {
@@ -41,9 +45,9 @@ export const PageContainer: Component<PageContainerProps> = (props) => {
         frontIndex = target;
         const removeOldPage = () => {
           if (frontIndex !== previous) {
-            if (props.pageInfos[previous].onLeave)
+            if (props.pageInfos[previous]?.onLeave)
               props.pageInfos[previous].onLeave();
-            container.removeChild(pages[previous]);
+            container?.removeChild(pages[previous]);
           }
         };
         if (props.switchMotion) {
@@ -64,7 +68,7 @@ export const PageContainer: Component<PageContainerProps> = (props) => {
         const newPage = container.appendChild(pages[target]);
         if (props.loadedMotion) props.loadedMotion(newPage);
       }
-      if (props.pageInfos[target].onPrepare)
+      if (props.pageInfos[target]?.onPrepare)
         props.pageInfos[target].onPrepare!();
     }
   };
@@ -86,11 +90,10 @@ export const PageContainer: Component<PageContainerProps> = (props) => {
       } else {
         window.history.pushState(historyPosition, "", "/" + url);
       }
-      if (props.pageInfos[index].onRouted)
+      if (props.pageInfos[index]?.onRouted)
         props.pageInfos[index].onRouted(props.pageInfos[index].name, param);
     }
   };
-  props.getMethods(handleSwitch);
 
   const handleLocationChange = (first = false, replace?: boolean) => {
     if (!props.fakeRouter) {
@@ -100,9 +103,12 @@ export const PageContainer: Component<PageContainerProps> = (props) => {
     const path = window.location.pathname.slice(1);
     const param = window.location.hash.slice(1);
     if (!first && path === "") return;
-    const index = props.pageInfos.findIndex((page) => page.name === path);
-    if (!index) return;
-    handleSwitch(index, param === "" ? undefined : param, replace);
+    const index =
+      path === "" && first
+        ? props.defaultIndex
+        : props.pageInfos.findIndex((page) => page.name === path);
+    if (index >= 0 && index < pages.length)
+      handleSwitch(index, param === "" ? undefined : param, replace);
   };
 
   const goBackward = () => {
@@ -127,17 +133,26 @@ export const PageContainer: Component<PageContainerProps> = (props) => {
     }
   };
 
+  const getFrontIndex = () => frontIndex;
+  props.getMethods(handleSwitch, getFrontIndex);
+
   onMount(() => {
     pages = props.children.map((content) => {
       const page = document.createElement("div");
-      page.style.position = "absolute";
-      page.style.height = "100vh";
-      page.style.width = "100vw";
-      page.style.display = "flex";
-      page.style.justifyContent = "center";
+      if (props.pageInit) props.pageInit(page);
+      else {
+        page.style.position = "absolute";
+        page.style.height = "100vh";
+        page.style.width = "100vw";
+        page.style.display = "flex";
+        page.style.justifyContent = "center";
+      }
       render(() => content, page);
       return page;
     });
+
+    if (props.pageInfos.length !== pages.length)
+      throw new Error("PageInfos length not matched.");
 
     window.addEventListener("popstate", handlePopState);
     if (props.fakeRouter) handleLocationChange(true, true);
@@ -158,6 +173,7 @@ export const PageContainer: Component<PageContainerProps> = (props) => {
       style={{
         height: "100%",
         width: "100%",
+        ...props.extraStyle,
       }}
     ></div>
   );

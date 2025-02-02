@@ -16,32 +16,40 @@ body {
 
   color: var(--theme-text);
 
+  --icon-font: "Segoe Fluent Icons";
+
   --theme-text: rgba(0, 0, 0, 0.8);
-  --theme-onActive: rgba(22, 77, 49, 0.8);
+  --theme-accent: rgba(22, 77, 49, 0.8);
+  --theme-accent-background: #99cc99;
+  --theme-accent-background-translucent: rgba(153, 204, 153, 0.3);
+  --theme-accent-text: var(--theme-accent);
 
-  --button-default: #f2f2f2;
-  --button-hover: white;
-  --button-active: #ddd;
-  --ghost-default: transparent;
-  --ghost-hover: rgba(0, 0, 0, 0.1);
-  --ghost-active: rgba(0, 0, 0, 0.2);
-
-  --border-default: rgba(0, 0, 0, 0.1);
-  --border-active: rgba(0, 0, 0, 0.2);
-  --border-default-down: var(--border-down);
-  --border-up: rgba(255, 255, 255, 0.1);
-  --border-down: rgba(0, 0, 0, 0.2);
-  --switch-hover: White;
-  --switch-active: #99cc99;
-
-  --surface-color: #f2f2f2;
+  --surface-default: #f2f2f2;
   --surface-hover: #ffffff;
   --surface-active: #e2e2e2;
   --surface-glass: rgba(255, 255, 255, 0.4);
 
   --shadow-color: rgba(0, 0, 0, 0.1);
 
-  --icon-font: "Segoe Fluent Icons";
+  --button-default: #f2f2f2;
+  --button-hover: white;
+  --button-active: #ddd;
+  --ghost-default: transparent;
+  --ghost-hover: rgba(0, 0, 0, 0.08);
+  --ghost-active: rgba(0, 0, 0, 0.16);
+
+  --border-default: rgba(0, 0, 0, 0.1);
+  --border-active: rgba(0, 0, 0, 0.2);
+  --border-default-down: var(--border-down);
+  --border-up: rgba(255, 255, 255, 0.1);
+  --border-down: rgba(0, 0, 0, 0.2);
+
+  --switch-hover: White;
+  --switch-press: var(--theme-accent-background-translucent);
+  --switch-active: var(--theme-accent-background);
+  --switch-onActive: var(--theme-accent-text);
+
+  --input-default: var(--surface-hover);
 
   transition: all 0.2s;
   height: 100%;
@@ -64,26 +72,29 @@ html {
   }
   body {
     --theme-text: rgba(255, 255, 255, 0.8);
-    --theme-onActive: rgba(192, 255, 225, 0.8);
+    --theme-accent: rgba(51, 122, 86, 0.8);
+    --theme-accent-background: #234d34;
+    --theme-accent-background-translucent: rgba(35, 77, 52, 0.3);
+    --theme-accent-text: rgba(192, 255, 225, 0.8);
 
-    --button-default: #2e2e2e;
-    --button-hover: #3e3e3e;
-    --button-active: #222;
-    --ghost-default: transparent;
-    --ghost-hover: rgba(255, 255, 255, 0.1);
-    --ghost-active: rgba(255, 255, 255, 0.2);
-
-    --border-default: rgba(255, 255, 255, 0.1);
-    --border-active: rgba(255, 255, 255, 0.2);
-    --border-default-down: var(--border-default);
-    --switch-hover: #333;
-    --switch-active: #234d34;
-
-    --surface-color: #222;
+    --surface-default: #222;
     --surface-hover: #2a2a2a;
     --surface-active: #262626;
     --surface-glass: rgba(42, 42, 42, 0.6);
 
     --shadow-color: rgba(0, 0, 0, 0.3);
+
+    --button-default: #2e2e2e;
+    --button-hover: #3e3e3e;
+    --button-active: #222;
+    --ghost-default: transparent;
+    --ghost-hover: rgba(255, 255, 255, 0.05);
+    --ghost-active: rgba(255, 255, 255, 0.1);
+
+    --border-default: rgba(255, 255, 255, 0.1);
+    --border-active: rgba(255, 255, 255, 0.2);
+    --border-default-down: var(--border-default);
+
+    --switch-hover: #333;
   }
 }

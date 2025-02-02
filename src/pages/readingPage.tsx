@@ -41,7 +41,7 @@ const ReadingPage: Component<ReadingPageProps> = (props) => {
     if (vlist) position = vlist.scrollOffset;
   };
   const loadPosition = () => {
-    if (vlist) vlist.scrollTo(position || 0);
+    if (vlist) vlist.scrollTo(position ?? 0);
   };
   props.getMethods(savePosition, loadPosition);
 

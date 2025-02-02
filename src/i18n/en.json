@@ -20,12 +20,31 @@
     "card2": {
       "title": "Read",
       "description": "Browse Related Articles"
-    }
+    },
+    "enterLibrary": "Component Library"
   },
   "learning": {
     "title": "EyKettle's Learning Resources"
   },
   "reading": {
     "title": "EyKettle's Reading List"
+  },
+  "library": {
+    "title": "Component Library",
+    "card": {
+      "name": "Card",
+      "effect": {
+        "all": "Includes floating and 3D effects",
+        "float": "Only floating effect",
+        "none": "No effect"
+      }
+    },
+    "button": {
+      "normal": "Normal Button",
+      "ghost": "Ghost Button"
+    },
+    "switch": "Switch",
+    "input": "Input Box",
+    "pageContainer": "Page Container"
   }
 }

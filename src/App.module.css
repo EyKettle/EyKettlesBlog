@@ -22,7 +22,7 @@
   padding: 0.5rem;
   border: none;
   background-color: var(--surface-glass);
-  backdrop-filter: blur(20px) saturate(200%) brightness(120%);
+  backdrop-filter: blur(20px) saturate(200%) brightness(105%);
   width: fit-content;
   box-shadow: 0 1rem 2rem rgba(0, 0, 0, 0.1),
     0 0 0 0.0625rem var(--border-default);
@@ -35,10 +35,10 @@ p {
   padding-bottom: 0.125rem;
 }
 
-@media (prefers-color-scheme: light) {
+@media (prefers-color-scheme: dark) {
   .header {
     box-shadow: 0 1rem 2rem rgba(0, 0, 0, 0.1),
       0 0 0 0.0625rem var(--border-default);
-    backdrop-filter: blur(20px) saturate(200%) brightness(105%);
+    backdrop-filter: blur(20px) saturate(200%) brightness(120%);
   }
 }

@@ -36,7 +36,7 @@ export const Card: Component<CardProps> = (props) => {
       element.style.boxShadow =
         "0 0.0625rem 0.125rem var(--shadow-color), 0 0 0 0.0625rem var(--border-default)";
       element.style.zIndex = "1";
-      element.style.backgroundColor = "var(--surface-color)";
+      element.style.backgroundColor = "var(--surface-default)";
       element.style.transform = "rotateY(0deg) rotateX(0deg)";
       element.style.perspective = "unset";
     });
@@ -77,10 +77,6 @@ export const Card: Component<CardProps> = (props) => {
       if (!props.effect) props.effect = "float";
     }
     if (props.effect === "all") parent.style.perspective = "64rem";
-
-    if (props.extraStyle) {
-      Object.assign(element.style, props.extraStyle);
-    }
   });
 
   const rotateDelta = 10;
@@ -116,13 +112,14 @@ export const Card: Component<CardProps> = (props) => {
         "justify-content": "center",
         "align-items": "center",
         "border-radius": "1.25rem",
-        "background-color": "var(--surface-color)",
+        "background-color": "var(--surface-default)",
         "box-shadow":
           "0 0.0625rem 0.125rem var(--shadow-color), 0 0 0 0.0625rem var(--border-default)",
         padding: "1rem",
         transition: "all 0.2s cubic-bezier(0, 0, 0, 1)",
         cursor: props.disabled ? "unset" : "pointer",
         "user-select": "none",
+        ...props.extraStyle,
       }}
       on:mouseenter={() => {
         if (props.disabled) return;

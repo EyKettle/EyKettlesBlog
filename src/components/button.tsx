@@ -11,7 +11,7 @@ interface ButtonProps {
 }
 
 export const Button: Component<ButtonProps> = (props) => {
-  let element: HTMLButtonElement;
+  let element: HTMLButtonElement | null = null;
   const iconChars = Array.from(props.icon || "");
 
   const [defaultStyle, setDefaultStyle] = createSignal({
@@ -30,6 +30,7 @@ export const Button: Component<ButtonProps> = (props) => {
     } else {
       element.style.border = "none";
     }
+    element.style.backgroundColor = `var(--${props.type}-default)`;
 
     if (props.rounded) element.style.borderRadius = "50%";
     if (props.size) {
@@ -66,7 +67,6 @@ export const Button: Component<ButtonProps> = (props) => {
         outline: "none",
         "box-sizing": "border-box",
         color: "var(--theme-text)",
-        "background-color": `var(--${props.type}-default)`,
         "min-height": "2.5rem",
         "min-width": "2.5rem",
         "font-size": defaultStyle().fontSize,

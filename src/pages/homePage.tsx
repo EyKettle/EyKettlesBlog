@@ -1,6 +1,7 @@
 import { Component, Show } from "solid-js";
 import { Card } from "../components/card";
 import { Pages } from "../App";
+import { Button } from "../components/button";
 
 interface HomePageProps {
   translator: any;
@@ -54,6 +55,13 @@ const HomePage: Component<HomePageProps> = (props) => {
           onClick={handleCard2}
         />
       </div>
+      <Button
+        icon={"\ue0ab"}
+        text={t("home.enterLibrary")}
+        type="ghost"
+        size="medium"
+        onClick={() => props.operations.switchTo(Pages.ComponentLibrary)}
+      />
       <Show when={props.showDarkModeTip}>
         <div
           style={{
