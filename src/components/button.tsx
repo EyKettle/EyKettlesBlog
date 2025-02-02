@@ -92,6 +92,8 @@ export const Button: Component<ButtonProps> = (props) => {
       }}
       on:touchend={(e) => {
         e.currentTarget.style.backgroundColor = `var(--${props.type}-default)`;
+        props.onClick?.();
+        e.preventDefault();
       }}
       on:blur={(e) => {
         e.currentTarget.style.backgroundColor = `var(--${props.type}-default)`;

@@ -172,6 +172,11 @@ export const Card: Component<CardProps> = (props) => {
         if (props.effect && ["float", "all"].includes(props.effect))
           element.style.scale = "1.05";
       }}
+      on:touchmove={(e) => {
+        if (props.disabled) return;
+        if (!element) return;
+        resetStyle();
+      }}
       on:blur={resetStyle}
       on:click={() => {
         if (props.disabled) return;
