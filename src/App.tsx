@@ -22,6 +22,7 @@ import ArticlePage from "./pages/articlePage";
 import NotFoundPage from "./pages/notFoundPage";
 import { animateMini } from "motion";
 import ComponentsPage from "./pages/componentsPage";
+import Loading from "./components/loading";
 
 export enum Pages {
   NotFound = 0,
@@ -130,6 +131,9 @@ const App: Component = () => {
 
   let [isExistDarkModePlugin, setDarkModeCheckState] = createSignal(false);
   const checkDarkMode = () => {
+    if (darkModeMediaQuery.matches)
+      document.documentElement.classList.add("dark");
+    else document.documentElement.classList.remove("dark");
     new Promise((resolve) => {
       setTimeout(() => {
         const cssChecker = document.getElementById("css-checker");
@@ -208,7 +212,7 @@ const App: Component = () => {
           width: "100vw",
         }}
       >
-        <Suspense>
+        <Suspense fallback={<Loading />}>
           <PageContainer
             pageInfos={[
               {

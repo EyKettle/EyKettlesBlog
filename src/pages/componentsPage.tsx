@@ -4,6 +4,7 @@ import { Card } from "../components/card";
 import { PageContainer } from "../components/pageContainer";
 import { Switch } from "../components/switch";
 import InputBox from "../components/inputbox";
+import Loading from "../components/loading";
 
 interface componentsPageProps {
   translator: any;
@@ -132,6 +133,9 @@ const ComponentsPage: Component<componentsPageProps> = (props) => {
         </div>
         <div style={styleOfSection}>
           <InputBox multiline={true} placeholder={t("library.input")} />
+        </div>
+        <div style={styleOfSection}>
+          <Loading />
         </div>
       </div>
     </div>

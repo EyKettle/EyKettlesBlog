@@ -119,7 +119,7 @@ export const Button: Component<ButtonProps> = (props) => {
                 style={{
                   // position: "absolute",
                   height: 0,
-                  scale: index() === 0 ? 0.95 : 1,
+                  zoom: index() === 0 ? 0.95 : 1,
                   color: props.iconColors ? props.iconColors[index()] : "unset",
                 }}
               >

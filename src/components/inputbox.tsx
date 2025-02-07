@@ -32,11 +32,11 @@ const InputBox: Component<InputBoxProps> = (props) => {
       placeholder={props.placeholder || ""}
       value={props.value || ""}
       on:mouseenter={() => {
-        if (!element) return;
+        if (!element || element === document.activeElement) return;
         element.style.boxShadow = "0 0 0 0.0625rem var(--theme-accent)";
       }}
       on:mouseleave={() => {
-        if (!element) return;
+        if (!element || element === document.activeElement) return;
         element.style.boxShadow = "0 0 0 0.0625rem var(--border-default)";
       }}
       on:focus={() => {

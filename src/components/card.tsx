@@ -38,7 +38,6 @@ export const Card: Component<CardProps> = (props) => {
       element.style.zIndex = "1";
       element.style.backgroundColor = "var(--surface-default)";
       element.style.transform = "rotateY(0deg) rotateX(0deg)";
-      element.style.perspective = "unset";
     });
   };
 
@@ -80,24 +79,43 @@ export const Card: Component<CardProps> = (props) => {
   });
 
   const rotateDelta = 10;
+  let remValue: number;
   let isFrameScheduled = false;
-  const handleRotate = (element: HTMLDivElement, e: MouseEvent) => {
+  const handleRotate = (
+    element: HTMLDivElement,
+    clientX: number,
+    clientY: number
+  ) => {
     if (isFrameScheduled) return;
     isFrameScheduled = true;
     requestAnimationFrame(() => {
       const rect = element.getBoundingClientRect();
-      const { halfWidth, halfHeight } = {
-        halfWidth: rect.width / 2,
-        halfHeight: rect.height / 2,
-      };
-      const offsetX = e.clientX - rect.left;
-      const offsetY = e.clientY - rect.top;
-      const rotateY = ((offsetX - halfWidth) / halfWidth) * rotateDelta;
-      const rotateX = ((offsetY - halfHeight) / halfHeight) * rotateDelta * -1;
-      element.style.transform = `rotateY(${rotateY}deg) rotateX(${rotateX}deg)`;
+      if (
+        clientX >= rect.left - 3 * remValue &&
+        clientX <= rect.right + 3 * remValue &&
+        clientY >= rect.top - 3 * remValue &&
+        clientY <= rect.bottom + 3 * remValue
+      ) {
+        const { halfWidth, halfHeight } = {
+          halfWidth: rect.width / 2,
+          halfHeight: rect.height / 2,
+        };
+        const offsetX = clientX - rect.left;
+        const offsetY = clientY - rect.top;
+        const rotateY = ((offsetX - halfWidth) / halfWidth) * rotateDelta;
+        const rotateX =
+          ((offsetY - halfHeight) / halfHeight) * rotateDelta * -1;
+        element.style.transform = `rotateY(${rotateY}deg) rotateX(${rotateX}deg)`;
+      } else resetStyle();
       isFrameScheduled = false;
     });
   };
+
+  onMount(() => {
+    if (!element) return;
+    remValue =
+      parseFloat(getComputedStyle(element).getPropertyValue("--rem")) || 16;
+  });
 
   return (
     <div
@@ -117,13 +135,13 @@ export const Card: Component<CardProps> = (props) => {
           "0 0.0625rem 0.125rem var(--shadow-color), 0 0 0 0.0625rem var(--border-default)",
         padding: "1rem",
         transition: "all 0.2s cubic-bezier(0, 0, 0, 1)",
+        "will-change": "transform, box-shadow, z-index, background-color, scale",
         cursor: props.disabled ? "unset" : "pointer",
         "user-select": "none",
         ...props.extraStyle,
       }}
       on:mouseenter={() => {
-        if (props.disabled) return;
-        if (!element) return;
+        if (props.disabled || !element) return;
         if (props.effect && ["float", "all"].includes(props.effect))
           element.style.scale = "1.1";
         element.style.boxShadow =
@@ -136,19 +154,18 @@ export const Card: Component<CardProps> = (props) => {
         resetStyle();
       }}
       on:mousedown={(e) => {
-        if (props.disabled) return;
-        if (!element) return;
+        if (props.disabled || !element) return;
         if (e.button === 0) {
           element.style.backgroundColor = "var(--surface-active)";
           if (props.effect && ["float", "all"].includes(props.effect)) {
             element.style.scale = "1.05";
-            if (props.effect === "all") handleRotate(element, e);
+            if (props.effect === "all")
+              handleRotate(element, e.clientX, e.clientY);
           }
         }
       }}
       on:mouseup={(e) => {
-        if (props.disabled) return;
-        if (!element) return;
+        if (props.disabled || !element) return;
         if (e.button === 0) {
           element.style.backgroundColor = "var(--surface-hover)";
           element.style.transform = "rotateY(0deg) rotateX(0deg)";
@@ -157,15 +174,14 @@ export const Card: Component<CardProps> = (props) => {
         }
       }}
       on:mousemove={(e) => {
-        if (props.disabled) return;
-        if (!element) return;
+        if (props.disabled || !element) return;
         if (e.buttons === 1) {
-          if (props.effect === "all") handleRotate(element, e);
+          if (props.effect === "all")
+            handleRotate(element, e.clientX, e.clientY);
         }
       }}
       on:touchstart={() => {
-        if (props.disabled) return;
-        if (!element) return;
+        if (props.disabled || !element) return;
         element.style.backgroundColor = "var(--surface-active)";
         element.style.boxShadow =
           "0 0.5rem 1rem var(--shadow-color), 0 0 0 0.0625rem var(--border-active)";
@@ -173,10 +189,17 @@ export const Card: Component<CardProps> = (props) => {
           element.style.scale = "1.05";
       }}
       on:touchmove={(e) => {
-        if (props.disabled) return;
-        if (!element) return;
-        resetStyle();
+        if (
+          props.disabled ||
+          !element ||
+          props.effect !== "all" ||
+          element.style.scale === "1"
+        )
+          return;
+        e.preventDefault();
+        handleRotate(element, e.touches[0].clientX, e.touches[0].clientY);
       }}
+      on:touchend={resetStyle}
       on:blur={resetStyle}
       on:click={() => {
         if (props.disabled) return;
