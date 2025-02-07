@@ -6,4 +6,4 @@
 
 ## 许可证
 
-[MIT 许可证](LICENSE)
+[MPL-2.0](LICENSE)

@@ -6,4 +6,4 @@ A personal blog website built with Vite + React + TypeScript
 
 ## License
 
-[MIT](LICENSE)
+[MPL-2.0](LICENSE)
