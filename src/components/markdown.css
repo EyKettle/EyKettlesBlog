@@ -10,6 +10,16 @@
     padding-bottom: 0.5rem !important;
   }
 
+  a {
+    color: var(--theme-accent-text);
+  }
+  a:hover {
+    text-decoration: dashed;
+  }
+  a:active {
+    color: var(--theme-accent);
+  }
+
   ul:has(input[type="checkbox"]) {
     list-style: none;
     padding-left: 0;

@@ -42,7 +42,7 @@
   - [ ] 完美的路由系统
     - 需要研究研究 SolidRouter 的实现原理
   - [ ] 完美的字体渲染
-    - [字体渲染问题例图](new/fontIssue.webp)
+    - [字体渲染问题例图](/src/articles/new/fontIssue.webp)
     - 上半部分是有问题的渲染模式，下半部分是正确的渲染模式。
 
 ## 补充信息
