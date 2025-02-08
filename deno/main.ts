@@ -11,13 +11,13 @@ async function handler(req: Request): Promise<Response> {
     try {
       return await serveFile(req, `${Deno.cwd()}/dist${path}`);
     } catch {
-      return new Response("??", { status: 404 });
+      return new Response("404 Not Found", { status: 404 });
     }
   } else {
     try {
       return await serveFile(req, `${Deno.cwd()}/dist/index.html`);
     } catch {
-      return new Response("??", { status: 404 });
+      return new Response("Website disappeared", { status: 404 });
     }
   }
 }
