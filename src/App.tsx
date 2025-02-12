@@ -12,17 +12,21 @@ import {
 import styles from "./App.module.css";
 
 import * as i18n from "@solid-primitives/i18n";
-import { fetchDictionary, Locale } from "./i18n/lang";
+import { fetchDictionary, Locale, locales } from "./i18n/lang";
+import { animateMini } from "motion";
+
 import { Switch } from "./components/switch";
-import HomePage from "./pages/homePage";
 import { PageContainer } from "./components/pageContainer";
+import Loading from "./components/loading";
+
+import HomePage from "./pages/homePage";
 import ReadingPage from "./pages/readingPage";
-import { Article, getInfos } from "./articles/methods";
 import ArticlePage from "./pages/articlePage";
 import NotFoundPage from "./pages/notFoundPage";
-import { animateMini } from "motion";
 import ComponentsPage from "./pages/componentsPage";
-import Loading from "./components/loading";
+
+import { Article, getInfos } from "./articles/methods";
+import { Config, loadConfig, saveConfig } from "./localStorage";
 
 export enum Pages {
   NotFound = 0,
@@ -33,7 +37,9 @@ export enum Pages {
 }
 
 const App: Component = () => {
-  const [locale, setLocale] = createSignal<Locale>("zh-CN");
+  let config: Config = loadConfig();
+
+  const [locale, setLocale] = createSignal<Locale>(config.language as Locale);
 
   const [dict] = createResource(locale, fetchDictionary);
 
@@ -42,6 +48,8 @@ const App: Component = () => {
   const [duringTransition, startTransition] = useTransition();
 
   function switchLocale(locale: Locale) {
+    config.language = locale;
+    saveConfig(config);
     startTransition(() => {
       setLocale(locale);
       document.documentElement.lang = locale;
@@ -85,31 +93,35 @@ const App: Component = () => {
     throw new Error("Not initialized");
   };
 
-  const updateTitle = (frontPage?: Pages) => {
-    if (!frontPage) {
-      frontPage = getFrontIndex() ?? Pages.Home;
-    }
-    switch (frontPage) {
-      case Pages.NotFound:
-        document.title = t("notFound.title") || "";
-        break;
-      case Pages.Home:
-        document.title = t("home.title") || "电水壶使用手册";
-        break;
-      case Pages.Reading:
-        document.title = t("reading.title") || "";
-        break;
-      case Pages.Article:
-        document.title = articleInfo()?.title || "未知的文章";
-        break;
-      case Pages.ComponentLibrary:
-        document.title = t("library.title") || "";
-        break;
-      default:
-        break;
-    }
-  };
-
+  const updateTitle = (frontPage?: Pages) =>
+    new Promise((resolve) => {
+      setTimeout(() => {
+        if (!frontPage) {
+          frontPage = getFrontIndex() ?? Pages.Home;
+        }
+        switch (frontPage) {
+          case Pages.NotFound:
+            document.title = t("notFound.title") || "";
+            break;
+          case Pages.Home:
+            document.title = t("home.title") || "电水壶使用手册";
+            break;
+          case Pages.Reading:
+            document.title = t("reading.title") || "";
+            break;
+          case Pages.Article:
+            document.title =
+              articleInfo?.title || t("errors.unknownArticle") || "未知的文章";
+            break;
+          case Pages.ComponentLibrary:
+            document.title = t("library.title") || "";
+            break;
+          default:
+            break;
+        }
+        resolve(null);
+      }, 10);
+    });
   let savePosition = () => {
     console.error("Not initialized");
   };
@@ -117,10 +129,11 @@ const App: Component = () => {
     console.error("Not initialized");
   };
 
-  const [articleInfo, setArticleInfo] = createSignal<Article>();
-  const loadArticle = (article: Article) => {
-    setArticleInfo(article);
-    switchTo(Pages.Article, article.fileName);
+  let articleInfo: Article | undefined = undefined;
+  let setArticle = (_fileName?: string) => console.log("Not initialized");
+  const loadArticle = () => {
+    config.currentArticle = articleInfo?.fileName || "";
+    setArticle(config.currentArticle);
   };
 
   createEffect(() => {
@@ -195,7 +208,7 @@ const App: Component = () => {
             gap: "0.4rem",
           }}
         >
-          <Switch current={1}>
+          <Switch current={locales.indexOf(locale())}>
             {[
               {
                 label: "English",
@@ -233,22 +246,34 @@ const App: Component = () => {
               },
               {
                 name: Pages[Pages.Article],
-                onPrepare: () =>
+                onPrepare: () => {
+                  loadArticle();
                   new Promise((resolve) => {
+                    if (!articleInfo)
+                      getInfos().then((articles) => {
+                        articleInfo = articles.find(
+                          (a) => a.fileName === loadConfig().currentArticle
+                        );
+                      });
                     setTimeout(() => {
                       updateTitle(Pages.Article);
                     }, 10);
                     resolve(null);
-                  }),
+                  });
+                },
               },
               {
                 name: Pages[Pages.ComponentLibrary],
                 onPrepare: () => updateTitle(Pages.ComponentLibrary),
               },
             ]}
-            defaultIndex={Pages.Home}
+            defaultIndex={config.pageIndex}
             getMethods={(s, i) => {
-              switchTo = s;
+              switchTo = (index: number, param?: string) => {
+                config.pageIndex = index;
+                saveConfig(config);
+                s(index, param);
+              };
               getFrontIndex = i;
             }}
             switchMotion={(oldPage, newPage, isForward) => {
@@ -312,7 +337,13 @@ const App: Component = () => {
             />
             <ReadingPage
               translator={t}
-              operations={{ back: () => switchTo(Pages.Home), loadArticle }}
+              operations={{
+                back: () => switchTo(Pages.Home),
+                setArticleInfo: (article) => {
+                  articleInfo = article;
+                  switchTo(Pages.Article);
+                },
+              }}
               getMethods={(save, load) => {
                 savePosition = save;
                 loadPosition = load;
@@ -320,8 +351,9 @@ const App: Component = () => {
             />
             <ArticlePage
               translator={t}
-              info={articleInfo()}
+              defaultArticle={loadConfig().currentArticle}
               operations={{ back: () => switchTo(Pages.Reading) }}
+              getMethods={(set) => (setArticle = set)}
             />
             <ComponentsPage
               translator={t}

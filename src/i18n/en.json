@@ -1,7 +1,8 @@
 {
   "errors": {
     "404": "Wait, where did you go?",
-    "emptyArticle": "Wait, what are you looking for?"
+    "emptyArticle": "Wait, what is this?",
+    "unknownArticle": "Unknown article"
   },
   "notFound": {
     "title": "Page Not Found"
@@ -45,6 +46,7 @@
     },
     "switch": "Switch",
     "input": "Input Box",
-    "pageContainer": "Page Container"
+    "pageContainer": "Page Container",
+    "loading": "Loading Component"
   }
 }

@@ -37,7 +37,8 @@ export const Card: Component<CardProps> = (props) => {
         "0 0.0625rem 0.125rem var(--shadow-color), 0 0 0 0.0625rem var(--border-default)";
       element.style.zIndex = "1";
       element.style.backgroundColor = "var(--surface-default)";
-      element.style.transform = "rotateY(0deg) rotateX(0deg)";
+      if (props.effect === "all")
+        element.style.transform = "rotateY(0deg) rotateX(0deg)";
     });
   };
 
@@ -52,6 +53,12 @@ export const Card: Component<CardProps> = (props) => {
     const parent = element.parentElement;
     if (!parent) return;
 
+    if (parent.hasAttribute("card-text-wrap")) {
+      if (props.title && props.description)
+        (element.children[1] as HTMLDivElement).style.whiteSpace = "normal";
+      else if (props.description)
+        (element.children[0] as HTMLDivElement).style.whiteSpace = "normal";
+    }
     if (parent.hasAttribute("card-text-align")) {
       element.style.alignItems =
         parent.getAttribute("card-text-align") || "center";
@@ -135,7 +142,8 @@ export const Card: Component<CardProps> = (props) => {
           "0 0.0625rem 0.125rem var(--shadow-color), 0 0 0 0.0625rem var(--border-default)",
         padding: "1rem",
         transition: "all 0.2s cubic-bezier(0, 0, 0, 1)",
-        "will-change": "transform, box-shadow, z-index, background-color, scale",
+        "will-change":
+          "transform, box-shadow, z-index, background-color, scale",
         cursor: props.disabled ? "unset" : "pointer",
         "user-select": "none",
         ...props.extraStyle,
@@ -168,9 +176,11 @@ export const Card: Component<CardProps> = (props) => {
         if (props.disabled || !element) return;
         if (e.button === 0) {
           element.style.backgroundColor = "var(--surface-hover)";
-          element.style.transform = "rotateY(0deg) rotateX(0deg)";
-          if (props.effect && ["float", "all"].includes(props.effect))
+          if (props.effect && ["float", "all"].includes(props.effect)) {
             element.style.scale = "1.1";
+            if (props.effect === "all")
+              element.style.transform = "rotateY(0deg) rotateX(0deg)";
+          }
         }
       }}
       on:mousemove={(e) => {

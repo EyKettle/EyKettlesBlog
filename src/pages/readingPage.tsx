@@ -9,7 +9,7 @@ interface ReadingPageProps {
   translator: any;
   operations: {
     back: () => void;
-    loadArticle: (article: Article) => void;
+    setArticleInfo: (article: Article) => void;
   };
   getMethods: (savePosition: () => void, loadPosition: () => void) => void;
 }
@@ -86,7 +86,7 @@ const ReadingPage: Component<ReadingPageProps> = (props) => {
                 title={info.title}
                 description={info.description}
                 onClick={() => {
-                  props.operations.loadArticle(info);
+                  props.operations.setArticleInfo(info);
                   return true;
                 }}
                 textJustify="flex-end"

@@ -1,7 +1,8 @@
 {
   "errors": {
     "404": "等等，这是哪里?",
-    "emptyArticle": "等等，这是哪篇？"
+    "emptyArticle": "等等，这是哪篇？",
+    "unknownArticle": "未知的文章"
   },
   "notFound": {
     "title": "找不到页面"
@@ -45,6 +46,7 @@
     },
     "switch": "开关",
     "input": "输入框",
-    "pageContainer": "页面容器"
+    "pageContainer": "页面容器",
+    "loading": "加载组件"
   }
 }

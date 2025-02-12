@@ -91,7 +91,7 @@
     overflow: scroll;
     padding: 0.5rem;
     margin-inline: 1.5rem;
-    background-color: var(--surface-hover);
+    background-color: var(--surface-default);
     border: var(--border-default) solid 0.0625rem;
     border-radius: 0.5rem;
   }
@@ -105,7 +105,7 @@
     font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
       monospace;
     padding-inline: 0.25rem;
-    background-color: var(--surface-hover);
+    background-color: var(--surface-default);
     border: var(--border-active) solid 0.0625rem;
     border-radius: 0.5rem;
   }

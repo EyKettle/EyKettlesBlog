@@ -73,6 +73,7 @@ const ComponentsPage: Component<componentsPageProps> = (props) => {
             }}
             card-height="10rem"
             card-width="15rem"
+            card-text-wrap=""
           >
             <Card
               title={t("library.card.name")}
@@ -135,7 +136,7 @@ const ComponentsPage: Component<componentsPageProps> = (props) => {
           <InputBox multiline={true} placeholder={t("library.input")} />
         </div>
         <div style={styleOfSection}>
-          <Loading />
+          <Loading text={t("library.loading")} />
         </div>
       </div>
     </div>

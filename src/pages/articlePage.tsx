@@ -1,35 +1,53 @@
-import {
-  Component,
-  createEffect,
-  createSignal,
-  Show,
-  Suspense,
-} from "solid-js";
-import { Article } from "../articles/methods";
+import { Component, createSignal, onMount, Show, Suspense } from "solid-js";
 import { Button } from "../components/button";
 import { SolidMarkdown } from "solid-markdown";
 import { Card } from "../components/card";
 import remarkGfm from "remark-gfm";
 
 import "../components/markdown.css";
+import Loading from "../components/loading";
+import { loadConfig, saveConfig } from "../localStorage";
 
 interface ArticlePageProps {
   translator: any;
-  info?: Article;
+  defaultArticle?: string;
   operations: {
     back: () => void;
   };
+  getMethods: (setArticle: (info?: string) => void) => void;
 }
 
 const ArticlePage: Component<ArticlePageProps> = (props) => {
   const t = props.translator;
 
+  const [isProper, setProper] = createSignal(true);
   const [content, setContent] = createSignal<string>();
 
-  createEffect(async () => {
-    if (!props.info) return;
-    const fileContent = await import(`../articles/${props.info.fileName}.ts`);
-    setContent(fileContent.default);
+  const setArticle = async (fileName?: string) => {
+    if (!fileName) {
+      setProper(false);
+      return;
+    }
+    setContent("");
+    const fileContent = await import(`../articles/${fileName}.ts`);
+    if (fileContent.default) {
+      setProper(true);
+      setContent(fileContent.default);
+      let newConfig = loadConfig();
+      newConfig.currentArticle = fileName;
+      saveConfig(newConfig);
+    } else {
+      setProper(false);
+      let newConfig = loadConfig();
+      newConfig.currentArticle = "";
+      saveConfig(newConfig);
+    }
+  };
+  props.getMethods(setArticle);
+
+  onMount(() => {
+    if (props.defaultArticle && props.defaultArticle !== "")
+      setArticle(props.defaultArticle);
   });
 
   return (
@@ -54,7 +72,7 @@ const ArticlePage: Component<ArticlePageProps> = (props) => {
       />
       <div>
         <Show
-          when={props.info}
+          when={isProper()}
           fallback={<div>{t("errors.emptyArticle")}</div>}
         >
           <Card
@@ -71,13 +89,24 @@ const ArticlePage: Component<ArticlePageProps> = (props) => {
               "background-color": "var(--surface-hover)",
             }}
           >
-            <Suspense fallback={false}>
-              <SolidMarkdown
-                class="markdown-body"
-                remarkPlugins={[remarkGfm]}
-                children={content()}
-              />
-            </Suspense>
+            <Show
+              when={content()}
+              fallback={
+                <Loading
+                  extraStyle={{
+                    "margin-top": "2rem",
+                  }}
+                />
+              }
+            >
+              <Suspense fallback={false}>
+                <SolidMarkdown
+                  class="markdown-body"
+                  remarkPlugins={[remarkGfm]}
+                  children={content()}
+                />
+              </Suspense>
+            </Show>
           </Card>
         </Show>
       </div>

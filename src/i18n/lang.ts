@@ -1,6 +1,7 @@
 import * as i18n from "@solid-primitives/i18n";
 
 export type Locale = "en-US" | "zh-CN";
+export const locales: Locale[] = ["en-US", "zh-CN"];
 type RawDictionary = typeof import("./zh.json");
 export type Dictionary = i18n.Flatten<RawDictionary>;
 
