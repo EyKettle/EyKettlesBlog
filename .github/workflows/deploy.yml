@@ -38,7 +38,7 @@ jobs:
         uses: denoland/deployctl@v1
         with:
           project: "eykettle-manual"
-          entrypoint: "../deno/main.ts"
+          entrypoint: "main.ts"
           root: "dist"
           
           
