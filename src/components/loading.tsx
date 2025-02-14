@@ -21,7 +21,7 @@ const Loading: Component<LoadingProps> = (props) => {
           duration: 0.5,
           repeat: Infinity,
           repeatType: "reverse",
-          ease: "linear",
+          ease: [0.2, 0, 0.8, 1],
         }
       );
       animateMini(

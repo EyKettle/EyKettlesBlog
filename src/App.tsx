@@ -25,7 +25,7 @@ import ArticlePage from "./pages/articlePage";
 import NotFoundPage from "./pages/notFoundPage";
 import ComponentsPage from "./pages/componentsPage";
 
-import { Article, getInfos } from "./articles/methods";
+import { Article } from "./articles/methods";
 import { Config, loadConfig, saveConfig } from "./localStorage";
 
 export enum Pages {
@@ -227,6 +227,7 @@ const App: Component = () => {
       >
         <Suspense fallback={<Loading />}>
           <PageContainer
+            fakeRouter={true}
             pageInfos={[
               {
                 name: Pages[Pages.NotFound],
@@ -246,15 +247,15 @@ const App: Component = () => {
               },
               {
                 name: Pages[Pages.Article],
-                onPrepare: () => {
+                onRouted: () => {
                   loadArticle();
                   new Promise((resolve) => {
-                    if (!articleInfo)
-                      getInfos().then((articles) => {
-                        articleInfo = articles.find(
-                          (a) => a.fileName === loadConfig().currentArticle
-                        );
-                      });
+                    // if (!articleInfo)
+                    //   getInfos().then((articles) => {
+                    //     articleInfo = articles.find(
+                    //       (a) => a.fileName === loadConfig().currentArticle
+                    //     );
+                    //   });
                     setTimeout(() => {
                       updateTitle(Pages.Article);
                     }, 10);
@@ -277,31 +278,49 @@ const App: Component = () => {
               getFrontIndex = i;
             }}
             switchMotion={(oldPage, newPage, isForward) => {
-              newPage.style.scale = isForward ? "0.8" : "1.4";
+              newPage.style.scale = isForward ? "0.8" : "1.6";
               newPage.style.opacity = "0";
-              newPage.style.filter = "blur(1rem)";
+              newPage.style.filter = "blur(0.75rem)";
               animateMini(
                 newPage,
                 {
                   scale: 1,
+                },
+                {
+                  duration: 0.3,
+                  ease: [0.2, 0, 0, 1],
+                }
+              );
+              animateMini(
+                newPage,
+                {
                   opacity: 1,
                   filter: "blur(0)",
                 },
                 {
-                  duration: 0.3,
-                  ease: [0.5, 0, 0, 1],
+                  duration: 0.25,
+                  ease: [0.2, 0, 0.5, 1],
                 }
               );
               animateMini(
                 oldPage,
                 {
-                  scale: isForward ? "1.4" : "0.8",
-                  opacity: 0,
-                  filter: "blur(1rem)",
+                  scale: isForward ? "1.6" : "0.8",
                 },
                 {
                   duration: 0.3,
-                  ease: [0.5, 0, 0, 1],
+                  ease: [0.2, 0, 0, 1],
+                }
+              );
+              animateMini(
+                oldPage,
+                {
+                  opacity: 0,
+                  filter: "blur(0.75rem)",
+                },
+                {
+                  duration: 0.25,
+                  ease: [0.2, 0, 0.5, 1],
                 }
               );
               return 300;
@@ -341,7 +360,7 @@ const App: Component = () => {
                 back: () => switchTo(Pages.Home),
                 setArticleInfo: (article) => {
                   articleInfo = article;
-                  switchTo(Pages.Article);
+                  switchTo(Pages.Article, article.fileName);
                 },
               }}
               getMethods={(save, load) => {

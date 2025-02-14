@@ -29,7 +29,7 @@ const ArticlePage: Component<ArticlePageProps> = (props) => {
       return;
     }
     setContent("");
-    const fileContent = await import(`../articles/${fileName}.ts`);
+    const fileContent = await import(`../articles/${fileName}.md?raw`);
     if (fileContent.default) {
       setProper(true);
       setContent(fileContent.default);
@@ -86,7 +86,7 @@ const ArticlePage: Component<ArticlePageProps> = (props) => {
               "align-items": "stretch",
               "text-align": "left",
               "text-wrap": "wrap",
-              "background-color": "var(--surface-hover)",
+              "--surface-default": "var(--surface-hover)",
             }}
           >
             <Show

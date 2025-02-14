@@ -1,6 +1,11 @@
 import { Component, JSX, onMount, Show } from "solid-js";
 
-type Effect = "none" | "float" | "all";
+type Effect = "none" | "float" | "3d" | "all";
+const EFFECT_MAP = {
+  valid: new Set<Effect>(["none", "float", "3d", "all"]),
+  rotate: new Set<Effect>(["all", "3d"]),
+  float: new Set<Effect>(["all", "float"]),
+};
 
 interface CardProps {
   title?: string;
@@ -37,8 +42,10 @@ export const Card: Component<CardProps> = (props) => {
         "0 0.0625rem 0.125rem var(--shadow-color), 0 0 0 0.0625rem var(--border-default)";
       element.style.zIndex = "1";
       element.style.backgroundColor = "var(--surface-default)";
-      if (props.effect === "all")
+      if (EFFECT_MAP.rotate.has(props.effect ?? "none")) {
+        element.style.transformOrigin = "center";
         element.style.transform = "rotateY(0deg) rotateX(0deg)";
+      }
     });
   };
 
@@ -76,13 +83,14 @@ export const Card: Component<CardProps> = (props) => {
     } else if (props.width) element.style.width = props.width;
     if (parent.hasAttribute("card-effect")) {
       const value = parent.getAttribute("card-effect");
-      props.effect = ["none", "float", "all"].includes(value ?? "")
-        ? (value as Effect)
-        : "all";
+      props.effect =
+        value && EFFECT_MAP.valid.has(value as Effect)
+          ? (value as Effect)
+          : "all";
     } else {
       if (!props.effect) props.effect = "float";
     }
-    if (props.effect === "all") parent.style.perspective = "64rem";
+    if (EFFECT_MAP.rotate.has(props.effect)) parent.style.perspective = "64rem";
   });
 
   const rotateDelta = 10;
@@ -103,12 +111,17 @@ export const Card: Component<CardProps> = (props) => {
         clientY >= rect.top - 3 * remValue &&
         clientY <= rect.bottom + 3 * remValue
       ) {
-        const { halfWidth, halfHeight } = {
-          halfWidth: rect.width / 2,
-          halfHeight: rect.height / 2,
-        };
         const offsetX = clientX - rect.left;
         const offsetY = clientY - rect.top;
+
+        if (props.effect === "3d") {
+          const oppositeX = ((rect.width - offsetX) / rect.width) * 100;
+          const oppositeY = ((rect.height - offsetY) / rect.height) * 100;
+          element.style.transformOrigin = `${oppositeX}% ${oppositeY}%`;
+        }
+
+        const halfWidth = rect.width / 2;
+        const halfHeight = rect.height / 2;
         const rotateY = ((offsetX - halfWidth) / halfWidth) * rotateDelta;
         const rotateX =
           ((offsetY - halfHeight) / halfHeight) * rotateDelta * -1;
@@ -120,8 +133,7 @@ export const Card: Component<CardProps> = (props) => {
 
   onMount(() => {
     if (!element) return;
-    remValue =
-      parseFloat(getComputedStyle(element).getPropertyValue("--rem")) || 16;
+    remValue = parseFloat(getComputedStyle(document.documentElement).fontSize);
   });
 
   return (
@@ -150,7 +162,7 @@ export const Card: Component<CardProps> = (props) => {
       }}
       on:mouseenter={() => {
         if (props.disabled || !element) return;
-        if (props.effect && ["float", "all"].includes(props.effect))
+        if (props.effect && EFFECT_MAP.float.has(props.effect))
           element.style.scale = "1.1";
         element.style.boxShadow =
           "0 0.5rem 1rem var(--shadow-color), 0 0 0 0.0625rem var(--border-active)";
@@ -158,17 +170,17 @@ export const Card: Component<CardProps> = (props) => {
         element.style.backgroundColor = "var(--surface-hover)";
       }}
       on:mouseleave={() => {
-        if (props.disabled) return;
-        resetStyle();
+        if (!props.disabled) resetStyle();
       }}
       on:mousedown={(e) => {
         if (props.disabled || !element) return;
         if (e.button === 0) {
           element.style.backgroundColor = "var(--surface-active)";
-          if (props.effect && ["float", "all"].includes(props.effect)) {
-            element.style.scale = "1.05";
-            if (props.effect === "all")
+          if (props.effect && props.effect !== "none") {
+            if (EFFECT_MAP.rotate.has(props.effect))
               handleRotate(element, e.clientX, e.clientY);
+            if (EFFECT_MAP.float.has(props.effect))
+              element.style.scale = "1.05";
           }
         }
       }}
@@ -176,17 +188,17 @@ export const Card: Component<CardProps> = (props) => {
         if (props.disabled || !element) return;
         if (e.button === 0) {
           element.style.backgroundColor = "var(--surface-hover)";
-          if (props.effect && ["float", "all"].includes(props.effect)) {
-            element.style.scale = "1.1";
-            if (props.effect === "all")
+          if (props.effect && props.effect !== "none") {
+            if (EFFECT_MAP.rotate.has(props.effect))
               element.style.transform = "rotateY(0deg) rotateX(0deg)";
+            if (EFFECT_MAP.float.has(props.effect)) element.style.scale = "1.1";
           }
         }
       }}
       on:mousemove={(e) => {
         if (props.disabled || !element) return;
         if (e.buttons === 1) {
-          if (props.effect === "all")
+          if (EFFECT_MAP.rotate.has(props.effect ?? "none"))
             handleRotate(element, e.clientX, e.clientY);
         }
       }}
@@ -195,7 +207,7 @@ export const Card: Component<CardProps> = (props) => {
         element.style.backgroundColor = "var(--surface-active)";
         element.style.boxShadow =
           "0 0.5rem 1rem var(--shadow-color), 0 0 0 0.0625rem var(--border-active)";
-        if (props.effect && ["float", "all"].includes(props.effect))
+        if (props.effect && EFFECT_MAP.float.has(props.effect))
           element.style.scale = "1.05";
       }}
       on:touchmove={(e) => {
@@ -209,11 +221,14 @@ export const Card: Component<CardProps> = (props) => {
         e.preventDefault();
         handleRotate(element, e.touches[0].clientX, e.touches[0].clientY);
       }}
-      on:touchend={resetStyle}
-      on:blur={resetStyle}
+      on:touchend={() => {
+        if (!props.disabled) resetStyle();
+      }}
+      on:blur={() => {
+        if (!props.disabled) resetStyle();
+      }}
       on:click={() => {
-        if (props.disabled) return;
-        if (props.onClick) {
+        if (!props.disabled && props.onClick) {
           if (props.onClick()) resetStyle();
         }
       }}

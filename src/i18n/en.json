@@ -36,6 +36,7 @@
       "name": "Card",
       "effect": {
         "all": "Includes floating and 3D effects",
+        "3d": "Only 3D effect",
         "float": "Only floating effect",
         "none": "No effect"
       }

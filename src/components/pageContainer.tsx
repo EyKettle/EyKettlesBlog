@@ -76,19 +76,26 @@ export const PageContainer: Component<PageContainerProps> = (props) => {
   let indexHistory: number[] = [];
   let historyPosition = 0;
 
-  const handleSwitch = (index: number, param?: string, replace = false) => {
+  const handleSwitch = (
+    index: number,
+    param?: string,
+    replace = false,
+    first = false
+  ) => {
     updateFrontPage(index);
     if (props.fakeRouter) {
       if (historyPosition < indexHistory.length - 1)
         indexHistory.splice(historyPosition + 1);
       indexHistory.push(index);
       historyPosition = indexHistory.length - 1;
-      let url = props.pageInfos[index].name;
-      if (param) url += "#" + param;
-      if (replace) {
-        window.history.replaceState(historyPosition, "", "/" + url);
-      } else {
-        window.history.pushState(historyPosition, "", "/" + url);
+      if (!first) {
+        let url = props.pageInfos[index].name;
+        if (param) url += "#" + param;
+        if (replace) {
+          window.history.replaceState(historyPosition, "", "/" + url);
+        } else {
+          window.history.pushState(historyPosition, "", "/" + url);
+        }
       }
       if (props.pageInfos[index]?.onRouted)
         props.pageInfos[index].onRouted(props.pageInfos[index].name, param);
@@ -108,7 +115,7 @@ export const PageContainer: Component<PageContainerProps> = (props) => {
         ? props.defaultIndex
         : props.pageInfos.findIndex((page) => page.name === path);
     if (index >= 0 && index < pages.length)
-      handleSwitch(index, param === "" ? undefined : param, replace);
+      handleSwitch(index, param === "" ? undefined : param, replace, first);
   };
 
   const goBackward = () => {

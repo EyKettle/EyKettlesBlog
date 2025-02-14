@@ -82,6 +82,11 @@ const ComponentsPage: Component<componentsPageProps> = (props) => {
             />
             <Card
               title={t("library.card.name")}
+              description={t("library.card.effect.3d")}
+              effect="3d"
+            />
+            <Card
+              title={t("library.card.name")}
               description={t("library.card.effect.float")}
               effect="float"
             />
