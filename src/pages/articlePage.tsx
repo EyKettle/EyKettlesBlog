@@ -79,6 +79,7 @@ const ArticlePage: Component<ArticlePageProps> = (props) => {
             disabled={true}
             width="90vw"
             extraStyle={{
+              "background-color": "var(--surface-hover)",
               "padding-inline": "min(3rem, 1vw)",
               "padding-block": "1rem 3rem",
               "user-select": "text",
@@ -86,7 +87,6 @@ const ArticlePage: Component<ArticlePageProps> = (props) => {
               "align-items": "stretch",
               "text-align": "left",
               "text-wrap": "wrap",
-              "--surface-default": "var(--surface-hover)",
             }}
           >
             <Show

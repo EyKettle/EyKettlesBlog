@@ -27,6 +27,7 @@ body {
   --surface-default: #f2f2f2;
   --surface-hover: #ffffff;
   --surface-active: #e2e2e2;
+  --surface-pressed: #e2e2e2;
   --surface-glass: rgba(255, 255, 255, 0.4);
 
   --shadow-color: rgba(0, 0, 0, 0.1);
@@ -80,6 +81,7 @@ html {
     --surface-default: #222;
     --surface-hover: #2a2a2a;
     --surface-active: #262626;
+    --surface-pressed: #1f1f1f;
     --surface-glass: rgba(42, 42, 42, 0.6);
 
     --shadow-color: rgba(0, 0, 0, 0.3);

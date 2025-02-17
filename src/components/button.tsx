@@ -7,11 +7,13 @@ interface ButtonProps {
   type?: "button" | "ghost";
   rounded?: boolean;
   size?: "small" | "medium" | "large";
+  disabled?: boolean;
   onClick?: () => void;
 }
 
 export const Button: Component<ButtonProps> = (props) => {
   let element: HTMLButtonElement | null = null;
+  let isTouch = false;
   const iconChars = Array.from(props.icon || "");
 
   const [defaultStyle, setDefaultStyle] = createSignal({
@@ -74,31 +76,41 @@ export const Button: Component<ButtonProps> = (props) => {
         cursor: "pointer",
       }}
       on:mouseenter={(e) => {
-        e.currentTarget.style.backgroundColor = `var(--${props.type}-hover)`;
+        if (!props.disabled && !isTouch)
+          e.currentTarget.style.backgroundColor = `var(--${props.type}-hover)`;
       }}
       on:mouseleave={(e) => {
-        e.currentTarget.style.backgroundColor = `var(--${props.type}-default)`;
+        if (!props.disabled && !isTouch)
+          e.currentTarget.style.backgroundColor = `var(--${props.type}-default)`;
       }}
       on:mousedown={(e) => {
-        if (e.button === 0)
+        if (!props.disabled && !isTouch && e.button === 0)
           e.currentTarget.style.backgroundColor = `var(--${props.type}-active)`;
       }}
       on:mouseup={(e) => {
-        if (e.button === 0)
+        if (isTouch) {
+          isTouch = false;
+          return;
+        }
+        if (!props.disabled && e.button === 0)
           e.currentTarget.style.backgroundColor = `var(--${props.type}-hover)`;
       }}
       on:touchstart={(e) => {
-        e.currentTarget.style.backgroundColor = `var(--${props.type}-hover)`;
+        isTouch = true;
+        if (!props.disabled)
+          e.currentTarget.style.backgroundColor = `var(--${props.type}-hover)`;
       }}
       on:touchend={(e) => {
-        e.currentTarget.style.backgroundColor = `var(--${props.type}-default)`;
-        props.onClick?.();
-        e.preventDefault();
+        if (!props.disabled)
+          e.currentTarget.style.backgroundColor = `var(--${props.type}-default)`;
       }}
       on:blur={(e) => {
-        e.currentTarget.style.backgroundColor = `var(--${props.type}-default)`;
+        if (!props.disabled)
+          e.currentTarget.style.backgroundColor = `var(--${props.type}-default)`;
       }}
-      on:click={props.onClick}
+      on:click={() => {
+        if (!props.disabled && !isTouch) props.onClick?.();
+      }}
     >
       <Show when={props.icon}>
         <div

@@ -53,9 +53,7 @@ const App: Component = () => {
     startTransition(() => {
       setLocale(locale);
       document.documentElement.lang = locale;
-      setTimeout(() => {
-        updateTitle();
-      }, 10);
+      updateTitle();
     });
   }
 
@@ -142,22 +140,13 @@ const App: Component = () => {
     }
   });
 
+  const cssChecker = document.getElementById("css-checker");
+  let cssChecked = false;
   let [isExistDarkModePlugin, setDarkModeCheckState] = createSignal(false);
   const checkDarkMode = () => {
     if (darkModeMediaQuery.matches)
       document.documentElement.classList.add("dark");
     else document.documentElement.classList.remove("dark");
-    new Promise((resolve) => {
-      setTimeout(() => {
-        const cssChecker = document.getElementById("css-checker");
-        if (cssChecker)
-          setDarkModeCheckState(
-            getComputedStyle(cssChecker).backgroundColor !==
-              "rgb(255, 255, 255)"
-          );
-        resolve(null);
-      }, 400);
-    });
   };
 
   const darkModeMediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
@@ -232,6 +221,14 @@ const App: Component = () => {
               {
                 name: Pages[Pages.NotFound],
                 onPrepare: () => updateTitle(Pages.NotFound),
+                onRouted: () => {
+                  if (cssChecker)
+                    setDarkModeCheckState(
+                      getComputedStyle(cssChecker).backgroundColor !==
+                        "rgb(255, 255, 255)"
+                    );
+                  cssChecked = true;
+                },
               },
               {
                 name: Pages[Pages.Home],
@@ -256,9 +253,7 @@ const App: Component = () => {
                     //       (a) => a.fileName === loadConfig().currentArticle
                     //     );
                     //   });
-                    setTimeout(() => {
-                      updateTitle(Pages.Article);
-                    }, 10);
+                    updateTitle(Pages.Article);
                     resolve(null);
                   });
                 },
@@ -288,7 +283,7 @@ const App: Component = () => {
                 },
                 {
                   duration: 0.3,
-                  ease: [0.2, 0, 0, 1],
+                  ease: [0.5, 0, 0, 1],
                 }
               );
               animateMini(
@@ -298,8 +293,8 @@ const App: Component = () => {
                   filter: "blur(0)",
                 },
                 {
-                  duration: 0.25,
-                  ease: [0.2, 0, 0.5, 1],
+                  duration: 0.2,
+                  ease: [0.2, 0, 1, 1],
                 }
               );
               animateMini(
@@ -309,7 +304,7 @@ const App: Component = () => {
                 },
                 {
                   duration: 0.3,
-                  ease: [0.2, 0, 0, 1],
+                  ease: [0.5, 0, 0, 1],
                 }
               );
               animateMini(
@@ -319,8 +314,8 @@ const App: Component = () => {
                   filter: "blur(0.75rem)",
                 },
                 {
-                  duration: 0.25,
-                  ease: [0.2, 0, 0.5, 1],
+                  duration: 0.2,
+                  ease: [0.2, 0, 1, 1],
                 }
               );
               return 300;
@@ -329,20 +324,23 @@ const App: Component = () => {
               defaultPage.style.transform = "translateY(12rem)";
               defaultPage.style.opacity = "0";
               defaultPage.style.filter = "blur(1rem)";
-              setTimeout(() => {
-                animateMini(
-                  defaultPage,
-                  {
-                    transform: "translateY(0)",
-                    opacity: 1,
-                    filter: "blur(0)",
-                  },
-                  {
-                    duration: 0.3,
-                    ease: [0.5, 0, 0, 1],
-                  }
-                );
-              }, 200);
+              new Promise((resolve) => {
+                setTimeout(() => {
+                  animateMini(
+                    defaultPage,
+                    {
+                      transform: "translateY(0)",
+                      opacity: 1,
+                      filter: "blur(0)",
+                    },
+                    {
+                      duration: 0.3,
+                      ease: [0.5, 0, 0, 1],
+                    }
+                  );
+                  resolve(null);
+                }, 200);
+              });
             }}
           >
             <NotFoundPage

@@ -19,7 +19,6 @@ const InputBox: Component<InputBoxProps> = (props) => {
         outline: "none",
         "font-size": "1rem",
         "text-align": "start",
-        "vertical-align": "middle",
         color: "var(--theme-text)",
         "background-color": "var(--input-default)",
         "border-radius": "0.5rem",

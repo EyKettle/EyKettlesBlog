@@ -1,3 +1,4 @@
+import { animateMini } from "motion";
 import { Component, JSX, onMount, Show } from "solid-js";
 
 type Effect = "none" | "float" | "3d" | "all";
@@ -22,6 +23,9 @@ interface CardProps {
 }
 
 export const Card: Component<CardProps> = (props) => {
+  let isTouch = false;
+
+  let pressColor = "var(--surface-active)";
   const getTextStyle = (size: string) => {
     return {
       "font-size": `${size}rem`,
@@ -44,7 +48,7 @@ export const Card: Component<CardProps> = (props) => {
       element.style.backgroundColor = "var(--surface-default)";
       if (EFFECT_MAP.rotate.has(props.effect ?? "none")) {
         element.style.transformOrigin = "center";
-        element.style.transform = "rotateY(0deg) rotateX(0deg)";
+        element.style.transform = "";
       }
     });
   };
@@ -90,7 +94,14 @@ export const Card: Component<CardProps> = (props) => {
     } else {
       if (!props.effect) props.effect = "float";
     }
-    if (EFFECT_MAP.rotate.has(props.effect)) parent.style.perspective = "64rem";
+    switch (props.effect) {
+      case "all":
+        element.style.touchAction = "none";
+        break;
+      case "3d":
+        pressColor = "var(--surface-pressed)";
+        break;
+    }
   });
 
   const rotateDelta = 10;
@@ -105,28 +116,20 @@ export const Card: Component<CardProps> = (props) => {
     isFrameScheduled = true;
     requestAnimationFrame(() => {
       const rect = element.getBoundingClientRect();
-      if (
-        clientX >= rect.left - 3 * remValue &&
-        clientX <= rect.right + 3 * remValue &&
-        clientY >= rect.top - 3 * remValue &&
-        clientY <= rect.bottom + 3 * remValue
-      ) {
-        const offsetX = clientX - rect.left;
-        const offsetY = clientY - rect.top;
-
-        if (props.effect === "3d") {
-          const oppositeX = ((rect.width - offsetX) / rect.width) * 100;
-          const oppositeY = ((rect.height - offsetY) / rect.height) * 100;
-          element.style.transformOrigin = `${oppositeX}% ${oppositeY}%`;
-        }
-
-        const halfWidth = rect.width / 2;
-        const halfHeight = rect.height / 2;
-        const rotateY = ((offsetX - halfWidth) / halfWidth) * rotateDelta;
-        const rotateX =
-          ((offsetY - halfHeight) / halfHeight) * rotateDelta * -1;
-        element.style.transform = `rotateY(${rotateY}deg) rotateX(${rotateX}deg)`;
-      } else resetStyle();
+      const offsetX = clientX - rect.left;
+      const offsetY = clientY - rect.top;
+      const halfWidth = rect.width / 2;
+      const halfHeight = rect.height / 2;
+      const rotateY =
+        ((offsetX - halfWidth) / halfWidth) *
+        rotateDelta *
+        (props.effect === "all" ? 1.5 : 1);
+      const rotateX =
+        ((offsetY - halfHeight) / halfHeight) *
+        rotateDelta *
+        -1 *
+        (props.effect === "all" ? 1.5 : 1);
+      element.style.transform = `perspective(64rem) rotateY(${rotateY}deg) rotateX(${rotateX}deg)`;
       isFrameScheduled = false;
     });
   };
@@ -153,7 +156,7 @@ export const Card: Component<CardProps> = (props) => {
         "box-shadow":
           "0 0.0625rem 0.125rem var(--shadow-color), 0 0 0 0.0625rem var(--border-default)",
         padding: "1rem",
-        transition: "all 0.2s cubic-bezier(0, 0, 0, 1)",
+        transition: "all 0.15s cubic-bezier(0.2, 0, 0, 1)",
         "will-change":
           "transform, box-shadow, z-index, background-color, scale",
         cursor: props.disabled ? "unset" : "pointer",
@@ -161,7 +164,7 @@ export const Card: Component<CardProps> = (props) => {
         ...props.extraStyle,
       }}
       on:mouseenter={() => {
-        if (props.disabled || !element) return;
+        if (props.disabled || isTouch || !element) return;
         if (props.effect && EFFECT_MAP.float.has(props.effect))
           element.style.scale = "1.1";
         element.style.boxShadow =
@@ -170,65 +173,97 @@ export const Card: Component<CardProps> = (props) => {
         element.style.backgroundColor = "var(--surface-hover)";
       }}
       on:mouseleave={() => {
-        if (!props.disabled) resetStyle();
+        if (!props.disabled && !isTouch) resetStyle();
       }}
       on:mousedown={(e) => {
-        if (props.disabled || !element) return;
+        if (props.disabled || isTouch || !element) return;
         if (e.button === 0) {
-          element.style.backgroundColor = "var(--surface-active)";
+          element.style.backgroundColor = pressColor;
           if (props.effect && props.effect !== "none") {
-            if (EFFECT_MAP.rotate.has(props.effect))
+            if (EFFECT_MAP.rotate.has(props.effect)) {
               handleRotate(element, e.clientX, e.clientY);
+              if (props.effect === "3d") element.style.scale = "0.95";
+            }
             if (EFFECT_MAP.float.has(props.effect))
               element.style.scale = "1.05";
           }
         }
       }}
       on:mouseup={(e) => {
+        if (isTouch) {
+          isTouch = false;
+          return;
+        }
         if (props.disabled || !element) return;
         if (e.button === 0) {
           element.style.backgroundColor = "var(--surface-hover)";
           if (props.effect && props.effect !== "none") {
-            if (EFFECT_MAP.rotate.has(props.effect))
-              element.style.transform = "rotateY(0deg) rotateX(0deg)";
+            if (EFFECT_MAP.rotate.has(props.effect)) {
+              element.style.transform = "";
+              if (props.effect === "3d") element.style.scale = "1";
+            }
             if (EFFECT_MAP.float.has(props.effect)) element.style.scale = "1.1";
           }
         }
       }}
       on:mousemove={(e) => {
-        if (props.disabled || !element) return;
+        if (props.disabled || isTouch || !element) return;
         if (e.buttons === 1) {
-          if (EFFECT_MAP.rotate.has(props.effect ?? "none"))
+          if (props.effect === "all")
             handleRotate(element, e.clientX, e.clientY);
         }
       }}
-      on:touchstart={() => {
+      on:touchstart={(e) => {
+        isTouch = true;
         if (props.disabled || !element) return;
-        element.style.backgroundColor = "var(--surface-active)";
-        element.style.boxShadow =
-          "0 0.5rem 1rem var(--shadow-color), 0 0 0 0.0625rem var(--border-active)";
-        if (props.effect && EFFECT_MAP.float.has(props.effect))
-          element.style.scale = "1.05";
+        if (props.effect !== "3d")
+          element.style.boxShadow =
+            "0 0.5rem 1rem var(--shadow-color), 0 0 0 0.0625rem var(--border-active)";
+        if (props.effect) {
+          if (props.effect === 'none') {
+            element.style.backgroundColor = "var(--surface-hover)";
+            return;
+          }
+          if (EFFECT_MAP.rotate.has(props.effect)) {
+            handleRotate(element, e.touches[0].clientX, e.touches[0].clientY);
+            if (props.effect === "3d") {
+              element.style.backgroundColor = pressColor;
+              element.style.scale = "0.95";
+            }
+          }
+          if (EFFECT_MAP.float.has(props.effect)) {
+            element.style.backgroundColor = "var(--surface-hover)";
+            element.style.scale = "1.05";
+          }
+        }
       }}
       on:touchmove={(e) => {
-        if (
-          props.disabled ||
-          !element ||
-          props.effect !== "all" ||
-          element.style.scale === "1"
-        )
-          return;
-        e.preventDefault();
-        handleRotate(element, e.touches[0].clientX, e.touches[0].clientY);
+        if (!props.disabled && element && props.effect === "all") {
+          const rect = element.getBoundingClientRect();
+          if (
+            e.touches[0].clientX >= rect.left - 3 * remValue &&
+            e.touches[0].clientX <= rect.right + 3 * remValue &&
+            e.touches[0].clientY >= rect.top - 3 * remValue &&
+            e.touches[0].clientY <= rect.bottom + 3 * remValue
+          ) {
+            element.style.backgroundColor = "var(--surface-hover)";
+            element.style.boxShadow =
+              "0 0.5rem 1rem var(--shadow-color), 0 0 0 0.0625rem var(--border-active)";
+            element.style.scale = "1.05";
+            handleRotate(element, e.touches[0].clientX, e.touches[0].clientY);
+          } else resetStyle();
+        }
       }}
       on:touchend={() => {
-        if (!props.disabled) resetStyle();
+        if (!props.disabled) {
+          resetStyle();
+        }
       }}
       on:blur={() => {
         if (!props.disabled) resetStyle();
       }}
       on:click={() => {
-        if (!props.disabled && props.onClick) {
+        if (!props.disabled && !isTouch && props.onClick) {
           if (props.onClick()) resetStyle();
         }
       }}

@@ -7,7 +7,7 @@
   }
 
   p {
-    padding-bottom: 0.5rem !important;
+    padding-block: 0.25rem !important;
   }
 
   a {
@@ -52,7 +52,8 @@
         li::before {
           content: "";
           flex-shrink: 0;
-          translate: 0 0.0625rem;
+          align-self: flex-start;
+          translate: 0 0.625rem;
           width: 0.375rem;
           height: 0.375rem;
           border-radius: 50%;
@@ -65,7 +66,8 @@
     input[type="checkbox"] {
       appearance: none;
       flex-shrink: 0;
-      translate: 0 0.0625rem;
+      align-self: flex-start;
+      translate: 0 0.3125rem;
       height: 1rem;
       width: 1rem;
       margin: 0;
