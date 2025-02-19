@@ -114,6 +114,7 @@ const ComponentsPage: Component<componentsPageProps> = (props) => {
           />
           <PageContainer
             defaultIndex={0}
+            routeMode="none"
             pageInfos={[
               { name: "Page 0" },
               { name: "Page 1" },

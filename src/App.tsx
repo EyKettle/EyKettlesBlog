@@ -25,7 +25,7 @@ import ArticlePage from "./pages/articlePage";
 import NotFoundPage from "./pages/notFoundPage";
 import ComponentsPage from "./pages/componentsPage";
 
-import { Article } from "./articles/methods";
+import { Article, getInfos } from "./articles/methods";
 import { Config, loadConfig, saveConfig } from "./localStorage";
 
 export enum Pages {
@@ -216,7 +216,7 @@ const App: Component = () => {
       >
         <Suspense fallback={<Loading />}>
           <PageContainer
-            fakeRouter={true}
+            routeMode="fakeRouter"
             pageInfos={[
               {
                 name: Pages[Pages.NotFound],
@@ -244,18 +244,23 @@ const App: Component = () => {
               },
               {
                 name: Pages[Pages.Article],
-                onRouted: () => {
+                onRouted: async (_, param) => {
+                  if (param)
+                    await getInfos().then((articles) => {
+                      articleInfo = articles.find((a) => a.fileName === param);
+                    });
                   loadArticle();
-                  new Promise((resolve) => {
-                    // if (!articleInfo)
-                    //   getInfos().then((articles) => {
-                    //     articleInfo = articles.find(
-                    //       (a) => a.fileName === loadConfig().currentArticle
-                    //     );
-                    //   });
-                    updateTitle(Pages.Article);
-                    resolve(null);
-                  });
+                  updateTitle(Pages.Article);
+                  // new Promise((resolve) => {
+                  //   if (!articleInfo)
+                  //     getInfos().then((articles) => {
+                  //       articleInfo = articles.find(
+                  //         (a) => a.fileName === loadConfig().currentArticle
+                  //       );
+                  //     });
+                  //   updateTitle(Pages.Article);
+                  //   resolve(null);
+                  // });
                 },
               },
               {

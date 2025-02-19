@@ -1,5 +1,5 @@
 import { Component, JSX, JSXElement, onCleanup, onMount } from "solid-js";
-import { render } from "solid-js/web";
+import { insert } from "solid-js/web";
 
 type PageInfo = {
   name: string;
@@ -20,7 +20,7 @@ interface PageContainerProps {
     isForward: boolean
   ) => number;
   defaultIndex: number;
-  fakeRouter?: boolean;
+  routeMode?: "none" | "spa" | "fakeRouter";
   getMethods: (
     switchTo: (index: number, param?: string, replace?: boolean) => void,
     getFrontIndex: () => number
@@ -83,7 +83,7 @@ export const PageContainer: Component<PageContainerProps> = (props) => {
     first = false
   ) => {
     updateFrontPage(index);
-    if (props.fakeRouter) {
+    if (props.routeMode === "fakeRouter") {
       if (historyPosition < indexHistory.length - 1)
         indexHistory.splice(historyPosition + 1);
       indexHistory.push(index);
@@ -103,8 +103,8 @@ export const PageContainer: Component<PageContainerProps> = (props) => {
   };
 
   const handleLocationChange = (first = false, replace?: boolean) => {
-    if (!props.fakeRouter) {
-      console.warn("LocationChange triggered without FakeRouter.");
+    if (props.routeMode !== "fakeRouter") {
+      console.warn(container, "LocationChange triggered without FakeRouter.");
       return;
     }
     const path = window.location.pathname.slice(1);
@@ -154,24 +154,30 @@ export const PageContainer: Component<PageContainerProps> = (props) => {
         page.style.display = "flex";
         page.style.justifyContent = "center";
       }
-      render(() => content, page);
+      insert(page, content);
       return page;
     });
 
     if (props.pageInfos.length !== pages.length)
       throw new Error("PageInfos length not matched.");
 
-    window.addEventListener("popstate", handlePopState);
-    if (props.fakeRouter) handleLocationChange(true, true);
+    if (props.routeMode !== "none")
+      window.addEventListener("popstate", handlePopState);
+
+    if (props.routeMode === "fakeRouter") handleLocationChange(true, true);
     else {
       handleSwitch(props.defaultIndex, undefined, true);
-      if (window.location.pathname.slice(1) !== "")
+      if (
+        props.routeMode !== "none" &&
+        window.location.pathname.slice(1) !== ""
+      )
         window.history.replaceState(null, "", "/");
     }
   });
 
   onCleanup(() => {
-    window.removeEventListener("popstate", handlePopState);
+    if (props.routeMode !== "none")
+      window.removeEventListener("popstate", handlePopState);
   });
 
   return (
