@@ -249,6 +249,13 @@ const App: Component = () => {
                     await getInfos().then((articles) => {
                       articleInfo = articles.find((a) => a.fileName === param);
                     });
+                  else if (config.currentArticle)
+                    await getInfos().then((articles) => {
+                      articleInfo = articles.find(
+                        (a) => a.fileName === config.currentArticle
+                      );
+                      window.location.hash = articleInfo?.fileName || "???";
+                    });
                   loadArticle();
                   updateTitle(Pages.Article);
                   // new Promise((resolve) => {
@@ -268,6 +275,7 @@ const App: Component = () => {
                 onPrepare: () => updateTitle(Pages.ComponentLibrary),
               },
             ]}
+            homeIndex={Pages.Home}
             defaultIndex={config.pageIndex}
             getMethods={(s, i) => {
               switchTo = (index: number, param?: string) => {

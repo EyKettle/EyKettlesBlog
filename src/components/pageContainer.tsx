@@ -19,6 +19,7 @@ interface PageContainerProps {
     newPage: HTMLDivElement,
     isForward: boolean
   ) => number;
+  homeIndex?: number;
   defaultIndex: number;
   routeMode?: "none" | "spa" | "fakeRouter";
   getMethods: (
@@ -114,6 +115,7 @@ export const PageContainer: Component<PageContainerProps> = (props) => {
       path === "" && first
         ? props.defaultIndex
         : props.pageInfos.findIndex((page) => page.name === path);
+    if (props.homeIndex && index !== props.homeIndex) first = false;
     if (index >= 0 && index < pages.length)
       handleSwitch(index, param === "" ? undefined : param, replace, first);
   };
