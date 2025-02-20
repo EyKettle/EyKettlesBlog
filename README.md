@@ -2,7 +2,7 @@
 
 [English](README_en.md) | [中文](README.md)
 
-一个基于 Vite + React + TypeScript 构建的个人博客网站
+一个基于 [SolidJS](https://solidjs.com/) 构建的个人博客网站
 
 ## 许可证
 

@@ -2,7 +2,7 @@
 
 [English](README_en.md) | [中文](README.md)
 
-A personal blog website built with Vite + React + TypeScript
+A personal blog website built with [SolidJS](https://solidjs.com/)
 
 ## License
 

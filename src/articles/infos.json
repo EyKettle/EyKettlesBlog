@@ -31,6 +31,14 @@
       "date": "2025-02-12",
       "author": "EyKettle",
       "fileName": "opposition"
+    },
+    {
+      "title": "Git Commit 规范",
+      "description": "Git Commit 书写规范",
+      "image": "",
+      "date": "2025-02-20",
+      "author": "EyKettle",
+      "fileName": "gitCommit"
     }
   ]
 }
