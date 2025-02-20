@@ -5,6 +5,7 @@ import {
   onCleanup,
   onMount,
   Suspense,
+  untrack,
   useTransition,
   type Component,
 } from "solid-js";
@@ -47,13 +48,13 @@ const App: Component = () => {
 
   const [duringTransition, startTransition] = useTransition();
 
+  document.documentElement.lang = config.language;
   function switchLocale(locale: Locale) {
     config.language = locale;
     saveConfig(config);
     startTransition(() => {
-      setLocale(locale);
       document.documentElement.lang = locale;
-      updateTitle();
+      setLocale(locale);
     });
   }
 
@@ -91,35 +92,37 @@ const App: Component = () => {
     throw new Error("Not initialized");
   };
 
-  const updateTitle = (frontPage?: Pages) =>
-    new Promise((resolve) => {
-      setTimeout(() => {
-        if (!frontPage) {
-          frontPage = getFrontIndex() ?? Pages.Home;
-        }
-        switch (frontPage) {
-          case Pages.NotFound:
-            document.title = t("notFound.title") || "";
-            break;
-          case Pages.Home:
-            document.title = t("home.title") || "电水壶使用手册";
-            break;
-          case Pages.Reading:
-            document.title = t("reading.title") || "";
-            break;
-          case Pages.Article:
-            document.title =
-              articleInfo?.title || t("errors.unknownArticle") || "未知的文章";
-            break;
-          case Pages.ComponentLibrary:
-            document.title = t("library.title") || "";
-            break;
-          default:
-            break;
-        }
-        resolve(null);
-      }, 10);
-    });
+  const updateTitle = (frontPage?: Pages) => {
+    if (!dict()) return;
+    if (!frontPage) {
+      frontPage = getFrontIndex() ?? Pages.Home;
+    }
+    switch (frontPage) {
+      case Pages.NotFound:
+        document.title = t("notFound.title") || "";
+        break;
+      case Pages.Home:
+        document.title = t("home.title") || "电水壶使用手册";
+        break;
+      case Pages.Reading:
+        document.title = t("reading.title") || "";
+        break;
+      case Pages.Article:
+        document.title =
+          articleInfo?.title || t("errors.unknownArticle") || "未知的文章";
+        break;
+      case Pages.ComponentLibrary:
+        document.title = t("library.title") || "";
+        break;
+      default:
+        break;
+    }
+  };
+  createEffect(() => {
+    dict();
+    updateTitle();
+  });
+
   let savePosition = () => {
     console.error("Not initialized");
   };
@@ -220,8 +223,8 @@ const App: Component = () => {
             pageInfos={[
               {
                 name: Pages[Pages.NotFound],
-                onPrepare: () => updateTitle(Pages.NotFound),
                 onRouted: () => {
+                  updateTitle(Pages.NotFound);
                   if (cssChecker)
                     setDarkModeCheckState(
                       getComputedStyle(cssChecker).backgroundColor !==
@@ -232,14 +235,12 @@ const App: Component = () => {
               },
               {
                 name: Pages[Pages.Home],
-                onPrepare: () => updateTitle(Pages.Home),
+                onRouted: () => updateTitle(Pages.Home),
               },
               {
                 name: Pages[Pages.Reading],
-                onPrepare: () => {
-                  loadPosition();
-                  updateTitle(Pages.Reading);
-                },
+                onPrepare: () => loadPosition(),
+                onRouted: () => updateTitle(Pages.Reading),
                 onLeave: () => savePosition(),
               },
               {
@@ -272,7 +273,7 @@ const App: Component = () => {
               },
               {
                 name: Pages[Pages.ComponentLibrary],
-                onPrepare: () => updateTitle(Pages.ComponentLibrary),
+                onRouted: () => updateTitle(Pages.ComponentLibrary),
               },
             ]}
             homeIndex={Pages.Home}
