@@ -2,6 +2,17 @@
 <html lang="zh-CN">
   <head>
     <meta charset="utf-8" />
+    <script>
+      (async function () {
+        try {
+          if (!("paintWorklet" in CSS))
+            await import("https://unpkg.com/css-paint-polyfill");
+          await CSS.paintWorklet.addModule("/css-houdini-squircle.js");
+        } catch (error) {
+          console.error("Worklet 加载失败:", error);
+        }
+      })();
+    </script>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#000000" />
     <link rel="shortcut icon" type="image/ico" href="/src/assets/favicon.ico" />
@@ -17,13 +28,6 @@
         style="background-color: rgb(255, 255, 255); height: 0; width: 0"
       />
     </div>
-
     <script src="/src/index.tsx" type="module"></script>
-    <script>
-      (async function () {
-        if (!("paintWorklet" in CSS)) await import("https://unpkg.com/css-paint-polyfill");
-        CSS.paintWorklet.addModule(`./src/components/css-houdini-squircle.js`);
-      })();
-    </script>
   </body>
 </html>

@@ -208,3 +208,7 @@
 记录一个任务：
 
 - [ ] 将文章文件移动到 Public 目录下
+
+* **_2025-3-8 晚上 23:27_**
+
+连夜修复 BUG，把 figma-squircle 和我改过的 css-houdini-squircle 融合到一起放到 public 下解决了 houdiniAPI 使用的问题。
