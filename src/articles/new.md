@@ -190,7 +190,7 @@
 
 忘了记录一下了：
 
-- [x] 实现完美的 Squircle
+- [x] 实现近乎完美的 Squircle
   - [x] 基本的 figma Squircle
   - [x] 兼容边框效果
   - [x] 交互区域修复

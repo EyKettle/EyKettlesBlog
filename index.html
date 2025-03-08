@@ -21,7 +21,7 @@
     <script src="/src/index.tsx" type="module"></script>
     <script>
       (async function () {
-        if (!("paintWorklet" in CSS)) await import("css-paint-polyfill");
+        if (!("paintWorklet" in CSS)) await import("https://unpkg.com/css-paint-polyfill");
         CSS.paintWorklet.addModule(`./src/components/css-houdini-squircle.js`);
       })();
     </script>
