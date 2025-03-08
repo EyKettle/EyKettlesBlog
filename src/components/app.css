@@ -1,3 +1,75 @@
+@property --squircle-radius {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0;
+}
+
+@property --squircle-radius-top-left {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0;
+}
+
+@property --squircle-radius-top-right {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0;
+}
+
+@property --squircle-radius-bottom-right {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0;
+}
+
+@property --squircle-radius-bottom-left {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0;
+}
+
+@property --squircle-fill {
+  syntax: "<color>";
+  inherits: false;
+  initial-value: transparent;
+}
+
+@property --squircle-outline-color {
+  syntax: "<color>";
+  inherits: false;
+  initial-value: transparent;
+}
+
+@property --squircle-outline {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0;
+}
+
+@property --squircle-outline-top {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0;
+}
+
+@property --squircle-outline-right {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0;
+}
+
+@property --squircle-outline-bottom {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0;
+}
+
+@property --squircle-outline-left {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0;
+}
+
 @font-face {
   font-family: "Segoe Fluent Icons";
   src: url("../assets/SegoeFluentIcons.TTF");
@@ -25,10 +97,15 @@ body {
   --theme-accent-text: var(--theme-accent);
 
   --surface-default: #f2f2f2;
+  --surface-light: #f8f8f8;
+  --surface-dark: #e6e6e6;
+  --surface-darker: #e2e2e2;
   --surface-hover: #ffffff;
   --surface-active: #e2e2e2;
   --surface-pressed: #e2e2e2;
   --surface-glass: rgba(255, 255, 255, 0.4);
+  --surface-glass-dark: rgba(240, 240, 240, 0.4);
+  --surface-glass-darker: rgba(234, 234, 234, 0.4);
 
   --shadow-color: rgba(0, 0, 0, 0.1);
 
@@ -39,18 +116,18 @@ body {
   --ghost-hover: rgba(0, 0, 0, 0.08);
   --ghost-active: rgba(0, 0, 0, 0.16);
 
-  --border-default: rgba(0, 0, 0, 0.1);
-  --border-active: rgba(0, 0, 0, 0.2);
+  --border-default: rgba(0, 0, 0, 0.06);
+  --border-active: rgba(0, 0, 0, 0.1);
   --border-default-down: var(--border-down);
   --border-up: rgba(255, 255, 255, 0.1);
   --border-down: rgba(0, 0, 0, 0.2);
 
-  --switch-hover: White;
+  --switch-hover: white;
   --switch-press: var(--theme-accent-background-translucent);
   --switch-active: var(--theme-accent-background);
   --switch-onActive: var(--theme-accent-text);
 
-  --input-default: var(--surface-hover);
+  --input-default: var(--surface-darker);
 
   transition: all 0.2s;
   height: 100%;
@@ -79,10 +156,15 @@ html {
     --theme-accent-text: rgba(192, 255, 225, 0.8);
 
     --surface-default: #222;
+    --surface-light: #242424;
+    --surface-dark: #1c1c1c;
+    --surface-darker: #1a1a1a;
     --surface-hover: #2a2a2a;
     --surface-active: #262626;
     --surface-pressed: #1f1f1f;
     --surface-glass: rgba(42, 42, 42, 0.6);
+    --surface-glass-dark: rgba(32, 32, 32, 0.6);
+    --surface-glass-darker: rgba(26, 26, 26, 0.6);
 
     --shadow-color: rgba(0, 0, 0, 0.3);
 
@@ -93,10 +175,14 @@ html {
     --ghost-hover: rgba(255, 255, 255, 0.05);
     --ghost-active: rgba(255, 255, 255, 0.1);
 
-    --border-default: rgba(255, 255, 255, 0.1);
-    --border-active: rgba(255, 255, 255, 0.2);
+    --border-default: rgba(255, 255, 255, 0.06);
+    --border-active: rgba(255, 255, 255, 0.1);
     --border-default-down: var(--border-default);
 
-    --switch-hover: #333;
+    --switch-hover: rgba(255, 255, 255, 0.06);
   }
+}
+
+input::placeholder {
+  opacity: 0.5;
 }

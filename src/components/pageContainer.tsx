@@ -11,13 +11,14 @@ type PageInfo = {
 interface PageContainerProps {
   children: JSXElement[];
   pageInfos: PageInfo[];
-  extraStyle?: JSX.CSSProperties;
+  style?: JSX.CSSProperties;
   pageInit?: (page: HTMLDivElement) => void;
   loadedMotion?: (defaultPage: HTMLDivElement) => void;
   switchMotion?: (
     oldPage: HTMLDivElement,
     newPage: HTMLDivElement,
-    isForward: boolean
+    isForward: boolean,
+    switchDirection: [number, number]
   ) => number;
   homeIndex?: number;
   defaultIndex: number;
@@ -48,14 +49,16 @@ export const PageContainer: Component<PageContainerProps> = (props) => {
           if (frontIndex !== previous) {
             if (props.pageInfos[previous]?.onLeave)
               props.pageInfos[previous].onLeave();
-            container?.removeChild(pages[previous]);
+            if (container?.contains(pages[previous]))
+              container?.removeChild(pages[previous]);
           }
         };
         if (props.switchMotion) {
           const duration = props.switchMotion(
             pages[previous],
             newPage,
-            isForward
+            isForward,
+            [previous, target]
           );
           new Promise((resolve) =>
             setTimeout(() => {
@@ -188,7 +191,7 @@ export const PageContainer: Component<PageContainerProps> = (props) => {
       style={{
         height: "100%",
         width: "100%",
-        ...props.extraStyle,
+        ...props.style,
       }}
     ></div>
   );

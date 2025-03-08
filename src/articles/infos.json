@@ -39,6 +39,14 @@
       "date": "2025-02-20",
       "author": "EyKettle",
       "fileName": "gitCommit"
+    },
+    {
+      "title": "AE 中的弹簧动画",
+      "description": "在 AE 中实现 Apple 风格的弹簧动画",
+      "image": "",
+      "date": "2025-02-25",
+      "author": "EyKettle",
+      "fileName": "springAnimationInAE"
     }
   ]
 }

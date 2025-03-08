@@ -1,10 +1,12 @@
-import { Component, JSX } from "solid-js";
+import { Component, createSignal, JSX } from "solid-js";
 import { Button } from "../components/button";
 import { Card } from "../components/card";
 import { PageContainer } from "../components/pageContainer";
 import { Switch } from "../components/switch";
-import InputBox from "../components/inputbox";
+import InputBox from "../components/inputBox";
 import Loading from "../components/loading";
+import Squircle from "../components/squircle";
+import { animateMini } from "motion";
 
 interface componentsPageProps {
   translator: any;
@@ -112,31 +114,90 @@ const ComponentsPage: Component<componentsPageProps> = (props) => {
               { label: "Page 2", callback: () => switchTo(2) },
             ]}
           />
-          <PageContainer
-            defaultIndex={0}
-            routeMode="none"
-            pageInfos={[
-              { name: "Page 0" },
-              { name: "Page 1" },
-              { name: "Page 2" },
-            ]}
-            pageInit={(page) => {
-              page.style.display = "flex";
-              page.style.justifyContent = "center";
-              page.style.alignItems = "center";
-              page.style.height = "100%";
-              page.style.width = "100%";
-            }}
-            getMethods={(s) => (switchTo = s)}
-            extraStyle={{
+          <Squircle
+            fillColor="var(--surface-dark)"
+            cornerRadius="1rem"
+            outlineColor="var(--border-active)"
+            outlineWidth={{ bottom: "0.0625rem" }}
+            style={{
+              height: "100%",
+              width: "100%",
               "border-radius": "1rem",
-              border: "0.0625rem solid var(--border-default)",
+              overflow: "hidden",
+              position: "relative",
             }}
           >
-            <div>{t("library.pageContainer") + " / Page0"}</div>
-            <div>{t("library.pageContainer") + " / Page1"}</div>
-            <div>{t("library.pageContainer") + " / Page2"}</div>
-          </PageContainer>
+            <PageContainer
+              defaultIndex={0}
+              routeMode="none"
+              pageInfos={[
+                { name: "Page 0" },
+                { name: "Page 1" },
+                { name: "Page 2" },
+              ]}
+              pageInit={(page) => {
+                page.style.display = "flex";
+                page.style.position = "absolute";
+                page.style.justifyContent = "center";
+                page.style.alignItems = "center";
+                page.style.height = "100%";
+                page.style.width = "100%";
+              }}
+              getMethods={(s) => (switchTo = s)}
+              switchMotion={(oldPage, newPage, isForward, direction) => {
+                if (direction[1] === 2) {
+                  animateMini(
+                    oldPage,
+                    {
+                      rotate: "-180deg",
+                      scale: 0.6,
+                      opacity: 0,
+                      translate: "0 -4rem",
+                    },
+                    { duration: 1, ease: [0.5, 0.2, 0, 1] }
+                  );
+                  animateMini(
+                    newPage,
+                    { translate: ["0 20rem", "0 0"], scale: 1 },
+                    { duration: 1, ease: [0.5, 0.2, 0, 1] }
+                  );
+                } else {
+                  animateMini(
+                    oldPage,
+                    { translate: ["0 0", isForward ? "-20rem 0" : "20rem 0"] },
+                    { duration: 1, ease: [0.5, 0.2, 0, 1] }
+                  );
+                  animateMini(
+                    newPage,
+                    {
+                      translate: [isForward ? "20rem 0" : "-20rem 0", "0 0"],
+                      scale: 1,
+                      opacity: 1,
+                      rotate: "0deg",
+                    },
+                    { duration: 1, ease: [0.5, 0.2, 0, 1] }
+                  );
+                }
+                return 1000;
+              }}
+            >
+              <div>
+                {t("library.pageContainer") + " / Page0"}
+                <br />
+                {t("library.pageTip1")}
+              </div>
+              <div>
+                {t("library.pageContainer") + " / Page1"}
+                <br />
+                {t("library.pageTip2")}
+              </div>
+              <div>
+                {t("library.pageContainer") + " / Page2"}
+                <br />
+                {t("library.pageTip3")}
+              </div>
+            </PageContainer>
+          </Squircle>
         </div>
         <div style={styleOfSection}>
           <InputBox multiline={true} placeholder={t("library.input")} />

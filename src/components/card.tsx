@@ -17,7 +17,7 @@ interface CardProps {
   textJustify?: string;
   height?: string;
   width?: string;
-  extraStyle?: JSX.CSSProperties;
+  style?: JSX.CSSProperties;
   disabled?: boolean;
   onClick?: () => boolean;
 }
@@ -40,63 +40,79 @@ export const Card: Component<CardProps> = (props) => {
 
   const resetStyle = () => {
     requestAnimationFrame(() => {
-      if (!element) return;
-      element.style.scale = "1";
-      element.style.boxShadow =
-        "0 0.0625rem 0.125rem var(--shadow-color), 0 0 0 0.0625rem var(--border-default)";
-      element.style.zIndex = "1";
-      element.style.backgroundColor = "var(--surface-default)";
+      if (!appearanceDiv) return;
+      appearanceDiv.parentElement!.style.scale = "1";
+      const shadowBox = appearanceDiv.parentElement!
+        .firstChild! as HTMLDivElement;
+      shadowBox.style.translate = "0 0.125rem";
+      shadowBox.style.filter = "blur(0.125rem)";
+      appearanceDiv.style.setProperty(
+        "--squircle-outline-color",
+        "var(--border-default)"
+      );
+      appearanceDiv.parentElement!.style.zIndex = "1";
+      appearanceDiv.style.setProperty(
+        "--squircle-fill",
+        "var(--surface-light)"
+      );
       if (EFFECT_MAP.rotate.has(props.effect ?? "none")) {
-        element.style.transformOrigin = "center";
-        element.style.transform = "";
+        appearanceDiv.style.transformOrigin = "center";
+        appearanceDiv.style.transform = "";
       }
     });
   };
 
-  let element: HTMLDivElement | null = null;
-
+  let appearanceDiv: HTMLDivElement | null = null;
   onMount(() => {
-    if (!element) {
+    if (!appearanceDiv) {
       console.warn("Element not found");
       return;
     }
 
-    const parent = element.parentElement;
+    const parent = appearanceDiv.parentElement!.parentElement;
     if (!parent) return;
 
     if (parent.hasAttribute("card-text-wrap")) {
       if (props.title && props.description)
-        (element.children[1] as HTMLDivElement).style.whiteSpace = "normal";
+        (appearanceDiv.children[1] as HTMLDivElement).style.whiteSpace =
+          "normal";
       else if (props.description)
-        (element.children[0] as HTMLDivElement).style.whiteSpace = "normal";
+        (appearanceDiv.children[0] as HTMLDivElement).style.whiteSpace =
+          "normal";
     }
-    if (parent.hasAttribute("card-text-align")) {
-      element.style.alignItems =
+    if (props.textAlign) appearanceDiv.style.alignItems = props.textAlign;
+    else if (parent.hasAttribute("card-text-align")) {
+      appearanceDiv.style.alignItems =
         parent.getAttribute("card-text-align") || "center";
-    } else if (props.textAlign) element.style.alignItems = props.textAlign;
-    if (parent.hasAttribute("card-text-justify")) {
-      element.style.justifyContent =
+    }
+    if (props.textJustify)
+      appearanceDiv.style.justifyContent = props.textJustify;
+    else if (parent.hasAttribute("card-text-justify")) {
+      appearanceDiv.style.justifyContent =
         parent.getAttribute("card-text-justify") || "center";
-    } else if (props.textJustify)
-      element.style.justifyContent = props.textJustify;
-    if (parent.hasAttribute("card-height")) {
-      element.style.height = parent.getAttribute("card-height") || "auto";
-    } else if (props.height) element.style.height = props.height;
-    if (parent.hasAttribute("card-width")) {
-      element.style.width = parent.getAttribute("card-width") || "auto";
-    } else if (props.width) element.style.width = props.width;
-    if (parent.hasAttribute("card-effect")) {
-      const value = parent.getAttribute("card-effect");
-      props.effect =
-        value && EFFECT_MAP.valid.has(value as Effect)
-          ? (value as Effect)
-          : "all";
-    } else {
-      if (!props.effect) props.effect = "float";
+    }
+    if (props.height) appearanceDiv.parentElement!.style.height = props.height;
+    else if (parent.hasAttribute("card-height")) {
+      appearanceDiv.parentElement!.style.height =
+        parent.getAttribute("card-height") || "auto";
+    }
+    if (props.width) appearanceDiv.parentElement!.style.width = props.width;
+    else if (parent.hasAttribute("card-width")) {
+      appearanceDiv.parentElement!.style.width =
+        parent.getAttribute("card-width") || "auto";
+    }
+    if (!props.effect) {
+      if (parent.hasAttribute("card-effect")) {
+        const value = parent.getAttribute("card-effect");
+        props.effect =
+          value && EFFECT_MAP.valid.has(value as Effect)
+            ? (value as Effect)
+            : "all";
+      } else props.effect = "float";
     }
     switch (props.effect) {
       case "all":
-        element.style.touchAction = "none";
+        appearanceDiv.parentElement!.style.touchAction = "none";
         break;
       case "3d":
         pressColor = "var(--surface-pressed)";
@@ -131,61 +147,64 @@ export const Card: Component<CardProps> = (props) => {
         (props.effect === "all" ? 1.5 : 1);
       element.style.transform = `perspective(64rem) rotateY(${rotateY}deg) rotateX(${rotateX}deg)`;
       isFrameScheduled = false;
+      const shadowBox = element.parentElement!.firstChild! as HTMLDivElement;
+      // const scaleX =
     });
   };
 
   onMount(() => {
-    if (!element) return;
+    if (!appearanceDiv) return;
     remValue = parseFloat(getComputedStyle(document.documentElement).fontSize);
   });
 
   return (
     <div
-      ref={(e) => {
-        element = e;
-      }}
       style={{
         display: "flex",
         "flex-shrink": "0",
         "z-index": "1",
-        "flex-direction": "column",
-        "justify-content": "center",
-        "align-items": "center",
-        "border-radius": "1.25rem",
-        "background-color": "var(--surface-default)",
-        "box-shadow":
-          "0 0.0625rem 0.125rem var(--shadow-color), 0 0 0 0.0625rem var(--border-default)",
-        padding: "1rem",
-        transition: "all 0.15s cubic-bezier(0.2, 0, 0, 1)",
-        "will-change":
-          "transform, box-shadow, z-index, background-color, scale",
+        height: "fit-content",
+        width: "fit-content",
+        "border-radius": "1rem",
+        transition: "scale 0.15s cubic-bezier(0.2, 0, 0, 1)",
+        "will-change": "scale",
         cursor: props.disabled ? "unset" : "pointer",
         "user-select": "none",
-        ...props.extraStyle,
       }}
       on:mouseenter={() => {
-        if (props.disabled || isTouch || !element) return;
-        if (props.effect && EFFECT_MAP.float.has(props.effect))
-          element.style.scale = "1.1";
-        element.style.boxShadow =
-          "0 0.5rem 1rem var(--shadow-color), 0 0 0 0.0625rem var(--border-active)";
-        element.style.zIndex = "2";
-        element.style.backgroundColor = "var(--surface-hover)";
+        if (props.disabled || isTouch || !appearanceDiv) return;
+        if (props.effect && EFFECT_MAP.float.has(props.effect)) {
+          appearanceDiv.parentElement!.style.scale = "1.1";
+          const shadowBox = appearanceDiv.parentElement!
+            .firstChild! as HTMLDivElement;
+          shadowBox.style.translate = "0 0.375rem";
+          shadowBox.style.filter = "blur(0.25rem)";
+        }
+        appearanceDiv.style.setProperty(
+          "--squircle-outline-color",
+          "var(--border-active)"
+        );
+        appearanceDiv.parentElement!.style.zIndex = "2";
+        appearanceDiv.style.setProperty(
+          "--squircle-fill",
+          "var(--surface-hover)"
+        );
       }}
       on:mouseleave={() => {
         if (!props.disabled && !isTouch) resetStyle();
       }}
       on:mousedown={(e) => {
-        if (props.disabled || isTouch || !element) return;
+        if (props.disabled || isTouch || !appearanceDiv) return;
         if (e.button === 0) {
-          element.style.backgroundColor = pressColor;
+          appearanceDiv.style.setProperty("--squircle-fill", pressColor);
           if (props.effect && props.effect !== "none") {
             if (EFFECT_MAP.rotate.has(props.effect)) {
-              handleRotate(element, e.clientX, e.clientY);
-              if (props.effect === "3d") element.style.scale = "0.95";
+              handleRotate(appearanceDiv, e.clientX, e.clientY);
+              if (props.effect === "3d") appearanceDiv.style.scale = "0.95";
             }
-            if (EFFECT_MAP.float.has(props.effect))
-              element.style.scale = "1.05";
+            if (EFFECT_MAP.float.has(props.effect)) {
+              appearanceDiv.parentElement!.style.scale = "1.05";
+            }
           }
         }
       }}
@@ -194,63 +213,96 @@ export const Card: Component<CardProps> = (props) => {
           isTouch = false;
           return;
         }
-        if (props.disabled || !element) return;
+        if (props.disabled || !appearanceDiv) return;
         if (e.button === 0) {
-          element.style.backgroundColor = "var(--surface-hover)";
+          appearanceDiv.style.setProperty(
+            "--squircle-fill",
+            "var(--surface-hover)"
+          );
           if (props.effect && props.effect !== "none") {
             if (EFFECT_MAP.rotate.has(props.effect)) {
-              element.style.transform = "";
-              if (props.effect === "3d") element.style.scale = "1";
+              appearanceDiv.style.transform = "";
+              if (props.effect === "3d") appearanceDiv.style.scale = "1";
             }
-            if (EFFECT_MAP.float.has(props.effect)) element.style.scale = "1.1";
+            if (EFFECT_MAP.float.has(props.effect)) {
+              appearanceDiv.parentElement!.style.scale = "1.1";
+              const shadowBox = appearanceDiv.parentElement!
+                .firstChild! as HTMLDivElement;
+              shadowBox.style.translate = "0 0.375rem";
+              shadowBox.style.filter = "blur(0.25rem)";
+            }
           }
         }
       }}
       on:mousemove={(e) => {
-        if (props.disabled || isTouch || !element) return;
+        if (props.disabled || isTouch || !appearanceDiv) return;
         if (e.buttons === 1) {
           if (props.effect === "all")
-            handleRotate(element, e.clientX, e.clientY);
+            handleRotate(appearanceDiv, e.clientX, e.clientY);
         }
       }}
       on:touchstart={(e) => {
         isTouch = true;
-        if (props.disabled || !element) return;
-        if (props.effect !== "3d")
-          element.style.boxShadow =
-            "0 0.5rem 1rem var(--shadow-color), 0 0 0 0.0625rem var(--border-active)";
+        if (props.disabled || !appearanceDiv) return;
+        if (props.effect !== "3d") {
+          appearanceDiv.style.setProperty(
+            "--squircle-outline-color",
+            "var(--border-active)"
+          );
+        }
         if (props.effect) {
-          if (props.effect === 'none') {
-            element.style.backgroundColor = "var(--surface-hover)";
+          if (props.effect === "none") {
+            appearanceDiv.style.setProperty(
+              "--squircle-fill",
+              "var(--surface-hover)"
+            );
             return;
           }
           if (EFFECT_MAP.rotate.has(props.effect)) {
-            handleRotate(element, e.touches[0].clientX, e.touches[0].clientY);
+            handleRotate(
+              appearanceDiv,
+              e.touches[0].clientX,
+              e.touches[0].clientY
+            );
             if (props.effect === "3d") {
-              element.style.backgroundColor = pressColor;
-              element.style.scale = "0.95";
+              appearanceDiv.style.setProperty("--squircle-fill", pressColor);
+              appearanceDiv.style.scale = "0.95";
             }
           }
           if (EFFECT_MAP.float.has(props.effect)) {
-            element.style.backgroundColor = "var(--surface-hover)";
-            element.style.scale = "1.05";
+            appearanceDiv.style.setProperty(
+              "--squircle-fill",
+              "var(--surface-hover)"
+            );
+            {
+              appearanceDiv.parentElement!.style.scale = "1.05";
+            }
           }
         }
       }}
       on:touchmove={(e) => {
-        if (!props.disabled && element && props.effect === "all") {
-          const rect = element.getBoundingClientRect();
+        if (!props.disabled && appearanceDiv && props.effect === "all") {
+          const rect = appearanceDiv.getBoundingClientRect();
           if (
             e.touches[0].clientX >= rect.left - 3 * remValue &&
             e.touches[0].clientX <= rect.right + 3 * remValue &&
             e.touches[0].clientY >= rect.top - 3 * remValue &&
             e.touches[0].clientY <= rect.bottom + 3 * remValue
           ) {
-            element.style.backgroundColor = "var(--surface-hover)";
-            element.style.boxShadow =
-              "0 0.5rem 1rem var(--shadow-color), 0 0 0 0.0625rem var(--border-active)";
-            element.style.scale = "1.05";
-            handleRotate(element, e.touches[0].clientX, e.touches[0].clientY);
+            appearanceDiv.style.setProperty(
+              "--squircle-fill",
+              "var(--surface-hover)"
+            );
+            appearanceDiv.style.setProperty(
+              "--squircle-outline-color",
+              "var(--border-active)"
+            );
+            appearanceDiv.parentElement!.style.scale = "1.05";
+            handleRotate(
+              appearanceDiv,
+              e.touches[0].clientX,
+              e.touches[0].clientY
+            );
           } else resetStyle();
         }
       }}
@@ -268,14 +320,51 @@ export const Card: Component<CardProps> = (props) => {
         }
       }}
     >
-      <Show when={props.title}>
-        {" "}
-        <div style={getTextStyle("1.5")}>{props.title}</div>
-      </Show>
-      <Show when={props.description}>
-        <div style={getTextStyle("1.2")}>{props.description}</div>
-      </Show>
-      <Show when={typeof props.children !== "boolean"}>{props.children}</Show>
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          background: "paint(squircle)",
+          "--squircle-radius": "1rem",
+          "--squircle-fill": "var(--shadow-color)",
+          opacity: 0.8,
+          translate: "0 0.125rem",
+          filter: "blur(0.125rem)",
+          transition: "all 0.15s cubic-bezier(0.2, 0, 0, 1)",
+          "pointer-events": "none",
+        }}
+      />
+      <div
+        ref={(e) => (appearanceDiv = e)}
+        style={{
+          display: "flex",
+          "flex-grow": 1,
+          "flex-direction": "column",
+          "justify-content": "center",
+          "align-items": "center",
+          "--squircle-radius": "1rem",
+          background: "paint(squircle)",
+          "--squircle-fill": "var(--surface-light)",
+          "--squircle-outline-color": "var(--border-default)",
+          "--squircle-outline": "0.0625rem",
+          padding: "1rem",
+          "transition-property": "all, --squircle-fill",
+          "transition-duration": "0.15s",
+          "transition-timing-function": "cubic-bezier(0.2, 0, 0, 1)",
+          "will-change": "transform, box-shadow, z-index, --squircle-fill",
+          "pointer-events": "none",
+          ...props.style,
+        }}
+      >
+        <Show when={props.title}>
+          {" "}
+          <div style={getTextStyle("1.5")}>{props.title}</div>
+        </Show>
+        <Show when={props.description}>
+          <div style={getTextStyle("1.2")}>{props.description}</div>
+        </Show>
+        <Show when={typeof props.children !== "boolean"}>{props.children}</Show>
+      </div>
     </div>
   );
 };

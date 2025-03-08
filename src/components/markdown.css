@@ -10,6 +10,11 @@
     margin-inline: 1.25rem;
     padding-block: 0.25rem !important;
   }
+  
+  hr {
+    margin-inline: 1.25rem;
+    opacity: 0.3;
+  }
 
   a {
     color: var(--theme-accent-text);

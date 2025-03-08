@@ -48,6 +48,9 @@
     "switch": "开关",
     "input": "输入框",
     "pageContainer": "页面容器",
+    "pageTip1": "用于实现多页面管理",
+    "pageTip2": "可实现自定义动画逻辑",
+    "pageTip3": "点快了仍然会抽搐",
     "loading": "加载组件"
   }
 }

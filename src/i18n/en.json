@@ -48,6 +48,9 @@
     "switch": "Switch",
     "input": "Input Box",
     "pageContainer": "Page Container",
+    "pageTip1": "Multi-page management component",
+    "pageTip2": "Support custom switch animation",
+    "pageTip3": "It will still glitch if click too fast",
     "loading": "Loading Component"
   }
 }

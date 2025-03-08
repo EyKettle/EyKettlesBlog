@@ -1,4 +1,5 @@
 import { Component, createSignal, For, onMount } from "solid-js";
+import Squircle from "./squircle";
 
 type SwitchItem = {
   label: string;
@@ -8,6 +9,7 @@ type SwitchItem = {
 interface SwitchProps {
   current?: number;
   children: SwitchItem[];
+  backgroundColor?: string;
   onChange?: (index: number) => void;
 }
 
@@ -30,13 +32,18 @@ const SwitchItem: Component<SwitchItemProps> = (props) => {
   onMount(() => {
     if (props.active) {
       element.style.color = "var(--switch-onActive)";
-      element.style.backgroundColor = "var(--switch-active)";
-      element.style.boxShadow = "inset 0 0.0625rem 0 var(--shadow-color)";
+      element.style.setProperty("--squircle-fill", "var(--switch-active)");
+      element.style.setProperty("--squircle-outline-bottom", "0");
+      element.style.setProperty("--squircle-outline-top", "0.0625rem");
       element.style.cursor = "auto";
     } else {
       element.style.color = "var(--theme-text)";
-      element.style.backgroundColor = defaultStyle.backgroundColor;
-      element.style.boxShadow = "none";
+      element.style.setProperty(
+        "--squircle-fill",
+        defaultStyle.backgroundColor
+      );
+      element.style.setProperty("--squircle-outline-bottom", "0");
+      element.style.setProperty("--squircle-outline-top", "0");
       element.style.cursor = "pointer";
     }
   });
@@ -50,8 +57,9 @@ const SwitchItem: Component<SwitchItemProps> = (props) => {
 
   const reset = () => {
     element.style.color = "var(--theme-text)";
-    element.style.backgroundColor = defaultStyle.backgroundColor;
-    element.style.boxShadow = "none";
+    element.style.setProperty("--squircle-fill", defaultStyle.backgroundColor);
+    element.style.setProperty("--squircle-outline-bottom", "0");
+    element.style.setProperty("--squircle-outline-top", "0");
     element.style.cursor = "pointer";
   };
   props.hooks(reset);
@@ -67,47 +75,66 @@ const SwitchItem: Component<SwitchItemProps> = (props) => {
         "border-radius": "0.5rem",
         padding: "0.5rem 1rem",
         "font-size": "1.05rem",
-        "background-color": defaultStyle.backgroundColor,
+        background: "paint(squircle)",
+        "--squircle-radius": "0.5rem",
+        "--squircle-fill": defaultStyle.backgroundColor,
+        "--squircle-outline-bottom": "0",
+        "--squircle-outline-top": "0",
+        "--squircle-outline-color": "var(--border-down)",
         color: "var(--theme-text)",
-        transition: "all 0.2s cubic-bezier(0, 0, 0, 1)",
+        "transition-property":
+          "all, --squircle-fill, --squircle-outline-top, --squircle-outline-bottom, --squircle-outline-color",
+        "transition-duration": "0.2s",
+        "transition-timing-function": "cubic-bezier(0, 0, 0, 1)",
       }}
       on:click={handleClick}
-      on:mouseenter={(e) => {
+      on:mouseenter={() => {
         if (props.active) return;
-        element.style.backgroundColor = "var(--switch-hover)";
-        element.style.boxShadow = "0 0.0625rem 0 var(--border-down)";
+        element.style.setProperty("--squircle-fill", "var(--switch-hover)");
+        element.style.setProperty("--squircle-outline-bottom", "0.0625rem");
       }}
-      on:mouseleave={(e) => {
+      on:mouseleave={() => {
         if (props.active) return;
         element.style.color = "var(--theme-text)";
-        element.style.backgroundColor = defaultStyle.backgroundColor;
-        element.style.boxShadow = "none";
+        element.style.setProperty(
+          "--squircle-fill",
+          defaultStyle.backgroundColor
+        );
+        element.style.setProperty("--squircle-outline-bottom", "0");
+        element.style.setProperty("--squircle-outline-top", "0");
       }}
       on:mousedown={(e) => {
         if (e.button === 0) {
           if (props.active) return;
-          element.style.backgroundColor = "var(--switch-press)";
-          element.style.boxShadow = "inset 0 0.0625rem 0 var(--border-down)";
+          element.style.setProperty("--squircle-fill", "var(--switch-press)");
+          element.style.setProperty("--squircle-outline-bottom", "0");
+          element.style.setProperty("--squircle-outline-top", "0.0625rem");
         }
       }}
-      on:mouseup={e => {
+      on:mouseup={(e) => {
         if (e.button === 0) {
           if (props.active) return;
           element.style.color = "var(--switch-onActive)";
-          element.style.backgroundColor = "var(--switch-active)";
-          element.style.boxShadow = "inset 0 0.0625rem 0 var(--border-down)";
+          element.style.setProperty("--squircle-fill", "var(--switch-active)");
+          element.style.setProperty("--squircle-outline-bottom", "0");
+          element.style.setProperty("--squircle-outline-top", "0.0625rem");
         }
       }}
       on:touchstart={() => {
         if (props.active) return;
-        element.style.backgroundColor = "var(--switch-hover)";
-        element.style.boxShadow = "0 0.0625rem 0 var(--border-down)";
+        element.style.setProperty("--squircle-fill", "var(--switch-hover)");
+        element.style.setProperty("--squircle-outline-bottom", "0.0625rem");
+        element.style.setProperty("--squircle-outline-top", "0");
       }}
       on:touchend={() => {
         if (props.active) return;
         element.style.color = "var(--theme-text)";
-        element.style.backgroundColor = defaultStyle.backgroundColor;
-        element.style.boxShadow = "none";
+        element.style.setProperty(
+          "--squircle-fill",
+          defaultStyle.backgroundColor
+        );
+        element.style.setProperty("--squircle-outline-bottom", "0");
+        element.style.setProperty("--squircle-outline-top", "0");
       }}
       on:blur={() => {
         if (props.active) return;
@@ -132,20 +159,18 @@ export const Switch: Component<SwitchProps> = (props) => {
   );
 
   return (
-    <div
+    <Squircle
+      fillColor={props.backgroundColor ?? "var(--surface-light)"}
+      cornerRadius="1rem"
+      outlineColor="var(--border-default)"
+      outlineWidth="0.0625rem"
       style={{
         display: "flex",
         "justify-content": "center",
         "min-height": "2.5rem",
         gap: "0.4rem",
-        "box-sizing": "border-box",
-        "border-radius": "1rem",
-        border: "0.0625rem solid var(--border-default)",
-        "border-bottom": "0.0625rem solid var(--border-default-down)",
         padding: "0.5rem",
-        overflow: "hidden",
-        "background-color": "var(--surface-default)",
-        "box-shadow": "0 0.0625rem 0.125rem var(--shadow-color)",
+        filter: "drop-shadow(0 0.0625rem 0 var(--shadow-color))",
       }}
     >
       <For each={props.children}>
@@ -162,6 +187,6 @@ export const Switch: Component<SwitchProps> = (props) => {
           />
         )}
       </For>
-    </div>
+    </Squircle>
   );
 };

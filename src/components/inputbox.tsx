@@ -20,11 +20,17 @@ const InputBox: Component<InputBoxProps> = (props) => {
         "font-size": "1rem",
         "text-align": "start",
         color: "var(--theme-text)",
-        "background-color": "var(--input-default)",
         "border-radius": "0.5rem",
-        "box-shadow": "0 0 0 0.0625rem var(--border-default)",
+        background: "paint(squircle)",
+        "--squircle-fill": "var(--input-default)",
+        "--squircle-radius": "0.5rem",
+        "--squircle-outline": "0.0625rem",
+        "--squircle-outline-color": "var(--border-default)",
         padding: "0.5rem",
-        transition: "all 0.2s cubic-bezier(0, 0, 0, 1)",
+        "transition-property":
+          "all, --squircle-fill, --squircle-outline, --squircle-outline-color",
+        "transition-duration": "0.2s",
+        "transition-timing-function": "cubic-bezier(0, 0, 0, 1)",
         cursor: "text",
         ...props.extraStyle,
       }}
@@ -32,22 +38,35 @@ const InputBox: Component<InputBoxProps> = (props) => {
       value={props.value || ""}
       on:mouseenter={() => {
         if (!element || element === document.activeElement) return;
-        element.style.boxShadow = "0 0 0 0.0625rem var(--theme-accent)";
+        element.style.setProperty(
+          "--squircle-outline-color",
+          "var(--theme-accent)"
+        );
       }}
       on:mouseleave={() => {
         if (!element || element === document.activeElement) return;
-        element.style.boxShadow = "0 0 0 0.0625rem var(--border-default)";
+        element.style.setProperty(
+          "--squircle-outline-color",
+          "var(--border-default)"
+        );
       }}
       on:focus={() => {
         if (!element) return;
         element.style.zIndex = "3";
-        element.style.boxShadow =
-          "0 0 0 0.1875rem var(--theme-accent), 0 0.125rem 1rem var(--border-down)";
+        element.style.setProperty("--squircle-outline", "0.125rem");
+        element.style.setProperty(
+          "--squircle-outline-color",
+          "var(--theme-accent)"
+        );
       }}
       on:blur={() => {
         if (!element) return;
         element.style.zIndex = "unset";
-        element.style.boxShadow = "0 0 0 0.0625rem var(--border-default)";
+        element.style.setProperty("--squircle-outline", "0.0625rem");
+        element.style.setProperty(
+          "--squircle-outline-color",
+          "var(--border-default)"
+        );
       }}
     />
   );

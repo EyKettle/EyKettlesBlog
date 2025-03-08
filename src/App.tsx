@@ -63,11 +63,11 @@ const App: Component = () => {
   const onResize = () => {
     if (window.innerWidth <= header.offsetWidth + 64) {
       if (
-        header.firstChild &&
-        header.firstChild.textContent !== t("header.shortTitle")
+        header.children[2] &&
+        header.children[2].textContent !== t("header.shortTitle")
       ) {
         longWidth = header.offsetWidth + 64;
-        header.firstChild.textContent = t("header.shortTitle") || "";
+        header.children[2].textContent = t("header.shortTitle") || "";
         return;
       }
       if (header.style.top === "-10rem") return;
@@ -75,9 +75,9 @@ const App: Component = () => {
     } else {
       if (
         window.innerWidth > (longWidth ?? header.offsetWidth + 64) &&
-        header.firstChild
+        header.children[2]
       ) {
-        header.firstChild.textContent = t("header.title") || "";
+        header.children[2].textContent = t("header.title") || "";
       }
       if (window.innerWidth > header.offsetWidth + 64) {
         if (header.style.top === "1rem") return;
@@ -182,10 +182,14 @@ const App: Component = () => {
         class={styles.header}
         style={{
           top: "-10rem",
+          position: "absolute",
         }}
       >
+        <div class={styles.headerGlass} />
+        <div class={styles.headerBack} />
         <div
           style={{
+            "z-index": 11,
             "margin-inline": "1.5rem",
             "padding-bottom": "0.125rem",
           }}
@@ -194,13 +198,17 @@ const App: Component = () => {
         </div>
         <div
           style={{
+            "z-index": 11,
             display: "flex",
             "justify-content": "center",
             "align-items": "center",
             gap: "0.4rem",
           }}
         >
-          <Switch current={locales.indexOf(locale())}>
+          <Switch
+            current={locales.indexOf(locale())}
+            backgroundColor="var(--surface-glass-darker)"
+          >
             {[
               {
                 label: "English",
@@ -307,8 +315,8 @@ const App: Component = () => {
                   filter: "blur(0)",
                 },
                 {
-                  duration: 0.2,
-                  ease: [0.2, 0, 1, 1],
+                  duration: 0.15,
+                  ease: [0.5, 0, 0.8, 1],
                 }
               );
               animateMini(
@@ -328,8 +336,8 @@ const App: Component = () => {
                   filter: "blur(0.75rem)",
                 },
                 {
-                  duration: 0.2,
-                  ease: [0.2, 0, 1, 1],
+                  duration: 0.15,
+                  ease: [0.5, 0, 0.8, 1],
                 }
               );
               return 300;

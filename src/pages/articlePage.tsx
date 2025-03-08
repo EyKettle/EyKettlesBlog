@@ -78,8 +78,8 @@ const ArticlePage: Component<ArticlePageProps> = (props) => {
           <Card
             disabled={true}
             width="90vw"
-            extraStyle={{
-              "background-color": "var(--surface-hover)",
+            style={{
+              "--squircle-fill": "var(--surface-hover)",
               "padding-inline": "min(3rem, 1vw)",
               "padding-block": "1rem 3rem",
               "user-select": "text",
