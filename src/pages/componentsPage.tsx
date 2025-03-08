@@ -1,4 +1,4 @@
-import { Component, createSignal, JSX } from "solid-js";
+import { Component, JSX } from "solid-js";
 import { Button } from "../components/button";
 import { Card } from "../components/card";
 import { PageContainer } from "../components/pageContainer";
