@@ -13,6 +13,7 @@ interface componentsPageProps {
   operations: {
     back: () => void;
   };
+  isDark: boolean;
 }
 
 const ComponentsPage: Component<componentsPageProps> = (props) => {
@@ -118,7 +119,10 @@ const ComponentsPage: Component<componentsPageProps> = (props) => {
             fillColor="var(--surface-dark)"
             cornerRadius="1rem"
             outlineColor="var(--border-active)"
-            outlineWidth={{ bottom: "0.0625rem" }}
+            outlineWidth={{
+              top: props.isDark ? "0" : "0.0625rem",
+              bottom: props.isDark ? "0.0625rem" : "0",
+            }}
             style={{
               height: "100%",
               width: "100%",
@@ -135,16 +139,31 @@ const ComponentsPage: Component<componentsPageProps> = (props) => {
                 { name: "Page 1" },
                 { name: "Page 2" },
               ]}
-              pageInit={(page) => {
+              pageInit={(page, index) => {
                 page.style.display = "flex";
                 page.style.position = "absolute";
                 page.style.justifyContent = "center";
                 page.style.alignItems = "center";
                 page.style.height = "100%";
                 page.style.width = "100%";
+                switch (index) {
+                  case 1:
+                    page.style.translate = "20rem 0";
+                    break;
+                  case 2:
+                    page.style.translate = "0 20rem";
+                    break;
+                }
               }}
               getMethods={(s) => (switchTo = s)}
-              switchMotion={(oldPage, newPage, isForward, direction) => {
+              switchMotion={(
+                oldPage,
+                newPage,
+                isForward,
+                direction,
+                container
+              ) => {
+                const newPageExist = container.contains(newPage);
                 if (direction[1] === 2) {
                   animateMini(
                     oldPage,
@@ -158,19 +177,30 @@ const ComponentsPage: Component<componentsPageProps> = (props) => {
                   );
                   animateMini(
                     newPage,
-                    { translate: ["0 20rem", "0 0"], scale: 1 },
+                    {
+                      translate: newPageExist ? "0 0" : ["0 20rem", "0 0"],
+                      scale: 1,
+                    },
                     { duration: 1, ease: [0.5, 0.2, 0, 1] }
                   );
                 } else {
                   animateMini(
                     oldPage,
-                    { translate: ["0 0", isForward ? "-20rem 0" : "20rem 0"] },
+                    {
+                      translate: isForward
+                        ? "-20rem 0"
+                        : direction[0] === 2
+                        ? "0 20rem"
+                        : "20rem 0",
+                    },
                     { duration: 1, ease: [0.5, 0.2, 0, 1] }
                   );
                   animateMini(
                     newPage,
                     {
-                      translate: [isForward ? "20rem 0" : "-20rem 0", "0 0"],
+                      translate: newPageExist
+                        ? "0 0"
+                        : [isForward ? "20rem 0" : "-20rem 0", "0 0"],
                       scale: 1,
                       opacity: 1,
                       rotate: "0deg",

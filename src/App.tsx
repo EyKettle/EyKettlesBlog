@@ -5,7 +5,6 @@ import {
   onCleanup,
   onMount,
   Suspense,
-  untrack,
   useTransition,
   type Component,
 } from "solid-js";
@@ -123,17 +122,20 @@ const App: Component = () => {
     updateTitle();
   });
 
-  let savePosition = () => {
-    console.error("Not initialized");
-  };
-  let loadPosition = () => {
-    console.error("Not initialized");
-  };
+  let savePosition = () => console.error("Not initialized");
+  let loadPosition = () => console.error("Not initialized");
+
+  let saveArticlePos = () => console.error("Not initialized");
+  let loadArticlePos = () => console.error("Not initialized");
 
   let articleInfo: Article | undefined = undefined;
   let setArticle = (_fileName?: string) => console.log("Not initialized");
   const loadArticle = () => {
-    config.currentArticle = articleInfo?.fileName || "";
+    if (!articleInfo) {
+      console.warn("No article info");
+      return;
+    }
+    config.currentArticle = articleInfo.fileName || "";
     setArticle(config.currentArticle);
   };
 
@@ -146,7 +148,9 @@ const App: Component = () => {
   const cssChecker = document.getElementById("css-checker");
   let cssChecked = false;
   let [isExistDarkModePlugin, setDarkModeCheckState] = createSignal(false);
-  const checkDarkMode = () => {
+  const [isDark, setDark] = createSignal(false);
+  const onDarkModeChanged = () => {
+    setDark(darkModeMediaQuery.matches);
     if (darkModeMediaQuery.matches)
       document.documentElement.classList.add("dark");
     else document.documentElement.classList.remove("dark");
@@ -155,14 +159,14 @@ const App: Component = () => {
   const darkModeMediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
   onMount(() => {
     window.addEventListener("resize", onResize);
-    checkDarkMode();
-    darkModeMediaQuery.addEventListener("change", checkDarkMode);
+    onDarkModeChanged();
+    darkModeMediaQuery.addEventListener("change", onDarkModeChanged);
     header.style.top = "1rem";
   });
 
   onCleanup(() => {
     window.removeEventListener("resize", onResize);
-    darkModeMediaQuery.removeEventListener("change", checkDarkMode);
+    darkModeMediaQuery.removeEventListener("change", onDarkModeChanged);
   });
 
   return (
@@ -247,9 +251,9 @@ const App: Component = () => {
               },
               {
                 name: Pages[Pages.Reading],
-                onPrepare: () => loadPosition(),
+                onPrepare: loadPosition,
                 onRouted: () => updateTitle(Pages.Reading),
-                onLeave: () => savePosition(),
+                onLeave: savePosition,
               },
               {
                 name: Pages[Pages.Article],
@@ -278,6 +282,8 @@ const App: Component = () => {
                   //   resolve(null);
                   // });
                 },
+                onPrepare: loadArticlePos,
+                onLeave: saveArticlePos,
               },
               {
                 name: Pages[Pages.ComponentLibrary],
@@ -392,11 +398,16 @@ const App: Component = () => {
               translator={t}
               defaultArticle={loadConfig().currentArticle}
               operations={{ back: () => switchTo(Pages.Reading) }}
-              getMethods={(set) => (setArticle = set)}
+              getMethods={(set, save, load) => {
+                setArticle = set;
+                saveArticlePos = save;
+                loadArticlePos = load;
+              }}
             />
             <ComponentsPage
               translator={t}
               operations={{ back: () => switchTo(Pages.Home) }}
+              isDark={isDark()}
             />
           </PageContainer>
         </Suspense>

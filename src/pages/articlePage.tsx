@@ -1,4 +1,11 @@
-import { Component, createSignal, onMount, Show, Suspense } from "solid-js";
+import {
+  Component,
+  createSignal,
+  onCleanup,
+  onMount,
+  Show,
+  Suspense,
+} from "solid-js";
 import { Button } from "../components/button";
 import { SolidMarkdown } from "solid-markdown";
 import { Card } from "../components/card";
@@ -6,7 +13,12 @@ import remarkGfm from "remark-gfm";
 
 import "../components/markdown.css";
 import Loading from "../components/loading";
-import { loadConfig, saveConfig } from "../localStorage";
+import {
+  checkArticlePos,
+  loadConfig,
+  saveConfig,
+  updateArticleHistory,
+} from "../localStorage";
 
 interface ArticlePageProps {
   translator: any;
@@ -14,7 +26,11 @@ interface ArticlePageProps {
   operations: {
     back: () => void;
   };
-  getMethods: (setArticle: (info?: string) => void) => void;
+  getMethods: (
+    setArticle: (info?: string) => void,
+    savePosition: () => void,
+    loadPosition: () => void
+  ) => void;
 }
 
 const ArticlePage: Component<ArticlePageProps> = (props) => {
@@ -22,17 +38,24 @@ const ArticlePage: Component<ArticlePageProps> = (props) => {
 
   const [isProper, setProper] = createSignal(true);
   const [content, setContent] = createSignal<string>();
+  let frontFile = "";
 
   const setArticle = async (fileName?: string) => {
     if (!fileName) {
       setProper(false);
       return;
     }
+    if (frontFile === fileName) {
+      return;
+    } else frontFile = fileName;
     setContent("");
-    const fileContent = await import(`../articles/${fileName}.md?raw`);
-    if (fileContent.default) {
+    const fileContent =
+      fileName === "new"
+        ? (await import("../articles/new.md?raw")).default
+        : await fetch(`./articles/${fileName}.md`).then((res) => res.text());
+    if (fileContent) {
       setProper(true);
-      setContent(fileContent.default);
+      setContent(fileContent);
       let newConfig = loadConfig();
       newConfig.currentArticle = fileName;
       saveConfig(newConfig);
@@ -42,16 +65,61 @@ const ArticlePage: Component<ArticlePageProps> = (props) => {
       newConfig.currentArticle = "";
       saveConfig(newConfig);
     }
+    if (isProper()) {
+      loadPosition();
+    } else {
+      console.warn("Lost article position by improper loading");
+    }
   };
-  props.getMethods(setArticle);
+  let pageContent: HTMLDivElement | null = null;
+  let position = 0;
+  const minSaveDistance = 100;
+  const minSaveInterval = 5000;
+  const savePosition = () => {
+    if (pageContent) {
+      const lastPos = position;
+      position = pageContent.scrollTop;
+      const now = Date.now();
+      if (
+        Math.abs(position - lastPos) < minSaveDistance &&
+        now - lastSaveTime < minSaveInterval
+      )
+        return;
+      updateArticleHistory(frontFile, position);
+      lastSaveTime = now;
+    }
+  };
+  const loadPosition = () => {
+    if (pageContent && content()) {
+      const savedPos = checkArticlePos(frontFile);
+      if (savedPos > 0) position = savedPos;
+      pageContent.scrollTop = position;
+    }
+  };
+  props.getMethods(setArticle, savePosition, loadPosition);
+
+  let debounceTimer: number | undefined;
+  let lastSaveTime = 0;
+  const debounceDelay = 1000;
+  const handleScroll = () => {
+    if (debounceTimer) clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(() => {
+      savePosition();
+    }, debounceDelay);
+  };
 
   onMount(() => {
     if (props.defaultArticle && props.defaultArticle !== "")
       setArticle(props.defaultArticle);
+    pageContent && pageContent.addEventListener("scroll", handleScroll);
+  });
+  onCleanup(() => {
+    pageContent && pageContent.removeEventListener("scroll", handleScroll);
   });
 
   return (
     <div
+      ref={(e) => (pageContent = e)}
       style={{
         display: "flex",
         "flex-direction": "column",

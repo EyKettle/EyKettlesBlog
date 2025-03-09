@@ -44,8 +44,8 @@ export const Card: Component<CardProps> = (props) => {
       appearanceDiv.parentElement!.style.scale = "1";
       const shadowBox = appearanceDiv.parentElement!
         .firstChild! as HTMLDivElement;
-      shadowBox.style.translate = "0 0.125rem";
-      shadowBox.style.filter = "blur(0.125rem)";
+      shadowBox.style.translate = "0 0.0625rem";
+      shadowBox.style.filter = "blur(0.0625rem)";
       appearanceDiv.style.setProperty(
         "--squircle-outline-color",
         "var(--border-default)"
@@ -327,9 +327,9 @@ export const Card: Component<CardProps> = (props) => {
           background: "paint(squircle)",
           "--squircle-radius": "1rem",
           "--squircle-fill": "var(--shadow-color)",
-          opacity: 0.8,
-          translate: "0 0.125rem",
-          filter: "blur(0.125rem)",
+          opacity: 0.6,
+          translate: "0 0.0625rem",
+          filter: "blur(0.0625rem)",
           transition: "all 0.15s cubic-bezier(0.2, 0, 0, 1)",
           "pointer-events": "none",
         }}
@@ -340,6 +340,9 @@ export const Card: Component<CardProps> = (props) => {
           display: "flex",
           "flex-grow": 1,
           "flex-direction": "column",
+          width: "100%",
+          height: "100%",
+          "box-sizing": "border-box",
           "justify-content": "center",
           "align-items": "center",
           "--squircle-radius": "1rem",

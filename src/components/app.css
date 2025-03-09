@@ -108,16 +108,17 @@ body {
   --surface-glass-darker: rgba(234, 234, 234, 0.4);
 
   --shadow-color: rgba(0, 0, 0, 0.1);
+  --auto-shadow: none;
 
-  --button-default: #f2f2f2;
+  --button-default: var(--surface-light);
   --button-hover: white;
   --button-active: #ddd;
   --ghost-default: transparent;
   --ghost-hover: rgba(0, 0, 0, 0.08);
   --ghost-active: rgba(0, 0, 0, 0.16);
 
-  --border-default: rgba(0, 0, 0, 0.06);
-  --border-active: rgba(0, 0, 0, 0.1);
+  --border-default: rgba(0, 0, 0, 0.1);
+  --border-active: rgba(0, 0, 0, 0.14);
   --border-default-down: var(--border-down);
   --border-up: rgba(255, 255, 255, 0.1);
   --border-down: rgba(0, 0, 0, 0.2);
@@ -167,6 +168,7 @@ html {
     --surface-glass-darker: rgba(26, 26, 26, 0.6);
 
     --shadow-color: rgba(0, 0, 0, 0.3);
+    --auto-shadow: var(--shadow-color);
 
     --button-default: #2e2e2e;
     --button-hover: #3e3e3e;

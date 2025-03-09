@@ -12,13 +12,14 @@ interface PageContainerProps {
   children: JSXElement[];
   pageInfos: PageInfo[];
   style?: JSX.CSSProperties;
-  pageInit?: (page: HTMLDivElement) => void;
+  pageInit?: (page: HTMLDivElement, index: number) => void;
   loadedMotion?: (defaultPage: HTMLDivElement) => void;
   switchMotion?: (
     oldPage: HTMLDivElement,
     newPage: HTMLDivElement,
     isForward: boolean,
-    switchDirection: [number, number]
+    switchDirection: [number, number],
+    container: HTMLDivElement
   ) => number;
   homeIndex?: number;
   defaultIndex: number;
@@ -49,7 +50,7 @@ export const PageContainer: Component<PageContainerProps> = (props) => {
           if (frontIndex !== previous) {
             if (props.pageInfos[previous]?.onLeave)
               props.pageInfos[previous].onLeave();
-            if (container?.contains(pages[previous]))
+            if (container?.contains(pages[previous]) && frontIndex !== target)
               container?.removeChild(pages[previous]);
           }
         };
@@ -58,7 +59,8 @@ export const PageContainer: Component<PageContainerProps> = (props) => {
             pages[previous],
             newPage,
             isForward,
-            [previous, target]
+            [previous, target],
+            container
           );
           new Promise((resolve) =>
             setTimeout(() => {
@@ -149,9 +151,9 @@ export const PageContainer: Component<PageContainerProps> = (props) => {
   props.getMethods(handleSwitch, getFrontIndex);
 
   onMount(() => {
-    pages = props.children.map((content) => {
+    pages = props.children.map((content, index) => {
       const page = document.createElement("div");
-      if (props.pageInit) props.pageInit(page);
+      if (props.pageInit) props.pageInit(page, index);
       else {
         page.style.position = "absolute";
         page.style.height = "100vh";

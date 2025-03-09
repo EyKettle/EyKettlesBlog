@@ -9,6 +9,7 @@ export const STATIC_EXTENSIONS = new Set([
   "zip",
   "rar",
   "webp",
+  "md",
 ]);
 
 async function handler(req: Request): Promise<Response> {

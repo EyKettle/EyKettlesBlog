@@ -170,7 +170,7 @@ export const Switch: Component<SwitchProps> = (props) => {
         "min-height": "2.5rem",
         gap: "0.4rem",
         padding: "0.5rem",
-        filter: "drop-shadow(0 0.0625rem 0 var(--shadow-color))",
+        filter: "drop-shadow(0 0.0625rem 0 var(--auto-shadow))",
       }}
     >
       <For each={props.children}>

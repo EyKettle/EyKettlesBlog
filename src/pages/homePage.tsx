@@ -42,7 +42,7 @@ const HomePage: Component<HomePageProps> = (props) => {
         card-text-justify="flex-end"
         card-text-align="flex-start"
         card-height="min(40vw, 18rem)"
-        card-width="min(30vw, 22rem)"
+        card-width="min(42vw, 22rem)"
         card-effect=""
       >
         <Card

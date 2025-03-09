@@ -1,12 +1,4 @@
-import {
-  type Component,
-  createEffect,
-  createSignal,
-  For,
-  onCleanup,
-  onMount,
-  Show,
-} from "solid-js";
+import { type Component, createSignal, For, onMount, Show } from "solid-js";
 
 interface ButtonProps {
   icon?: string;
@@ -35,28 +27,16 @@ export const Button: Component<ButtonProps> = (props) => {
     }
     if (!props.type) props.type = "button";
     if (props.type === "button") {
-      element.style.filter = "drop-shadow(0 0.0625rem 0 var(--border-down))";
+      element.style.filter = "drop-shadow(0 0.0625rem 0 var(--shadow-color))";
       element.style.setProperty("--squircle-outline-top", "0.0625rem");
-      element.style.setProperty(
-        "--squircle-outline-color",
-        "var(--border-default)"
-      );
+      element.style.setProperty("--squircle-outline-color", "var(--border-up)");
     }
-    if (props.rounded)
-      element.style.backgroundColor = `var(--${props.type}-default)`;
-    else
-      element.style.setProperty(
-        "--squircle-fill",
-        `var(--${props.type}-default)`
-      );
-
-    const remPx = parseFloat(
-      getComputedStyle(document.documentElement).fontSize
+    element.style.setProperty(
+      "--squircle-fill",
+      `var(--${props.type}-default)`
     );
-    if (props.rounded) {
-      element.style.borderRadius = "50%";
-      element.style.background = `var(--${props.type}-default)`;
-    }
+
+    if (props.rounded) element.style.borderRadius = "50%";
     if (props.size) {
       switch (props.size) {
         case "medium":
@@ -109,33 +89,24 @@ export const Button: Component<ButtonProps> = (props) => {
       }}
       on:mouseenter={(e) => {
         if (!props.disabled && !isTouch)
-          if (props.rounded)
-            e.currentTarget.style.backgroundColor = `var(--${props.type}-hover)`;
-          else
-            e.currentTarget.style.setProperty(
-              "--squircle-fill",
-              `var(--${props.type}-hover)`
-            );
+          e.currentTarget.style.setProperty(
+            "--squircle-fill",
+            `var(--${props.type}-hover)`
+          );
       }}
       on:mouseleave={(e) => {
         if (!props.disabled && !isTouch)
-          if (props.rounded)
-            e.currentTarget.style.backgroundColor = `var(--${props.type}-default)`;
-          else
-            e.currentTarget.style.setProperty(
-              "--squircle-fill",
-              `var(--${props.type}-default)`
-            );
+          e.currentTarget.style.setProperty(
+            "--squircle-fill",
+            `var(--${props.type}-default)`
+          );
       }}
       on:mousedown={(e) => {
         if (!props.disabled && !isTouch && e.button === 0)
-          if (props.rounded)
-            e.currentTarget.style.backgroundColor = `var(--${props.type}-active)`;
-          else
-            e.currentTarget.style.setProperty(
-              "--squircle-fill",
-              `var(--${props.type}-active)`
-            );
+          e.currentTarget.style.setProperty(
+            "--squircle-fill",
+            `var(--${props.type}-active)`
+          );
       }}
       on:mouseup={(e) => {
         if (isTouch) {
@@ -143,44 +114,32 @@ export const Button: Component<ButtonProps> = (props) => {
           return;
         }
         if (!props.disabled && e.button === 0)
-          if (props.rounded)
-            e.currentTarget.style.backgroundColor = `var(--${props.type}-hover)`;
-          else
-            e.currentTarget.style.setProperty(
-              "--squircle-fill",
-              `var(--${props.type}-hover)`
-            );
+          e.currentTarget.style.setProperty(
+            "--squircle-fill",
+            `var(--${props.type}-hover)`
+          );
       }}
       on:touchstart={(e) => {
         isTouch = true;
         if (!props.disabled)
-          if (props.rounded)
-            e.currentTarget.style.backgroundColor = `var(--${props.type}-active)`;
-          else
-            e.currentTarget.style.setProperty(
-              "--squircle-fill",
-              `var(--${props.type}-hover)`
-            );
+          e.currentTarget.style.setProperty(
+            "--squircle-fill",
+            `var(--${props.type}-hover)`
+          );
       }}
       on:touchend={(e) => {
         if (!props.disabled)
-          if (props.rounded)
-            e.currentTarget.style.backgroundColor = `var(--${props.type}-hover)`;
-          else
-            e.currentTarget.style.setProperty(
-              "--squircle-fill",
-              `var(--${props.type}-default)`
-            );
+          e.currentTarget.style.setProperty(
+            "--squircle-fill",
+            `var(--${props.type}-default)`
+          );
       }}
       on:blur={(e) => {
         if (!props.disabled)
-          if (props.rounded)
-            e.currentTarget.style.backgroundColor = `var(--${props.type}-default)`;
-          else
-            e.currentTarget.style.setProperty(
-              "--squircle-fill",
-              `var(--${props.type}-default)`
-            );
+          e.currentTarget.style.setProperty(
+            "--squircle-fill",
+            `var(--${props.type}-default)`
+          );
       }}
       on:click={() => {
         if (!props.disabled && !isTouch) props.onClick?.();
