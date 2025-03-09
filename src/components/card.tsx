@@ -42,6 +42,7 @@ export const Card: Component<CardProps> = (props) => {
     requestAnimationFrame(() => {
       if (!appearanceDiv) return;
       appearanceDiv.parentElement!.style.scale = "1";
+      appearanceDiv.style.scale = "1";
       const shadowBox = appearanceDiv.parentElement!
         .firstChild! as HTMLDivElement;
       shadowBox.style.translate = "0 0.0625rem";
@@ -355,7 +356,6 @@ export const Card: Component<CardProps> = (props) => {
           "transition-duration": "0.15s",
           "transition-timing-function": "cubic-bezier(0.2, 0, 0, 1)",
           "will-change": "transform, box-shadow, z-index, --squircle-fill",
-          "pointer-events": "none",
           ...props.style,
         }}
       >

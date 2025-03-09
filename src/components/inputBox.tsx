@@ -17,7 +17,7 @@ const InputBox: Component<InputBoxProps> = (props) => {
       style={{
         border: "none",
         outline: "none",
-        "font-size": "1rem",
+        "font-size": "1.125rem",
         "text-align": "start",
         color: "var(--theme-text)",
         "border-radius": "0.5rem",
@@ -26,7 +26,7 @@ const InputBox: Component<InputBoxProps> = (props) => {
         "--squircle-radius": "0.5rem",
         "--squircle-outline": "0.0625rem",
         "--squircle-outline-color": "var(--border-default)",
-        padding: "0.5rem",
+        padding: "0.625rem",
         "transition-property":
           "all, --squircle-fill, --squircle-outline, --squircle-outline-color",
         "transition-duration": "0.2s",
