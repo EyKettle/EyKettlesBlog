@@ -19,6 +19,7 @@ import {
   saveConfig,
   updateArticleHistory,
 } from "../localStorage";
+import { Article, getInfos } from "../articles/methods";
 
 interface ArticlePageProps {
   translator: any;
@@ -27,7 +28,7 @@ interface ArticlePageProps {
     back: () => void;
   };
   getMethods: (
-    setArticle: (info?: string) => void,
+    setArticle: (info?: Article) => void,
     savePosition: () => void,
     loadPosition: () => void
   ) => void;
@@ -36,15 +37,19 @@ interface ArticlePageProps {
 const ArticlePage: Component<ArticlePageProps> = (props) => {
   const t = props.translator;
 
+  const [articleInfo, setArticleInfo] = createSignal<Article | null>(null);
   const [isProper, setProper] = createSignal(true);
   const [content, setContent] = createSignal<string>();
   let frontFile = "";
 
-  const setArticle = async (fileName?: string) => {
-    if (!fileName) {
+  const setArticle = async (info?: Article) => {
+    if (!info) {
       setProper(false);
+      setArticleInfo(null);
       return;
     }
+    setArticleInfo(info);
+    const { fileName } = info;
     if (frontFile === fileName) {
       return;
     } else frontFile = fileName;
@@ -109,8 +114,13 @@ const ArticlePage: Component<ArticlePageProps> = (props) => {
   };
 
   onMount(() => {
-    if (props.defaultArticle && props.defaultArticle !== "")
-      setArticle(props.defaultArticle);
+    if (props.defaultArticle && props.defaultArticle !== "") {
+      getInfos().then((articles) => {
+        setArticle(
+          articles.find((article) => article.fileName === props.defaultArticle)
+        );
+      });
+    }
     pageContent && pageContent.addEventListener("scroll", handleScroll);
   });
   onCleanup(() => {
@@ -123,7 +133,7 @@ const ArticlePage: Component<ArticlePageProps> = (props) => {
       style={{
         display: "flex",
         "flex-direction": "column",
-        "padding-top": "12rem",
+        "padding-top": "8.5rem",
         "padding-bottom": "6rem",
         "align-items": "center",
         gap: "1rem",
@@ -138,16 +148,55 @@ const ArticlePage: Component<ArticlePageProps> = (props) => {
         rounded={true}
         onClick={props.operations.back}
       />
-      <div>
+      <div
+        style={{
+          display: "grid",
+          gap: "1rem",
+        }}
+      >
         <Show
           when={isProper()}
           fallback={<div>{t("errors.emptyArticle")}</div>}
         >
+          <div
+            style={{
+              display: "grid",
+              "grid-template-columns": "1fr 1fr",
+              width: "fit-content",
+              gap: "1rem",
+              padding: "0.5rem",
+              "justify-self": "center",
+              opacity: 0.6,
+            }}
+          >
+            <Show when={articleInfo()} fallback={"querying..."}>
+              <label
+                style={{
+                  display: "flex",
+                  "justify-content": "center",
+                  "align-items": "center",
+                  "font-size": "1.2rem",
+                  "font-weight": "bold",
+                }}
+              >
+                {articleInfo()!.author}
+              </label>
+              <label
+                style={{
+                  display: "flex",
+                  "justify-content": "center",
+                  "align-items": "center",
+                }}
+              >
+                {articleInfo()!.date}
+              </label>
+            </Show>
+          </div>
           <Card
             disabled={true}
             width="90vw"
             style={{
-              "--squircle-fill": "var(--surface-hover)",
+              "background-color": "var(--surface-hover)",
               "padding-inline": "min(3rem, 1vw)",
               "padding-block": "1rem 3rem",
               "user-select": "text",

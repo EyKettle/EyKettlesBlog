@@ -1,3 +1,5 @@
+// This module is modified from [css-houdini-squircle](https://github.com/PavelLaptev/css-houdini-squircle) by using [figma-squircle](https://github.com/phamfoo/figma-squircle) for smoother squircle. And add more feature for squircle.
+
 // src/distribute.ts
 function distributeAndNormalize({
   topLeftCornerRadius,
@@ -67,7 +69,7 @@ function distributeAndNormalize({
     },
   };
 }
-var adjacentsByCorner = {
+const adjacentsByCorner = {
   topLeft: [
     {
       corner: "topRight",
@@ -377,9 +379,9 @@ class SquircleClass {
     const squircleOutline = properties.get("--squircle-outline")?.value;
 
     if (!outlineWidths.every(isNaN) && outlineWidths.some(isNaN)) {
-      outlineWidths = outlineWidths.map((w) => (w !== NaN ? w : 0));
+      outlineWidths = outlineWidths.map((w) => (isNaN(w) ? w : 0));
     }
-    let squircleColor = properties.get("--squircle-fill")?.toString();
+    const squircleColor = properties.get("--squircle-fill")?.toString();
 
     const [topLeft, topRight, bottomRight, bottomLeft] = squircleRadii;
     const params = {

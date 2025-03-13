@@ -1,5 +1,11 @@
-import { animateMini } from "motion";
-import { Component, JSX, onMount, Show } from "solid-js";
+import {
+  Component,
+  createEffect,
+  JSX,
+  onCleanup,
+  onMount,
+  Show,
+} from "solid-js";
 
 type Effect = "none" | "float" | "3d" | "all";
 const EFFECT_MAP = {
@@ -41,21 +47,16 @@ export const Card: Component<CardProps> = (props) => {
   const resetStyle = () => {
     requestAnimationFrame(() => {
       if (!appearanceDiv) return;
-      appearanceDiv.parentElement!.style.scale = "1";
       appearanceDiv.style.scale = "1";
-      const shadowBox = appearanceDiv.parentElement!
-        .firstChild! as HTMLDivElement;
-      shadowBox.style.translate = "0 0.0625rem";
-      shadowBox.style.filter = "blur(0.0625rem)";
-      appearanceDiv.style.setProperty(
-        "--squircle-outline-color",
-        "var(--border-default)"
-      );
+      if (shadowBox) {
+        shadowBox.style.translate = "0 0.0625rem";
+        shadowBox.style.filter = "blur(0.0625rem)";
+        shadowBox.style.opacity = "0.6";
+        shadowBox.style.scale = "1";
+      }
+      appearanceDiv.style.borderColor = "var(--border-default)";
       appearanceDiv.parentElement!.style.zIndex = "1";
-      appearanceDiv.style.setProperty(
-        "--squircle-fill",
-        "var(--surface-light)"
-      );
+      appearanceDiv.style.backgroundColor = "var(--surface-light)";
       if (EFFECT_MAP.rotate.has(props.effect ?? "none")) {
         appearanceDiv.style.transformOrigin = "center";
         appearanceDiv.style.transform = "";
@@ -64,6 +65,7 @@ export const Card: Component<CardProps> = (props) => {
   };
 
   let appearanceDiv: HTMLDivElement | null = null;
+  let shadowBox: HTMLDivElement | null = null;
   onMount(() => {
     if (!appearanceDiv) {
       console.warn("Element not found");
@@ -114,6 +116,7 @@ export const Card: Component<CardProps> = (props) => {
     switch (props.effect) {
       case "all":
         appearanceDiv.parentElement!.style.touchAction = "none";
+        pressColor = "var(--surface-light)";
         break;
       case "3d":
         pressColor = "var(--surface-pressed)";
@@ -148,14 +151,49 @@ export const Card: Component<CardProps> = (props) => {
         (props.effect === "all" ? 1.5 : 1);
       element.style.transform = `perspective(64rem) rotateY(${rotateY}deg) rotateX(${rotateX}deg)`;
       isFrameScheduled = false;
-      const shadowBox = element.parentElement!.firstChild! as HTMLDivElement;
-      // const scaleX =
+      if (props.effect === "all") {
+        if (!shadowBox) return;
+        const rotateYRad = (rotateY * Math.PI) / 180;
+        const rotateXRad = (rotateX * Math.PI) / 180;
+        const scaleX = Math.abs(Math.cos(rotateYRad));
+        const scaleY = Math.abs(Math.cos(rotateXRad));
+        shadowBox.style.scale = `${scaleX} ${scaleY}`;
+      }
     });
   };
 
+  const onEnterDown = (e: KeyboardEvent) => {
+    if (e.key === "Enter" && !props.disabled && appearanceDiv?.parentElement)
+      appearanceDiv.parentElement.style.scale = "0.95";
+  };
+  const onEnterUp = (e: KeyboardEvent) => {
+    if (e.key === "Enter" && !props.disabled && appearanceDiv?.parentElement) {
+      appearanceDiv.parentElement.style.scale = "1";
+      props.onClick?.();
+    }
+  };
+
+  createEffect(() => {
+    if (!appearanceDiv?.parentElement) return;
+    if (props.disabled) {
+      appearanceDiv.parentElement.tabIndex = -1;
+    } else {
+      appearanceDiv.parentElement.tabIndex = 0;
+    }
+  });
+
   onMount(() => {
-    if (!appearanceDiv) return;
+    if (!appearanceDiv?.parentElement) return;
     remValue = parseFloat(getComputedStyle(document.documentElement).fontSize);
+
+    appearanceDiv.parentElement.addEventListener("keydown", onEnterDown);
+    appearanceDiv.parentElement.addEventListener("keyup", onEnterUp);
+  });
+
+  onCleanup(() => {
+    if (!appearanceDiv?.parentElement) return;
+    appearanceDiv.parentElement.removeEventListener("keydown", onEnterDown);
+    appearanceDiv.parentElement.removeEventListener("keyup", onEnterUp);
   });
 
   return (
@@ -175,21 +213,14 @@ export const Card: Component<CardProps> = (props) => {
       on:mouseenter={() => {
         if (props.disabled || isTouch || !appearanceDiv) return;
         if (props.effect && EFFECT_MAP.float.has(props.effect)) {
-          appearanceDiv.parentElement!.style.scale = "1.1";
-          const shadowBox = appearanceDiv.parentElement!
-            .firstChild! as HTMLDivElement;
-          shadowBox.style.translate = "0 0.375rem";
+          appearanceDiv.style.scale = "1.1";
+          if (!shadowBox) return;
+          shadowBox.style.translate = "0 0.625rem";
           shadowBox.style.filter = "blur(0.25rem)";
         }
-        appearanceDiv.style.setProperty(
-          "--squircle-outline-color",
-          "var(--border-active)"
-        );
+        appearanceDiv.style.borderColor = "var(--border-active)";
         appearanceDiv.parentElement!.style.zIndex = "2";
-        appearanceDiv.style.setProperty(
-          "--squircle-fill",
-          "var(--surface-hover)"
-        );
+        appearanceDiv.style.backgroundColor = "var(--surface-hover)";
       }}
       on:mouseleave={() => {
         if (!props.disabled && !isTouch) resetStyle();
@@ -197,14 +228,22 @@ export const Card: Component<CardProps> = (props) => {
       on:mousedown={(e) => {
         if (props.disabled || isTouch || !appearanceDiv) return;
         if (e.button === 0) {
-          appearanceDiv.style.setProperty("--squircle-fill", pressColor);
+          appearanceDiv.style.backgroundColor = pressColor;
           if (props.effect && props.effect !== "none") {
             if (EFFECT_MAP.rotate.has(props.effect)) {
               handleRotate(appearanceDiv, e.clientX, e.clientY);
-              if (props.effect === "3d") appearanceDiv.style.scale = "0.95";
+              if (props.effect === "3d") {
+                appearanceDiv.style.scale = "0.95";
+                if (!shadowBox) return;
+                shadowBox.style.opacity = "0";
+                shadowBox.style.scale = "0.95";
+              }
             }
             if (EFFECT_MAP.float.has(props.effect)) {
-              appearanceDiv.parentElement!.style.scale = "1.05";
+              appearanceDiv.style.scale = "1.05";
+              if (!shadowBox) return;
+              shadowBox.style.translate = "0 0.375rem";
+              shadowBox.style.filter = "blur(0.125rem)";
             }
           }
         }
@@ -216,20 +255,21 @@ export const Card: Component<CardProps> = (props) => {
         }
         if (props.disabled || !appearanceDiv) return;
         if (e.button === 0) {
-          appearanceDiv.style.setProperty(
-            "--squircle-fill",
-            "var(--surface-hover)"
-          );
+          appearanceDiv.style.backgroundColor = "var(--surface-hover)";
           if (props.effect && props.effect !== "none") {
             if (EFFECT_MAP.rotate.has(props.effect)) {
               appearanceDiv.style.transform = "";
-              if (props.effect === "3d") appearanceDiv.style.scale = "1";
+              if (props.effect === "3d") {
+                appearanceDiv.style.scale = "1";
+                if (!shadowBox) return;
+                shadowBox.style.opacity = "0.6";
+                shadowBox.style.scale = "1";
+              }
             }
             if (EFFECT_MAP.float.has(props.effect)) {
-              appearanceDiv.parentElement!.style.scale = "1.1";
-              const shadowBox = appearanceDiv.parentElement!
-                .firstChild! as HTMLDivElement;
-              shadowBox.style.translate = "0 0.375rem";
+              appearanceDiv.style.scale = "1.1";
+              if (!shadowBox) return;
+              shadowBox.style.translate = "0 0.625rem";
               shadowBox.style.filter = "blur(0.25rem)";
             }
           }
@@ -238,25 +278,25 @@ export const Card: Component<CardProps> = (props) => {
       on:mousemove={(e) => {
         if (props.disabled || isTouch || !appearanceDiv) return;
         if (e.buttons === 1) {
-          if (props.effect === "all")
+          if (props.effect === "all") {
             handleRotate(appearanceDiv, e.clientX, e.clientY);
+            appearanceDiv.style.backgroundColor = pressColor;
+            appearanceDiv.style.scale = "1.05";
+            if (!shadowBox) return;
+            shadowBox.style.translate = "0 0.375rem";
+            shadowBox.style.filter = "blur(0.125rem)";
+          }
         }
       }}
       on:touchstart={(e) => {
         isTouch = true;
         if (props.disabled || !appearanceDiv) return;
         if (props.effect !== "3d") {
-          appearanceDiv.style.setProperty(
-            "--squircle-outline-color",
-            "var(--border-active)"
-          );
+          appearanceDiv.style.borderColor = "var(--border-active)";
         }
         if (props.effect) {
           if (props.effect === "none") {
-            appearanceDiv.style.setProperty(
-              "--squircle-fill",
-              "var(--surface-hover)"
-            );
+            appearanceDiv.style.backgroundColor = "var(--surface-hover)";
             return;
           }
           if (EFFECT_MAP.rotate.has(props.effect)) {
@@ -266,17 +306,17 @@ export const Card: Component<CardProps> = (props) => {
               e.touches[0].clientY
             );
             if (props.effect === "3d") {
-              appearanceDiv.style.setProperty("--squircle-fill", pressColor);
+              appearanceDiv.style.backgroundColor = pressColor;
               appearanceDiv.style.scale = "0.95";
+              if (!shadowBox) return;
+              shadowBox.style.opacity = "0";
+              shadowBox.style.scale = "0.95";
             }
           }
           if (EFFECT_MAP.float.has(props.effect)) {
-            appearanceDiv.style.setProperty(
-              "--squircle-fill",
-              "var(--surface-hover)"
-            );
+            appearanceDiv.style.backgroundColor = "var(--surface-hover)";
             {
-              appearanceDiv.parentElement!.style.scale = "1.05";
+              appearanceDiv.style.scale = "1.05";
             }
           }
         }
@@ -290,15 +330,12 @@ export const Card: Component<CardProps> = (props) => {
             e.touches[0].clientY >= rect.top - 3 * remValue &&
             e.touches[0].clientY <= rect.bottom + 3 * remValue
           ) {
-            appearanceDiv.style.setProperty(
-              "--squircle-fill",
-              "var(--surface-hover)"
-            );
-            appearanceDiv.style.setProperty(
-              "--squircle-outline-color",
-              "var(--border-active)"
-            );
-            appearanceDiv.parentElement!.style.scale = "1.05";
+            appearanceDiv.style.backgroundColor = "var(--surface-hover)";
+            appearanceDiv.style.borderColor = "var(--border-active)";
+            appearanceDiv.style.scale = "1.05";
+            if (!shadowBox) return;
+            shadowBox.style.translate = "0 0.375rem";
+            shadowBox.style.filter = "blur(0.125rem)";
             handleRotate(
               appearanceDiv,
               e.touches[0].clientX,
@@ -322,12 +359,12 @@ export const Card: Component<CardProps> = (props) => {
       }}
     >
       <div
+        ref={(e) => (shadowBox = e)}
         style={{
           position: "absolute",
           inset: 0,
-          background: "paint(squircle)",
-          "--squircle-radius": "1rem",
-          "--squircle-fill": "var(--shadow-color)",
+          "border-radius": "1rem",
+          "background-color": "var(--shadow-color)",
           opacity: 0.6,
           translate: "0 0.0625rem",
           filter: "blur(0.0625rem)",
@@ -346,16 +383,16 @@ export const Card: Component<CardProps> = (props) => {
           "box-sizing": "border-box",
           "justify-content": "center",
           "align-items": "center",
-          "--squircle-radius": "1rem",
-          background: "paint(squircle)",
-          "--squircle-fill": "var(--surface-light)",
-          "--squircle-outline-color": "var(--border-default)",
-          "--squircle-outline": "0.0625rem",
+          "border-radius": "1rem",
+          "background-color": "var(--surface-light)",
+          "border-style": "solid",
+          "border-color": "var(--border-default)",
+          "border-width": "0.0625rem",
           padding: "1rem",
-          "transition-property": "all, --squircle-fill",
+          "transition-property": "all",
           "transition-duration": "0.15s",
           "transition-timing-function": "cubic-bezier(0.2, 0, 0, 1)",
-          "will-change": "transform, box-shadow, z-index, --squircle-fill",
+          "will-change": "transform",
           ...props.style,
         }}
       >

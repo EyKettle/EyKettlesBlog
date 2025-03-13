@@ -1,4 +1,4 @@
-@property --squircle-radius {
+/* @property --squircle-radius {
   syntax: "<length>";
   inherits: false;
   initial-value: 0;
@@ -68,7 +68,7 @@
   syntax: "<length>";
   inherits: false;
   initial-value: 0;
-}
+} */
 
 @font-face {
   font-family: "Segoe Fluent Icons";
@@ -101,8 +101,8 @@ body {
   --surface-dark: #e6e6e6;
   --surface-darker: #e2e2e2;
   --surface-hover: #ffffff;
-  --surface-active: #e2e2e2;
-  --surface-pressed: #e2e2e2;
+  --surface-active: #eee;
+  --surface-pressed: #e9e9e9;
   --surface-glass: rgba(255, 255, 255, 0.4);
   --surface-glass-dark: rgba(240, 240, 240, 0.4);
   --surface-glass-darker: rgba(234, 234, 234, 0.4);
@@ -171,8 +171,8 @@ html {
     --auto-shadow: var(--shadow-color);
 
     --button-default: #2e2e2e;
-    --button-hover: #3e3e3e;
-    --button-active: #222;
+    --button-hover: #3c3c3c;
+    --button-active: #2a2a2a;
     --ghost-default: transparent;
     --ghost-hover: rgba(255, 255, 255, 0.05);
     --ghost-active: rgba(255, 255, 255, 0.1);
@@ -183,6 +183,22 @@ html {
 
     --switch-hover: rgba(255, 255, 255, 0.06);
   }
+}
+
+* {
+  border-width: 0;
+  outline-width: 0;
+}
+
+*:focus {
+  outline: none !important;
+  transition: none;
+}
+
+*:not(input):focus-visible {
+  outline: 0.125rem solid var(--theme-accent) !important;
+  outline-offset: 0.125rem !important;
+  transition: none;
 }
 
 input::placeholder {

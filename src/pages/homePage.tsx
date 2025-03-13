@@ -24,10 +24,10 @@ const HomePage: Component<HomePageProps> = (props) => {
       style={{
         display: "flex",
         "flex-direction": "column",
-        // "justify-content": "center",
+        "justify-content": "center",
         "align-items": "center",
         gap: "1rem",
-        "padding-top": "max(8rem, 30vh)",
+        "padding-top": "2rem",
         "padding-bottom": "6rem",
         overflow: "scroll",
         width: "100%",
@@ -41,7 +41,7 @@ const HomePage: Component<HomePageProps> = (props) => {
         }}
         card-text-justify="flex-end"
         card-text-align="flex-start"
-        card-height="min(40vw, 18rem)"
+        card-height="clamp(10rem, 40vw, 18rem)"
         card-width="min(42vw, 22rem)"
         card-effect=""
       >

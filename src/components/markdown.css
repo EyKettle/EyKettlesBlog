@@ -25,6 +25,9 @@
   a:active {
     color: var(--theme-accent);
   }
+  a:focus {
+    outline: none;
+  }
 
   ul {
     padding-inline: 1.25rem;

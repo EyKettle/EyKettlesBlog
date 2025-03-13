@@ -62,25 +62,19 @@ const App: Component = () => {
   const onResize = () => {
     if (window.innerWidth <= header.offsetWidth + 64) {
       if (
-        header.children[2] &&
-        header.children[2].textContent !== t("header.shortTitle")
+        header.firstChild &&
+        header.firstChild.textContent !== t("header.shortTitle")
       ) {
         longWidth = header.offsetWidth + 64;
-        header.children[2].textContent = t("header.shortTitle") || "";
+        header.firstChild.textContent = t("header.shortTitle") || "";
         return;
       }
-      if (header.style.top === "-10rem") return;
-      header.style.top = "-10rem";
     } else {
       if (
         window.innerWidth > (longWidth ?? header.offsetWidth + 64) &&
-        header.children[2]
+        header.firstChild
       ) {
-        header.children[2].textContent = t("header.title") || "";
-      }
-      if (window.innerWidth > header.offsetWidth + 64) {
-        if (header.style.top === "1rem") return;
-        header.style.top = "1rem";
+        header.firstChild.textContent = t("header.title") || "";
       }
     }
   };
@@ -129,14 +123,14 @@ const App: Component = () => {
   let loadArticlePos = () => console.error("Not initialized");
 
   let articleInfo: Article | undefined = undefined;
-  let setArticle = (_fileName?: string) => console.log("Not initialized");
+  let setArticle = (_info?: Article) => console.log("Not initialized");
   const loadArticle = () => {
     if (!articleInfo) {
       console.warn("No article info");
       return;
     }
     config.currentArticle = articleInfo.fileName || "";
-    setArticle(config.currentArticle);
+    setArticle(articleInfo);
   };
 
   createEffect(() => {
@@ -161,7 +155,6 @@ const App: Component = () => {
     window.addEventListener("resize", onResize);
     onDarkModeChanged();
     darkModeMediaQuery.addEventListener("change", onDarkModeChanged);
-    header.style.top = "1rem";
   });
 
   onCleanup(() => {
@@ -185,12 +178,9 @@ const App: Component = () => {
         }}
         class={styles.header}
         style={{
-          top: "-10rem",
-          position: "absolute",
+          top: "1rem",
         }}
       >
-        <div class={styles.headerGlass} />
-        <div class={styles.headerBack} />
         <div
           style={{
             "z-index": 11,
@@ -211,14 +201,14 @@ const App: Component = () => {
         >
           <Switch
             current={locales.indexOf(locale())}
-            backgroundColor="var(--surface-glass-darker)"
+            backgroundColor="var(--surface-glass)"
           >
             {[
               {
                 label: "English",
-                callback: () => switchLocale("en-US"),
+                onClick: () => switchLocale("en-US"),
               },
-              { label: "中文", callback: () => switchLocale("zh-CN") },
+              { label: "中文", onClick: () => switchLocale("zh-CN") },
             ]}
           </Switch>
         </div>
@@ -300,62 +290,63 @@ const App: Component = () => {
               };
               getFrontIndex = i;
             }}
-            switchMotion={(oldPage, newPage, isForward) => {
-              newPage.style.scale = isForward ? "0.8" : "1.6";
-              newPage.style.opacity = "0";
-              newPage.style.filter = "blur(0.75rem)";
-              animateMini(
-                newPage,
-                {
-                  scale: 1,
-                },
-                {
-                  duration: 0.3,
-                  ease: [0.5, 0, 0, 1],
-                }
-              );
-              animateMini(
-                newPage,
-                {
-                  opacity: 1,
-                  filter: "blur(0)",
-                },
-                {
-                  duration: 0.15,
-                  ease: [0.5, 0, 0.8, 1],
-                }
-              );
-              animateMini(
-                oldPage,
-                {
-                  scale: isForward ? "1.6" : "0.8",
-                },
-                {
-                  duration: 0.3,
-                  ease: [0.5, 0, 0, 1],
-                }
-              );
-              animateMini(
-                oldPage,
-                {
-                  opacity: 0,
-                  filter: "blur(0.75rem)",
-                },
-                {
-                  duration: 0.15,
-                  ease: [0.5, 0, 0.8, 1],
-                }
-              );
-              return 300;
-            }}
-            loadedMotion={(defaultPage) => {
-              defaultPage.style.transform = "translateY(12rem)";
-              defaultPage.style.opacity = "0";
-              defaultPage.style.filter = "blur(1rem)";
+            switchMotion={(oldPage, newPage, isForward) =>
+              new Promise((resolve) => {
+                newPage.style.scale = isForward ? "0.8" : "1.6";
+                newPage.style.opacity = "0";
+                newPage.style.filter = "blur(0.75rem)";
+                animateMini(
+                  newPage,
+                  {
+                    scale: 1,
+                  },
+                  {
+                    duration: 0.3,
+                    ease: [0.5, 0, 0, 1],
+                  }
+                ).then(resolve);
+                animateMini(
+                  newPage,
+                  {
+                    opacity: 1,
+                    filter: "blur(0)",
+                  },
+                  {
+                    duration: 0.15,
+                    ease: [0.5, 0, 0.8, 1],
+                  }
+                );
+                animateMini(
+                  oldPage,
+                  {
+                    scale: isForward ? "1.6" : "0.8",
+                  },
+                  {
+                    duration: 0.3,
+                    ease: [0.5, 0, 0, 1],
+                  }
+                );
+                animateMini(
+                  oldPage,
+                  {
+                    opacity: 0,
+                    filter: "blur(0.75rem)",
+                  },
+                  {
+                    duration: 0.15,
+                    ease: [0.5, 0, 0.8, 1],
+                  }
+                );
+              })
+            }
+            loadedMotion={(container) => {
+              container.style.transform = "translateY(12rem)";
+              container.style.opacity = "0";
+              container.style.filter = "blur(1rem)";
               new Promise((resolve) => {
                 setTimeout(() => {
                   animateMini(
-                    defaultPage,
+                    container,
                     {
                       transform: "translateY(0)",
                       opacity: 1,

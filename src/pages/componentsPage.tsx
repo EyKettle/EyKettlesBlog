@@ -5,7 +5,6 @@ import { PageContainer } from "../components/pageContainer";
 import { Switch } from "../components/switch";
 import InputBox from "../components/inputBox";
 import Loading from "../components/loading";
-import Squircle from "../components/squircle";
 import { animateMini } from "motion";
 
 interface componentsPageProps {
@@ -110,25 +109,23 @@ const ComponentsPage: Component<componentsPageProps> = (props) => {
           <Switch
             current={0}
             children={[
-              { label: "Page 0", callback: () => switchTo(0) },
-              { label: "Page 1", callback: () => switchTo(1) },
-              { label: "Page 2", callback: () => switchTo(2) },
+              { label: "Page 0", onClick: () => switchTo(0) },
+              { label: "Page 1", onClick: () => switchTo(1) },
+              { label: "Page 2", onClick: () => switchTo(2) },
             ]}
           />
-          <Squircle
-            fillColor="var(--surface-dark)"
-            cornerRadius="1rem"
-            outlineColor="var(--border-active)"
-            outlineWidth={{
-              top: props.isDark ? "0" : "0.0625rem",
-              bottom: props.isDark ? "0.0625rem" : "0",
-            }}
+          <div
             style={{
               height: "100%",
               width: "100%",
-              "border-radius": "1rem",
               overflow: "hidden",
               position: "relative",
+              "background-color": "var(--surface-dark)",
+              "border-radius": "1rem",
+              "border-style": "solid",
+              "border-top-width": `${props.isDark ? "0" : "0.0625rem"}`,
+              "border-bottom-width": `${props.isDark ? "0.0625rem" : "0"}`,
+              "border-color": "var(--border-active)",
             }}
           >
             <PageContainer
@@ -162,54 +159,56 @@ const ComponentsPage: Component<componentsPageProps> = (props) => {
                 isForward,
                 direction,
                 container
-              ) => {
-                const newPageExist = container.contains(newPage);
-                if (direction[1] === 2) {
-                  animateMini(
-                    oldPage,
-                    {
-                      rotate: "-180deg",
-                      scale: 0.6,
-                      opacity: 0,
-                      translate: "0 -4rem",
-                    },
-                    { duration: 1, ease: [0.5, 0.2, 0, 1] }
-                  );
-                  animateMini(
-                    newPage,
-                    {
-                      translate: newPageExist ? "0 0" : ["0 20rem", "0 0"],
-                      scale: 1,
-                    },
-                    { duration: 1, ease: [0.5, 0.2, 0, 1] }
-                  );
-                } else {
-                  animateMini(
-                    oldPage,
-                    {
-                      translate: isForward
-                        ? "-20rem 0"
-                        : direction[0] === 2
-                        ? "0 20rem"
-                        : "20rem 0",
-                    },
-                    { duration: 1, ease: [0.5, 0.2, 0, 1] }
-                  );
-                  animateMini(
-                    newPage,
-                    {
-                      translate: newPageExist
-                        ? "0 0"
-                        : [isForward ? "20rem 0" : "-20rem 0", "0 0"],
-                      scale: 1,
-                      opacity: 1,
-                      rotate: "0deg",
-                    },
-                    { duration: 1, ease: [0.5, 0.2, 0, 1] }
-                  );
-                }
-                return 1000;
-              }}
+              ) =>
+                new Promise((resolve) => {
+                  const newPageExist = container.contains(newPage);
+                  if (direction[1] === 2) {
+                    animateMini(
+                      oldPage,
+                      {
+                        rotate: "-180deg",
+                        scale: 0.6,
+                        opacity: 0,
+                        translate: "0 -4rem",
+                      },
+                      { duration: 1, ease: [0.5, 0.2, 0, 1] }
+                    );
+                    animateMini(
+                      newPage,
+                      {
+                        translate: newPageExist ? "0 0" : ["0 20rem", "0 0"],
+                        scale: 1,
+                      },
+                      { duration: 1, ease: [0.5, 0.2, 0, 1] }
+                    ).then(resolve);
+                  } else {
+                    animateMini(
+                      oldPage,
+                      {
+                        translate: isForward
+                          ? "-20rem 0"
+                          : direction[0] === 2
+                          ? "0 20rem"
+                          : "20rem 0",
+                      },
+                      { duration: 1, ease: [0.5, 0.2, 0, 1] }
+                    );
+                    animateMini(
+                      newPage,
+                      {
+                        translate: newPageExist
+                          ? "0 0"
+                          : [isForward ? "20rem 0" : "-20rem 0", "0 0"],
+                        scale: 1,
+                        opacity: 1,
+                        rotate: "0deg",
+                      },
+                      { duration: 1, ease: [0.5, 0.2, 0, 1] }
+                    ).then(resolve);
+                  }
+                  return 1000;
+                })
+              }
             >
               <div>
                 {t("library.pageContainer") + " / Page0"}
@@ -227,7 +226,7 @@ const ComponentsPage: Component<componentsPageProps> = (props) => {
                 {t("library.pageTip3")}
               </div>
             </PageContainer>
-          </Squircle>
+          </div>
         </div>
         <div style={styleOfSection}>
           <InputBox multiline={true} placeholder={t("library.input")} />

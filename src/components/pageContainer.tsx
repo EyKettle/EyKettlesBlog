@@ -13,14 +13,14 @@ interface PageContainerProps {
   pageInfos: PageInfo[];
   style?: JSX.CSSProperties;
   pageInit?: (page: HTMLDivElement, index: number) => void;
-  loadedMotion?: (defaultPage: HTMLDivElement) => void;
+  loadedMotion?: (container: HTMLDivElement) => void;
   switchMotion?: (
     oldPage: HTMLDivElement,
     newPage: HTMLDivElement,
     isForward: boolean,
     switchDirection: [number, number],
     container: HTMLDivElement
-  ) => number;
+  ) => Promise<void>;
   homeIndex?: number;
   defaultIndex: number;
   routeMode?: "none" | "spa" | "fakeRouter";
@@ -50,29 +50,26 @@ export const PageContainer: Component<PageContainerProps> = (props) => {
           if (frontIndex !== previous) {
             if (props.pageInfos[previous]?.onLeave)
               props.pageInfos[previous].onLeave();
-            if (container?.contains(pages[previous]) && frontIndex !== target)
+            if (container?.contains(pages[previous])) {
               container?.removeChild(pages[previous]);
+            }
           }
         };
         if (props.switchMotion) {
-          const duration = props.switchMotion(
-            pages[previous],
-            newPage,
-            isForward,
-            [previous, target],
-            container
-          );
-          new Promise((resolve) =>
-            setTimeout(() => {
-              removeOldPage();
-              resolve(null);
-            }, duration)
-          );
+          props
+            .switchMotion(
+              pages[previous],
+              newPage,
+              isForward,
+              [previous, target],
+              container
+            )
+            .then(removeOldPage);
         } else removeOldPage();
       } else {
         frontIndex = target;
-        const newPage = container.appendChild(pages[target]);
-        if (props.loadedMotion) props.loadedMotion(newPage);
+        container.appendChild(pages[target]);
+        if (props.loadedMotion) props.loadedMotion(container);
       }
       if (props.pageInfos[target]?.onPrepare)
         props.pageInfos[target].onPrepare!();

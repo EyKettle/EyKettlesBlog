@@ -11,6 +11,7 @@
 
 .header {
   display: flex;
+  position: absolute;
   z-index: 10;
   flex-direction: row;
   align-items: center;
@@ -18,34 +19,16 @@
   font-size: 1.5rem;
   margin-block: 1rem;
   padding: 0.5rem;
-  border: none;
-  border-radius: 1.5rem;
   width: fit-content;
-  transition: top 0.2s cubic-bezier(0, 0, 0, 1);
-}
-
-.headerBack {
-  position: absolute;
-  z-index: 9;
-  inset: 0;
   border: none;
-  background: paint(squircle);
-  --squircle-radius: 1.5rem;
-  --squircle-fill: var(--surface-glass);
-  --squircle-outline: 0.0625rem;
-  --squircle-outline-color: var(--border-default);
-  filter: drop-shadow(0 1rem 2rem rgba(0, 0, 0, 0.2));
-  pointer-events: none;
-}
-.headerGlass {
-  position: absolute;
-  z-index: 9;
-  inset: 0;
-  --squircle-fill: var(--surface-hover);
-  --squircle-radius: 1.5rem;
-  mask-image: paint(squircle);
+  background-color: var(--surface-glass);
+  border-radius: 1.5rem;
+  border-style: solid;
+  border-width: 0.0625rem;
+  border-color: var(--border-default);
   backdrop-filter: blur(20px) saturate(200%) brightness(105%);
-  pointer-events: none;
+  box-shadow: 0 1rem 2rem rgba(0, 0, 0, 0.1);
+  transition: top 0.2s cubic-bezier(0, 0, 0, 1);
 }
 
 p {

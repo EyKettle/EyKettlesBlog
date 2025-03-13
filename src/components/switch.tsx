@@ -1,12 +1,19 @@
-import { Component, createSignal, For, onMount } from "solid-js";
-import Squircle from "./squircle";
+import {
+  Component,
+  createEffect,
+  createSignal,
+  For,
+  onCleanup,
+  onMount,
+} from "solid-js";
 
 type SwitchItem = {
   label: string;
-  callback: () => void;
+  onClick: () => void;
 };
 
 interface SwitchProps {
+  disabled?: boolean;
   current?: number;
   children: SwitchItem[];
   backgroundColor?: string;
@@ -14,6 +21,7 @@ interface SwitchProps {
 }
 
 interface SwitchItemProps {
+  disabled?: boolean;
   index: number;
   text: string;
   active: boolean;
@@ -29,25 +37,6 @@ const SwitchItem: Component<SwitchItemProps> = (props) => {
     backgroundColor: "transparent",
   };
 
-  onMount(() => {
-    if (props.active) {
-      element.style.color = "var(--switch-onActive)";
-      element.style.setProperty("--squircle-fill", "var(--switch-active)");
-      element.style.setProperty("--squircle-outline-bottom", "0");
-      element.style.setProperty("--squircle-outline-top", "0.0625rem");
-      element.style.cursor = "auto";
-    } else {
-      element.style.color = "var(--theme-text)";
-      element.style.setProperty(
-        "--squircle-fill",
-        defaultStyle.backgroundColor
-      );
-      element.style.setProperty("--squircle-outline-bottom", "0");
-      element.style.setProperty("--squircle-outline-top", "0");
-      element.style.cursor = "pointer";
-    }
-  });
-
   const handleClick = () => {
     if (props.active) return;
     element.style.cursor = "auto";
@@ -57,12 +46,79 @@ const SwitchItem: Component<SwitchItemProps> = (props) => {
 
   const reset = () => {
     element.style.color = "var(--theme-text)";
-    element.style.setProperty("--squircle-fill", defaultStyle.backgroundColor);
-    element.style.setProperty("--squircle-outline-bottom", "0");
-    element.style.setProperty("--squircle-outline-top", "0");
+    element.style.backgroundColor = defaultStyle.backgroundColor;
+    element.style.boxShadow = "none";
+    element.style.translate = "0 0";
+    element.style.borderTopWidth = "0";
     element.style.cursor = "pointer";
   };
   props.hooks(reset);
+
+  const applyMousedown = () => {
+    element.style.backgroundColor = "var(--switch-press)";
+    element.style.boxShadow = "none";
+    element.style.translate = "0 0";
+    element.style.borderTopWidth = "0.0625rem";
+  };
+  const applyMouseup = () => {
+    element.style.color = "var(--switch-onActive)";
+    element.style.backgroundColor = "var(--switch-active)";
+    element.style.boxShadow = "none";
+    element.style.translate = "0 0";
+    element.style.borderTopWidth = "0.0625rem";
+  };
+
+  const onEnterDown = (e: KeyboardEvent) => {
+    if (e.key === "Enter" && !props.disabled && !props.active && element) {
+      e.preventDefault();
+      element.style.scale = "0.95";
+      applyMousedown();
+    }
+  };
+  const onEnterUp = (e: KeyboardEvent) => {
+    if (e.key === "Enter" && !props.disabled && !props.active && element) {
+      element.style.scale = "1";
+      applyMouseup();
+      handleClick();
+    }
+  };
+
+  createEffect(() => {
+    if (!element) return;
+    if (props.disabled) {
+      element.tabIndex = -1;
+    } else {
+      element.tabIndex = 0;
+    }
+  });
+
+  onMount(() => {
+    if (props.active) {
+      element.style.color = "var(--switch-onActive)";
+      element.style.backgroundColor = "var(--switch-active)";
+      element.style.boxShadow = "none";
+      element.style.translate = "0 0";
+      element.style.borderTopWidth = "0.0625rem";
+      element.style.cursor = "auto";
+    } else {
+      element.style.color = "var(--theme-text)";
+      element.style.backgroundColor = defaultStyle.backgroundColor;
+      element.style.boxShadow = "none";
+      element.style.translate = "0 0";
+      element.style.borderTopWidth = "0";
+      element.style.cursor = "pointer";
+    }
+
+    if (!element) return;
+    element.addEventListener("keydown", onEnterDown);
+    element.addEventListener("keyup", onEnterUp);
+  });
+
+  onCleanup(() => {
+    if (!element) return;
+    element.removeEventListener("keydown", onEnterDown);
+    element.removeEventListener("keyup", onEnterUp);
+  });
 
   return (
     <button
@@ -72,69 +128,60 @@ const SwitchItem: Component<SwitchItemProps> = (props) => {
         "align-items": "center",
         outline: "none",
         border: "none",
-        "border-radius": "0.5rem",
         padding: "0.5rem 1rem",
         "font-size": "1.05rem",
-        background: "paint(squircle)",
-        "--squircle-radius": "0.5rem",
-        "--squircle-fill": defaultStyle.backgroundColor,
-        "--squircle-outline-bottom": "0",
-        "--squircle-outline-top": "0",
-        "--squircle-outline-color": "var(--border-down)",
+        "background-color": defaultStyle.backgroundColor,
+        "border-radius": "0.5rem",
+        "border-width": 0,
+        "border-style": "solid",
+        "border-top-width": "0",
+        "border-color": "var(--border-down)",
         color: "var(--theme-text)",
-        "transition-property":
-          "all, --squircle-fill, --squircle-outline-top, --squircle-outline-bottom, --squircle-outline-color",
-        "transition-duration": "0.2s",
+        "transition-property": "background-color, scale",
+        "transition-duration": "0.15s",
         "transition-timing-function": "cubic-bezier(0, 0, 0, 1)",
       }}
       on:click={handleClick}
       on:mouseenter={() => {
         if (props.active) return;
-        element.style.setProperty("--squircle-fill", "var(--switch-hover)");
-        element.style.setProperty("--squircle-outline-bottom", "0.0625rem");
+        element.style.backgroundColor = "var(--switch-hover)";
+        element.style.boxShadow = "0 0.0625rem 0 var(--shadow-color)";
+        element.style.translate = "0 -0.0625rem";
       }}
       on:mouseleave={() => {
         if (props.active) return;
         element.style.color = "var(--theme-text)";
-        element.style.setProperty(
-          "--squircle-fill",
-          defaultStyle.backgroundColor
-        );
-        element.style.setProperty("--squircle-outline-bottom", "0");
-        element.style.setProperty("--squircle-outline-top", "0");
+        element.style.backgroundColor = defaultStyle.backgroundColor;
+        element.style.boxShadow = "none";
+        element.style.translate = "0 0";
+        element.style.borderTopWidth = "0";
       }}
       on:mousedown={(e) => {
         if (e.button === 0) {
           if (props.active) return;
-          element.style.setProperty("--squircle-fill", "var(--switch-press)");
-          element.style.setProperty("--squircle-outline-bottom", "0");
-          element.style.setProperty("--squircle-outline-top", "0.0625rem");
+          applyMousedown();
         }
       }}
       on:mouseup={(e) => {
         if (e.button === 0) {
           if (props.active) return;
-          element.style.color = "var(--switch-onActive)";
-          element.style.setProperty("--squircle-fill", "var(--switch-active)");
-          element.style.setProperty("--squircle-outline-bottom", "0");
-          element.style.setProperty("--squircle-outline-top", "0.0625rem");
+          applyMouseup();
         }
       }}
       on:touchstart={() => {
         if (props.active) return;
-        element.style.setProperty("--squircle-fill", "var(--switch-hover)");
-        element.style.setProperty("--squircle-outline-bottom", "0.0625rem");
-        element.style.setProperty("--squircle-outline-top", "0");
+        element.style.backgroundColor = "var(--switch-hover)";
+        element.style.boxShadow = "0 0.0625rem 0 var(--shadow-color)";
+        element.style.translate = "0 -0.0625rem";
+        element.style.borderTopWidth = "0";
       }}
       on:touchend={() => {
         if (props.active) return;
         element.style.color = "var(--theme-text)";
-        element.style.setProperty(
-          "--squircle-fill",
-          defaultStyle.backgroundColor
-        );
-        element.style.setProperty("--squircle-outline-bottom", "0");
-        element.style.setProperty("--squircle-outline-top", "0");
+        element.style.backgroundColor = defaultStyle.backgroundColor;
+        element.style.boxShadow = "none";
+        element.style.translate = "0 0";
+        element.style.borderTopWidth = "0";
       }}
       on:blur={() => {
         if (props.active) return;
@@ -159,17 +206,20 @@ export const Switch: Component<SwitchProps> = (props) => {
   );
 
   return (
-    <Squircle
-      fillColor={props.backgroundColor ?? "var(--surface-light)"}
-      cornerRadius="1rem"
-      outlineColor="var(--border-default)"
-      outlineWidth="0.0625rem"
+    <div
       style={{
         display: "flex",
         "justify-content": "center",
         "min-height": "2.5rem",
         gap: "0.4rem",
         padding: "0.5rem",
+        "background-color": `${
+          props.backgroundColor ?? "var(--surface-light)"
+        }`,
+        "border-radius": "1rem",
+        "border-style": "solid",
+        "border-color": "var(--border-default)",
+        "border-width": "0.0625rem",
         filter: "drop-shadow(0 0.0625rem 0 var(--auto-shadow))",
       }}
     >
@@ -179,14 +229,15 @@ export const Switch: Component<SwitchProps> = (props) => {
             index={index()}
             text={item.label}
             callback={handleSwitch}
-            event={item.callback}
+            event={item.onClick}
             active={index() === activeIndex()}
             hooks={(r) => {
               resetHandles[index()] = r;
             }}
+            disabled={props.disabled}
           />
         )}
       </For>
-    </Squircle>
+    </div>
   );
 };

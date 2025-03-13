@@ -60,7 +60,7 @@ const ReadingPage: Component<ReadingPageProps> = (props) => {
         if (index === 0) {
           return (
             <>
-              <Blocker style={{ height: "12rem" }} />
+              <Blocker style={{ height: "8rem" }} />
               <div
                 style={{
                   "justify-self": "center",
