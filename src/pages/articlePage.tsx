@@ -274,7 +274,7 @@ const ArticlePage: Component<ArticlePageProps> = (props) => {
             width="90vw"
             style={{
               "background-color": "var(--surface-hover)",
-              "padding-inline": "min(3rem, 1vw)",
+              "padding-inline": "max(1.5rem, 3vw)",
               "padding-block": "1rem 2rem",
               "user-select": "text",
               "justify-content": "start",
