@@ -41,6 +41,11 @@ const ArticlePage: Component<ArticlePageProps> = (props) => {
   const [isProper, setProper] = createSignal(true);
   const [content, setContent] = createSignal<string>();
   let frontFile = "";
+  const [imgProps, setImgProps] = createSignal({
+    src: "",
+    height: 0,
+    width: 0,
+  });
 
   const setArticle = (info?: Article) =>
     new Promise<void>(async (resolve) => {
@@ -67,12 +72,11 @@ const ArticlePage: Component<ArticlePageProps> = (props) => {
         saveConfig(newConfig);
 
         if (info.author === "EyKettle") {
-          const img = document.getElementById(
-            "author-avatar"
-          ) as HTMLImageElement;
-          img.src = "./profiles/EyKettle_256px.png";
-          img.height = 24;
-          img.width = 24;
+          setImgProps({
+            src: "/profiles/EyKettle_256px.png",
+            height: 24,
+            width: 24,
+          });
         }
       } else {
         setProper(false);
@@ -180,7 +184,7 @@ const ArticlePage: Component<ArticlePageProps> = (props) => {
           >
             <Show when={articleInfo()} fallback={"querying..."}>
               <img
-                src="./Icons/Time.svg"
+                src="/Icons/Time.svg"
                 height={18}
                 width={18}
                 alt="Date"
@@ -244,7 +248,13 @@ const ArticlePage: Component<ArticlePageProps> = (props) => {
                     "pointer-events": "none",
                   }}
                 >
-                  <img id="author-avatar" alt="Author" />
+                  <img
+                    id="author-avatar"
+                    alt="Author"
+                    src={imgProps().src}
+                    height={imgProps().height}
+                    width={imgProps().width}
+                  />
                 </div>
                 <label
                   style={{

@@ -10,6 +10,8 @@ export const STATIC_EXTENSIONS = new Set([
   "rar",
   "webp",
   "md",
+  "svg",
+  "png",
 ]);
 
 async function handler(req: Request): Promise<Response> {
