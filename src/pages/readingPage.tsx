@@ -30,10 +30,14 @@ const ReadingPage: Component<ReadingPageProps> = (props) => {
     backButton,
   ]);
 
-  onMount(async () => {
-    const infos = await getInfos();
-    setArticleInfos([backButton, ...infos]);
-  });
+  onMount(
+    () =>
+      new Promise(async (resolve) => {
+        const infos = await getInfos();
+        setArticleInfos([backButton, ...infos]);
+        resolve(null);
+      })
+  );
 
   let vlist: VirtualizerHandle | undefined;
   let position: number | undefined;

@@ -201,7 +201,7 @@ const App: Component = () => {
         >
           <Switch
             current={locales.indexOf(locale())}
-            backgroundColor="var(--surface-glass)"
+            backgroundColor="var(--surface-glass-dark)"
           >
             {[
               {
@@ -247,31 +247,35 @@ const App: Component = () => {
               },
               {
                 name: Pages[Pages.Article],
-                onRouted: async (_, param) => {
-                  if (param)
-                    await getInfos().then((articles) => {
-                      articleInfo = articles.find((a) => a.fileName === param);
-                    });
-                  else if (config.currentArticle)
-                    await getInfos().then((articles) => {
-                      articleInfo = articles.find(
-                        (a) => a.fileName === config.currentArticle
-                      );
-                      window.location.hash = articleInfo?.fileName || "???";
-                    });
-                  loadArticle();
-                  updateTitle(Pages.Article);
-                  // new Promise((resolve) => {
-                  //   if (!articleInfo)
-                  //     getInfos().then((articles) => {
-                  //       articleInfo = articles.find(
-                  //         (a) => a.fileName === loadConfig().currentArticle
-                  //       );
-                  //     });
-                  //   updateTitle(Pages.Article);
-                  //   resolve(null);
-                  // });
-                },
+                onRouted: (_, param) =>
+                  new Promise(async (resolve) => {
+                    if (param)
+                      await getInfos().then((articles) => {
+                        articleInfo = articles.find(
+                          (a) => a.fileName === param
+                        );
+                      });
+                    else if (config.currentArticle)
+                      await getInfos().then((articles) => {
+                        articleInfo = articles.find(
+                          (a) => a.fileName === config.currentArticle
+                        );
+                        window.location.hash = articleInfo?.fileName || "???";
+                      });
+                    loadArticle();
+                    updateTitle(Pages.Article);
+                    // new Promise((resolve) => {
+                    //   if (!articleInfo)
+                    //     getInfos().then((articles) => {
+                    //       articleInfo = articles.find(
+                    //         (a) => a.fileName === loadConfig().currentArticle
+                    //       );
+                    //     });
+                    //   updateTitle(Pages.Article);
+                    //   resolve(null);
+                    // });
+                    resolve(null);
+                  }),
                 onPrepare: loadArticlePos,
                 onLeave: saveArticlePos,
               },

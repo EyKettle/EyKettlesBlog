@@ -28,7 +28,7 @@ interface ArticlePageProps {
     back: () => void;
   };
   getMethods: (
-    setArticle: (info?: Article) => void,
+    setArticle: (info?: Article) => Promise<void>,
     savePosition: () => void,
     loadPosition: () => void
   ) => void;
@@ -42,40 +42,51 @@ const ArticlePage: Component<ArticlePageProps> = (props) => {
   const [content, setContent] = createSignal<string>();
   let frontFile = "";
 
-  const setArticle = async (info?: Article) => {
-    if (!info) {
-      setProper(false);
-      setArticleInfo(null);
-      return;
-    }
-    setArticleInfo(info);
-    const { fileName } = info;
-    if (frontFile === fileName) {
-      return;
-    } else frontFile = fileName;
-    setContent("");
-    const fileContent =
-      fileName === "new"
-        ? (await import("../articles/new.md?raw")).default
-        : await fetch(`./articles/${fileName}.md`).then((res) => res.text());
-    if (fileContent) {
-      setProper(true);
-      setContent(fileContent);
-      let newConfig = loadConfig();
-      newConfig.currentArticle = fileName;
-      saveConfig(newConfig);
-    } else {
-      setProper(false);
-      let newConfig = loadConfig();
-      newConfig.currentArticle = "";
-      saveConfig(newConfig);
-    }
-    if (isProper()) {
-      loadPosition();
-    } else {
-      console.warn("Lost article position by improper loading");
-    }
-  };
+  const setArticle = (info?: Article) =>
+    new Promise<void>(async (resolve) => {
+      if (!info) {
+        setProper(false);
+        setArticleInfo(null);
+        return;
+      }
+      setArticleInfo(info);
+      const { fileName } = info;
+      if (frontFile === fileName) {
+        return;
+      } else frontFile = fileName;
+      setContent("");
+      const fileContent =
+        fileName === "new"
+          ? (await import("../articles/new.md?raw")).default
+          : await fetch(`./articles/${fileName}.md`).then((res) => res.text());
+      if (fileContent) {
+        setProper(true);
+        setContent(fileContent);
+        let newConfig = loadConfig();
+        newConfig.currentArticle = fileName;
+        saveConfig(newConfig);
+
+        if (info.author === "EyKettle") {
+          const img = document.getElementById(
+            "author-avatar"
+          ) as HTMLImageElement;
+          img.src = "./profiles/EyKettle_256px.png";
+          img.height = 24;
+          img.width = 24;
+        }
+      } else {
+        setProper(false);
+        let newConfig = loadConfig();
+        newConfig.currentArticle = "";
+        saveConfig(newConfig);
+      }
+      if (isProper()) {
+        loadPosition();
+      } else {
+        console.warn("Lost article position by improper loading");
+      }
+      resolve();
+    });
   let pageContent: HTMLDivElement | null = null;
   let position = 0;
   const minSaveDistance = 100;
@@ -151,7 +162,7 @@ const ArticlePage: Component<ArticlePageProps> = (props) => {
       <div
         style={{
           display: "grid",
-          gap: "1rem",
+          gap: "0.5rem",
         }}
       >
         <Show
@@ -160,36 +171,92 @@ const ArticlePage: Component<ArticlePageProps> = (props) => {
         >
           <div
             style={{
-              display: "grid",
-              "grid-template-columns": "1fr 1fr",
-              width: "fit-content",
-              gap: "1rem",
-              padding: "0.5rem",
-              "justify-self": "center",
-              opacity: 0.6,
+              display: "flex",
+              gap: "0.25rem",
+              "justify-content": "end",
+              "align-items": "center",
+              "margin-right": "0.75rem",
             }}
           >
             <Show when={articleInfo()} fallback={"querying..."}>
-              <label
+              <img
+                src="./Icons/Time.svg"
+                height={18}
+                width={18}
+                alt="Date"
                 style={{
-                  display: "flex",
-                  "justify-content": "center",
-                  "align-items": "center",
-                  "font-size": "1.2rem",
-                  "font-weight": "bold",
+                  "justify-self": "end",
+                  opacity: 0.6,
                 }}
-              >
-                {articleInfo()!.author}
-              </label>
+              />
               <label
                 style={{
                   display: "flex",
                   "justify-content": "center",
                   "align-items": "center",
+                  opacity: 0.6,
                 }}
               >
                 {articleInfo()!.date}
               </label>
+              <div
+                style={{
+                  display: "flex",
+                  padding: "0.375rem 0.5rem",
+                  "align-items": "center",
+                  gap: "0.25rem",
+                  "margin-left": "0.5rem",
+                  "border-radius": "0.75rem",
+                  opacity: 0.6,
+                  "transition-property":
+                    "background-color, border-color, opacity",
+                  "transition-duration": "0.2s",
+                  "transition-timing-function": "cubic-bezier(0.5, 0.2, 0, 1)",
+                }}
+                on:mouseenter={(e) => {
+                  const target = e.target as HTMLDivElement;
+                  target.style.backgroundColor = "var(--surface-hover)";
+                  target.style.opacity = "1";
+                }}
+                on:mouseleave={(e) => {
+                  const target = e.target as HTMLDivElement;
+                  target.style.backgroundColor = "transparent";
+                  target.style.opacity = "0.6";
+                }}
+                on:touchstart={(e) => {
+                  const target = e.target as HTMLDivElement;
+                  target.style.backgroundColor = "var(--surface-hover)";
+                  target.style.opacity = "1";
+                }}
+                on:touchend={(e) => {
+                  const target = e.target as HTMLDivElement;
+                  target.style.backgroundColor = "transparent";
+                  target.style.opacity = "0.6";
+                }}
+              >
+                <div
+                  style={{
+                    "border-radius": "50%",
+                    "background-color": "var(--theme-accent-background)",
+                    width: "1.5rem",
+                    height: "1.5rem",
+                    overflow: "hidden",
+                    "pointer-events": "none",
+                  }}
+                >
+                  <img id="author-avatar" alt="Author" />
+                </div>
+                <label
+                  style={{
+                    "font-size": "1.25rem",
+                    "justify-self": "start",
+                    "font-weight": "bold",
+                    "pointer-events": "none",
+                  }}
+                >
+                  {articleInfo()!.author}
+                </label>
+              </div>
             </Show>
           </div>
           <Card
@@ -198,7 +265,7 @@ const ArticlePage: Component<ArticlePageProps> = (props) => {
             style={{
               "background-color": "var(--surface-hover)",
               "padding-inline": "min(3rem, 1vw)",
-              "padding-block": "1rem 3rem",
+              "padding-block": "1rem 2rem",
               "user-select": "text",
               "justify-content": "start",
               "align-items": "stretch",
