@@ -356,7 +356,9 @@ class SquircleClass {
     ];
   }
   paint(ctx, geom, properties) {
-    const squircleSmooth = properties.get("--squircle-smooth")?.value || 0.6;
+    const squircleSmooth = parseFloat(
+      properties.get("--squircle-smooth")?.toString() || 0.6
+    );
     const individualRadiiProps = SquircleClass.inputProperties.slice(3, 7);
     let squircleRadii = individualRadiiProps.map((prop) => {
       const value = properties.get(prop)?.value;
@@ -398,8 +400,6 @@ class SquircleClass {
     const path = new Path2D(getSvgPath(params));
 
     ctx.fillStyle = squircleColor;
-    ctx.fill(path);
-
     ctx.clip(path);
     if (
       outlineWidths.every(isNaN) ||
@@ -413,6 +413,13 @@ class SquircleClass {
           ? outlineColorValue
           : squircleColor;
       if (squircleOutline > 0 && outlineWidths.every(isNaN)) {
+        ctx.translate(squircleOutline / 2, squircleOutline / 2);
+        let innerPathParams = { ...params };
+        innerPathParams.height -= squircleOutline;
+        innerPathParams.width -= squircleOutline;
+        const innerPath = new Path2D(getSvgPath(innerPathParams));
+        ctx.fill(innerPath);
+        ctx.translate(-squircleOutline / 2, -squircleOutline / 2);
         ctx.save();
         ctx.strokeStyle = squircleOutlineColor;
         ctx.lineWidth = squircleOutline * 2;
@@ -427,24 +434,31 @@ class SquircleClass {
         ];
         const maxWidth = Math.max(top, right, bottom, left);
         if (maxWidth > 0 && squircleOutlineColor !== "rgba(0, 0, 0, 0)") {
+          ctx.translate(left / 2, top / 2);
+          let innerPathParams = { ...params };
+          innerPathParams.height -= top / 2 + bottom / 2;
+          innerPathParams.width -= left / 2 + right / 2;
+          const innerPath = new Path2D(getSvgPath(innerPathParams));
+          ctx.fill(innerPath);
+          ctx.translate(-left / 2, -top / 2);
           ctx.save();
           ctx.translate(-maxWidth - 0.1 + left, -maxWidth - 0.1 + top);
           ctx.strokeStyle = squircleOutlineColor;
           ctx.lineWidth = maxWidth * 2;
-          const p = params;
-          params.topLeftCornerRadius += maxWidth + 0.1;
-          params.topRightCornerRadius += maxWidth + 0.1;
-          params.bottomRightCornerRadius += maxWidth + 0.1;
-          params.bottomLeftCornerRadius += maxWidth + 0.1;
+          let outlinePathParams = { ...params };
+          outlinePathParams.topLeftCornerRadius += maxWidth + 0.1;
+          outlinePathParams.topRightCornerRadius += maxWidth + 0.1;
+          outlinePathParams.bottomRightCornerRadius += maxWidth + 0.1;
+          outlinePathParams.bottomLeftCornerRadius += maxWidth + 0.1;
 
-          p.height += maxWidth * 2 + 0.2 - top - bottom;
-          p.width += maxWidth * 2 + 0.2 - left - right;
-          const path = new Path2D(getSvgPath(p));
-          ctx.stroke(path);
+          outlinePathParams.height += maxWidth * 2 + 0.2 - top - bottom;
+          outlinePathParams.width += maxWidth * 2 + 0.2 - left - right;
+          const outlinePath = new Path2D(getSvgPath(outlinePathParams));
+          ctx.stroke(outlinePath);
           ctx.restore();
         }
       }
-    }
+    } else ctx.fill(path);
   }
 }
 if (typeof registerPaint !== "undefined") {

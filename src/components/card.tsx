@@ -209,6 +209,8 @@ export const Card: Component<CardProps> = (props) => {
         "will-change": "scale",
         cursor: props.disabled ? "unset" : "pointer",
         "user-select": "none",
+        "-webkit-user-select": "none",
+        "-moz-user-select": "none",
       }}
       on:mouseenter={() => {
         if (props.disabled || isTouch || !appearanceDiv) return;

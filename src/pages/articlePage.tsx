@@ -277,6 +277,8 @@ const ArticlePage: Component<ArticlePageProps> = (props) => {
               "padding-inline": "max(1.5rem, 3vw)",
               "padding-block": "1rem 2rem",
               "user-select": "text",
+              "-webkit-user-select": "text",
+              "-moz-user-select": "text",
               "justify-content": "start",
               "align-items": "stretch",
               "text-align": "left",

@@ -9,8 +9,9 @@
   }
 
   hr {
-    margin-inline: 1.25rem;
-    opacity: 0.3;
+    opacity: 1;
+    height: 0.0625rem;
+    background-color: var(--border-default);
   }
 
   a {
@@ -87,7 +88,6 @@
   pre {
     overflow: scroll;
     padding: 0.5rem;
-    margin-inline: 1.5rem;
     background-color: var(--surface-default);
     border: var(--border-default) solid 0.0625rem;
     border-radius: 0.5rem;

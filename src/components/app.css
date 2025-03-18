@@ -1,4 +1,4 @@
-/* @property --squircle-radius {
+@property --squircle-radius {
   syntax: "<length>";
   inherits: false;
   initial-value: 0;
@@ -68,7 +68,7 @@
   syntax: "<length>";
   inherits: false;
   initial-value: 0;
-} */
+}
 
 @font-face {
   font-family: "Segoe Fluent Icons";
@@ -133,10 +133,6 @@ body {
   transition: all 0.2s;
   height: 100%;
   overflow: hidden;
-
-  *::-webkit-scrollbar {
-    display: none;
-  }
 }
 
 html {
@@ -183,6 +179,10 @@ html {
 
     --switch-hover: rgba(255, 255, 255, 0.06);
   }
+}
+
+*::-webkit-scrollbar {
+  display: none;
 }
 
 * {

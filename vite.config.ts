@@ -1,6 +1,7 @@
 import { defineConfig } from "vite";
 import solidPlugin from "vite-plugin-solid";
 import devtools from "solid-devtools/vite";
+import postcssPresetEnv from "postcss-preset-env";
 
 export default defineConfig({
   plugins: [
@@ -14,6 +15,11 @@ export default defineConfig({
     }),
     solidPlugin(),
   ],
+  css: {
+    postcss: {
+      plugins: [postcssPresetEnv()],
+    },
+  },
   server: {
     port: 3000,
     hmr: {

@@ -6,6 +6,7 @@ import { Switch } from "../components/switch";
 import InputBox from "../components/inputBox";
 import Loading from "../components/loading";
 import { animateMini } from "motion";
+import Squircle from "../components/squircle";
 
 interface componentsPageProps {
   translator: any;
@@ -233,6 +234,25 @@ const ComponentsPage: Component<componentsPageProps> = (props) => {
         </div>
         <div style={styleOfSection}>
           <Loading text={t("library.loading")} />
+        </div>
+        <div style={{ "flex-direction": "column", ...styleOfSection }}>
+          <Squircle
+            cornerRadius="2rem"
+            fillColor="rgb(27, 27, 27)"
+            outlineColor="rgba(255, 255, 255, 1)"
+            outlineWidth={"0.1875rem"}
+            cornerSmoothing="1"
+            style={{
+              height: "6rem",
+              width: "8rem",
+              filter: "drop-shadow(0 0.25rem 0.5rem rgba(0, 0, 0, 0.3))",
+              display: "flex",
+              "justify-content": "center",
+              "align-items": "center",
+            }}
+          >
+            <strong style={{ color: "white" }}>Squircle Test</strong>
+          </Squircle>
         </div>
       </div>
     </div>
