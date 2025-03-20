@@ -7,11 +7,13 @@ import InputBox from "../components/inputBox";
 import Loading from "../components/loading";
 import { animateMini } from "motion";
 import Squircle from "../components/squircle";
+import { initReport } from "../components/utils";
 
 interface componentsPageProps {
   translator: any;
   operations: {
     back: () => void;
+    enterChatPage: () => void;
   };
   isDark: boolean;
 }
@@ -22,9 +24,7 @@ const ComponentsPage: Component<componentsPageProps> = (props) => {
     display: "flex",
     gap: "1rem",
   } as JSX.CSSProperties;
-  let switchTo = (_index: number, _param?: string) => {
-    console.error("Not initialized");
-  };
+  let switchTo = (_index: number, _param?: string) => initReport();
 
   return (
     <div
@@ -56,8 +56,8 @@ const ComponentsPage: Component<componentsPageProps> = (props) => {
       >
         <h1>{t("library.title")}</h1>
         <div style={styleOfSection}>
-          <Button text={t("library.button.normal")} />
-          <Button text={t("library.button.ghost")} type="ghost" />
+          <Button label={t("library.button.normal")} />
+          <Button label={t("library.button.ghost")} type="ghost" />
         </div>
         <div
           style={{
@@ -254,6 +254,13 @@ const ComponentsPage: Component<componentsPageProps> = (props) => {
             <strong style={{ color: "white" }}>Squircle Test</strong>
           </Squircle>
         </div>
+        <Button
+          icon={"\ue0ab"}
+          label={t("library.enterChatPage")}
+          size="medium"
+          style={{ "margin-top": "2rem" }}
+          onClick={props.operations.enterChatPage}
+        />
       </div>
     </div>
   );

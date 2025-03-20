@@ -57,7 +57,7 @@ const HomePage: Component<HomePageProps> = (props) => {
       </div>
       <Button
         icon={"\ue0ab"}
-        text={t("home.enterLibrary")}
+        label={t("home.enterLibrary")}
         type="ghost"
         size="medium"
         onClick={() => props.operations.switchTo(Pages.ComponentLibrary)}

@@ -51,6 +51,10 @@
     "pageTip1": "用于实现多页面管理",
     "pageTip2": "可实现自定义动画逻辑",
     "pageTip3": "点快了仍然会抽搐",
-    "loading": "加载组件"
+    "loading": "加载组件",
+    "enterChatPage": "进入对话测试页面"
+  },
+  "chatPage": {
+    "systemTip": "这是一个用于测试对话相关组件的界面\n数据不被记录"
   }
 }

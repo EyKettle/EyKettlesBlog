@@ -78,9 +78,6 @@
 
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
-    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
-    sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
@@ -90,11 +87,13 @@ body {
 
   --icon-font: "Segoe Fluent Icons";
 
+  --theme-color: rgba(255, 255, 255, 0.8);
   --theme-text: rgba(0, 0, 0, 0.8);
   --theme-accent: rgba(22, 77, 49, 0.8);
   --theme-accent-background: #99cc99;
   --theme-accent-background-translucent: rgba(153, 204, 153, 0.3);
   --theme-accent-text: var(--theme-accent);
+  --theme-selection: #2e5f5d;
 
   --surface-default: #f2f2f2;
   --surface-light: #f8f8f8;
@@ -113,6 +112,9 @@ body {
   --button-default: var(--surface-light);
   --button-hover: white;
   --button-active: #ddd;
+  --button-main-default: #94dab5;
+  --button-main-hover: #bbeed3;
+  --button-main-active: #83b89c;
   --ghost-default: transparent;
   --ghost-hover: rgba(0, 0, 0, 0.08);
   --ghost-active: rgba(0, 0, 0, 0.16);
@@ -130,6 +132,11 @@ body {
 
   --input-default: var(--surface-darker);
 
+  --chat-own-back-default: var(--theme-accent-background);
+  --chat-own-text-default: var(--theme-accent-text);
+  --chat-other-back-default: var(--surface-hover);
+  --chat-other-text-default: var(--theme-text);
+
   transition: all 0.2s;
   height: 100%;
   overflow: hidden;
@@ -146,11 +153,13 @@ html {
     background-color: #202020;
   }
   body {
+    --theme-color: rgba(0, 0, 0, 0.8);
     --theme-text: rgba(255, 255, 255, 0.8);
-    --theme-accent: rgba(51, 122, 86, 0.8);
+    --theme-accent: rgba(65, 155, 110, 0.8);
     --theme-accent-background: #234d34;
     --theme-accent-background-translucent: rgba(35, 77, 52, 0.3);
     --theme-accent-text: rgba(192, 255, 225, 0.8);
+    --theme-selection: #497e77;
 
     --surface-default: #222;
     --surface-light: #242424;
@@ -169,6 +178,9 @@ html {
     --button-default: #2e2e2e;
     --button-hover: #3c3c3c;
     --button-active: #2a2a2a;
+    --button-main-default: #1c4933;
+    --button-main-hover: #22573d;
+    --button-main-active: #193f2d;
     --ghost-default: transparent;
     --ghost-hover: rgba(255, 255, 255, 0.05);
     --ghost-active: rgba(255, 255, 255, 0.1);
@@ -188,19 +200,32 @@ html {
 * {
   border-width: 0;
   outline-width: 0;
+  /* font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
+    sans-serif; */
 }
 
 *:focus {
-  outline: none !important;
+  outline: none;
   transition: none;
 }
 
 *:not(input):focus-visible {
-  outline: 0.125rem solid var(--theme-accent) !important;
+  outline: 0.125rem solid var(--theme-accent);
   outline-offset: 0.125rem !important;
   transition: none;
 }
 
+*::selection {
+  color: white;
+  background-color: var(--theme-selection);
+}
+
 input::placeholder {
   opacity: 0.5;
+}
+
+textarea {
+  font-size: 1rem;
+  font-family: inherit;
 }

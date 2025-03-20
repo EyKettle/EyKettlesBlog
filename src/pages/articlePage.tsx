@@ -183,16 +183,16 @@ const ArticlePage: Component<ArticlePageProps> = (props) => {
             }}
           >
             <Show when={articleInfo()} fallback={"querying..."}>
-              <img
-                src="/Icons/Time.svg"
+              <svg
+                viewBox="0 0 32 32"
                 height={18}
                 width={18}
-                alt="Date"
-                style={{
-                  "justify-self": "end",
-                  opacity: 0.6,
-                }}
-              />
+                style={{ opacity: 0.6 }}
+                fill="var(--theme-text)"
+              >
+                <path d="M16,2c-7.73,0-14,6.27-14,14s6.27,14,14,14,14-6.27,14-14S23.73,2,16,2ZM16,28c-6.62,0-12-5.38-12-12s5.38-12,12-12,12,5.38,12,12-5.38,12-12,12Z" />
+                <path d="M21,16h-4v-8c0-.55-.45-1-1-1s-1,.45-1,1v9c0,.55.45,1,1,1h5c.55,0,1-.45,1-1s-.45-1-1-1Z" />
+              </svg>
               <label
                 style={{
                   display: "flex",

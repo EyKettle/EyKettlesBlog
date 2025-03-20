@@ -3,6 +3,7 @@ import {
   createEffect,
   createSignal,
   For,
+  JSX,
   onCleanup,
   onMount,
   Show,
@@ -11,12 +12,21 @@ import {
 interface ButtonProps {
   icon?: string;
   iconColors?: string[];
-  text?: string;
+  label?: string;
   type?: "button" | "ghost";
   rounded?: boolean;
   size?: "small" | "medium" | "large";
+  color?: string;
+  backgroundColor?: {
+    default: string;
+    hover: string;
+    active: string;
+  };
+  borderRadius?: string;
+  style?: JSX.CSSProperties;
   disabled?: boolean;
   onClick?: () => void;
+  getAnimates?: (press: () => void, release: () => void) => void;
 }
 
 export const Button: Component<ButtonProps> = (props) => {
@@ -41,6 +51,14 @@ export const Button: Component<ButtonProps> = (props) => {
     }
   };
 
+  const applyMousedown = () => {
+    if (element) element.style.backgroundColor = `var(--${props.type}-active)`;
+  };
+  const applyMouseup = () => {
+    if (element) element.style.backgroundColor = `var(--${props.type}-hover)`;
+  };
+  if (props.getAnimates) props.getAnimates(applyMousedown, applyMouseup);
+
   createEffect(() => {
     if (!element) return;
     if (props.disabled) {
@@ -61,32 +79,49 @@ export const Button: Component<ButtonProps> = (props) => {
       element.style.borderWidth = "0";
       element.style.borderColor = "var(--border-up)";
       element.style.borderTopWidth = "0.0625rem";
-      element.style.borderBottomColor = "var(--shadow-color)";
+      element.style.borderBottomColor = "var(--border-down)";
       element.style.borderBottomWidth = "0.0625rem";
     }
+    if (props.backgroundColor) {
+      element.style.setProperty(
+        `--${props.type}-default`,
+        props.backgroundColor.default
+      );
+      element.style.setProperty(
+        `--${props.type}-hover`,
+        props.backgroundColor.hover
+      );
+      element.style.setProperty(
+        `--${props.type}-active`,
+        props.backgroundColor.active
+      );
+    }
     element.style.backgroundColor = `var(--${props.type}-default)`;
+    element.style.color = props.color ? props.color : "var(--theme-text)";
 
-    if (props.rounded) element.style.borderRadius = "50%";
+    if (props.borderRadius) {
+      element.style.borderRadius = props.borderRadius;
+    } else if (props.rounded) element.style.borderRadius = "50%";
     if (props.size) {
       switch (props.size) {
         case "medium":
           element.style.minHeight = element.style.minWidth = "3rem";
           element.style.padding = "1rem";
           setDefaultStyle({ fontSize: "1.25rem" });
-          if (props.rounded) break;
+          if (props.rounded || props.borderRadius) break;
           element.style.borderRadius = "0.75rem";
           break;
         case "large":
           element.style.minHeight = element.style.minWidth = "3.5rem";
           element.style.padding = "1.5rem";
           setDefaultStyle({ fontSize: "1.75rem" });
-          if (props.rounded) break;
+          if (props.rounded || props.borderRadius) break;
           element.style.borderRadius = "1.25rem";
           break;
       }
     } else {
       element.style.padding = "0.75rem";
-      if (!props.rounded) {
+      if (!props.rounded && !props.borderRadius) {
         element.style.borderRadius = "0.5rem";
       }
     }
@@ -110,18 +145,17 @@ export const Button: Component<ButtonProps> = (props) => {
         "flex-direction": "row",
         "justify-content": "center",
         "align-items": "center",
-        "line-height": "0",
-        outline: "none",
-        border: "none",
-        color: "var(--theme-text)",
+        "line-height": "1",
+        "baseline-shift": "baseline",
         "min-height": "2.5rem",
         "min-width": "2.5rem",
         "font-size": defaultStyle().fontSize,
         "transition-property": "background-color, scale",
-        "transition-duration": "0.15s",
+        "transition-duration": "0.3s",
         "transition-timing-function": "cubic-bezier(0, 0, 0, 1)",
         "will-change": "scale",
         cursor: "pointer",
+        ...props.style,
       }}
       on:mouseenter={(e) => {
         if (!props.disabled && !isTouch)
@@ -132,16 +166,14 @@ export const Button: Component<ButtonProps> = (props) => {
           e.currentTarget.style.backgroundColor = `var(--${props.type}-default)`;
       }}
       on:mousedown={(e) => {
-        if (!props.disabled && !isTouch && e.button === 0)
-          e.currentTarget.style.backgroundColor = `var(--${props.type}-active)`;
+        if (!props.disabled && !isTouch && e.button === 0) applyMousedown();
       }}
       on:mouseup={(e) => {
         if (isTouch) {
           isTouch = false;
           return;
         }
-        if (!props.disabled && e.button === 0)
-          e.currentTarget.style.backgroundColor = `var(--${props.type}-hover)`;
+        if (!props.disabled && e.button === 0) applyMouseup();
       }}
       on:touchstart={(e) => {
         isTouch = true;
@@ -167,7 +199,6 @@ export const Button: Component<ButtonProps> = (props) => {
             "flex-direction": "column",
             "justify-content": "center",
             "align-items": "center",
-            "font-family": "var(--icon-font)",
             "white-space": "nowrap",
             width: defaultStyle().fontSize,
             height: defaultStyle().fontSize,
@@ -177,7 +208,7 @@ export const Button: Component<ButtonProps> = (props) => {
             {(char, index) => (
               <span
                 style={{
-                  height: 0,
+                  "font-family": "var(--icon-font)",
                   zoom: index() === 0 ? 0.95 : 1,
                   color: props.iconColors ? props.iconColors[index()] : "unset",
                 }}
@@ -188,13 +219,13 @@ export const Button: Component<ButtonProps> = (props) => {
           </For>
         </div>
       </Show>
-      <Show when={props.text}>
+      <Show when={props.label}>
         <div
           style={{
             "margin-inline": parseFloat(defaultStyle().fontSize) / 4 + "rem",
           }}
         >
-          {props.text}
+          {props.label}
         </div>
       </Show>
     </button>

@@ -16,7 +16,6 @@ const InputBox: Component<InputBoxProps> = (props) => {
       type="text"
       style={{
         border: "none",
-        outline: "none",
         "font-size": "1.125rem",
         "text-align": "start",
         color: "var(--theme-text)",

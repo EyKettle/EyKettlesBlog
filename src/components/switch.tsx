@@ -85,11 +85,9 @@ const SwitchItem: Component<SwitchItemProps> = (props) => {
 
   createEffect(() => {
     if (!element) return;
-    if (props.disabled) {
-      element.tabIndex = -1;
-    } else {
-      element.tabIndex = 0;
-    }
+    if (props.disabled) element.tabIndex = -1;
+    else if (props.active) element.tabIndex = -1;
+    else element.tabIndex = 0;
   });
 
   onMount(() => {
@@ -126,7 +124,6 @@ const SwitchItem: Component<SwitchItemProps> = (props) => {
       style={{
         display: "flex",
         "align-items": "center",
-        outline: "none",
         border: "none",
         padding: "0.5rem 1rem",
         "font-size": "1.05rem",

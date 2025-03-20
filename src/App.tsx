@@ -27,6 +27,8 @@ import ComponentsPage from "./pages/componentsPage";
 
 import { Article, getInfos } from "./articles/methods";
 import { Config, loadConfig, saveConfig } from "./localStorage";
+import ChatPage from "./pages/chatPage";
+import { initReport } from "./components/utils";
 
 export enum Pages {
   NotFound = 0,
@@ -34,6 +36,7 @@ export enum Pages {
   Reading = 2,
   Article = 3,
   ComponentLibrary = 4,
+  Chat = 5,
 }
 
 const App: Component = () => {
@@ -79,8 +82,7 @@ const App: Component = () => {
     }
   };
 
-  let switchTo = (_index: number, _param?: string) =>
-    console.error("Not initialized");
+  let switchTo = (_index: number, _param?: string) => initReport();
   let getFrontIndex = (): number => {
     throw new Error("Not initialized");
   };
@@ -116,14 +118,17 @@ const App: Component = () => {
     updateTitle();
   });
 
-  let savePosition = () => console.error("Not initialized");
-  let loadPosition = () => console.error("Not initialized");
+  let savePosition = () => initReport();
+  let loadPosition = () => initReport();
 
-  let saveArticlePos = () => console.error("Not initialized");
-  let loadArticlePos = () => console.error("Not initialized");
+  let saveChatPos = () => initReport();
+  let loadChatPos = () => initReport();
+
+  let saveArticlePos = () => initReport();
+  let loadArticlePos = () => initReport();
 
   let articleInfo: Article | undefined = undefined;
-  let setArticle = (_info?: Article) => console.log("Not initialized");
+  let setArticle = (_info?: Article) => initReport();
   const loadArticle = () => {
     if (!articleInfo) {
       console.warn("No article info");
@@ -283,6 +288,11 @@ const App: Component = () => {
                 name: Pages[Pages.ComponentLibrary],
                 onRouted: () => updateTitle(Pages.ComponentLibrary),
               },
+              {
+                name: Pages[Pages.Chat],
+                onPrepare: loadChatPos,
+                onLeave: saveChatPos,
+              },
             ]}
             homeIndex={Pages.Home}
             defaultIndex={config.pageIndex}
@@ -401,8 +411,21 @@ const App: Component = () => {
             />
             <ComponentsPage
               translator={t}
-              operations={{ back: () => switchTo(Pages.Home) }}
+              operations={{
+                back: () => switchTo(Pages.Home),
+                enterChatPage: () => {
+                  switchTo(Pages.Chat);
+                },
+              }}
               isDark={isDark()}
+            />
+            <ChatPage
+              translator={t}
+              operations={{ back: () => switchTo(Pages.ComponentLibrary) }}
+              getMethods={(save, load) => {
+                saveChatPos = save;
+                loadChatPos = load;
+              }}
             />
           </PageContainer>
         </Suspense>

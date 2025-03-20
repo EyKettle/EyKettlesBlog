@@ -23,13 +23,11 @@
   a:active {
     color: var(--theme-accent);
   }
-  a:focus {
-    outline: none;
-  }
 
   ul {
     padding-inline: 0;
     ul {
+      padding-left: 1.25rem;
       padding-right: 0;
     }
 

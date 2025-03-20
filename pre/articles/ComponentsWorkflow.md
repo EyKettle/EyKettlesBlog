@@ -1,6 +1,6 @@
 # 组件库工作流程
 
-使用`npm install postcss-preset-env`安装 PostCSS 的插件来统一 CSS 环境。
+使用`npm install postcss postcss-preset-env`安装 PostCSS 和所需插件来统一 CSS 环境。
 
 在 defineConfig 中添加 css 参数：
 
