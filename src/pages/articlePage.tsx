@@ -152,6 +152,8 @@ const ArticlePage: Component<ArticlePageProps> = (props) => {
         "padding-bottom": "6rem",
         "align-items": "center",
         gap: "1rem",
+        "box-sizing": "border-box",
+        height: "100%",
         width: "100%",
         overflow: "scroll",
       }}

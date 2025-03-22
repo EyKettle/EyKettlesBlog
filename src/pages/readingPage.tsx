@@ -16,25 +16,13 @@ interface ReadingPageProps {
 
 const ReadingPage: Component<ReadingPageProps> = (props) => {
   const t = props.translator;
-  const backButton = (
-    <Button
-      icon={"\u{e10e}"}
-      type="ghost"
-      size="large"
-      rounded={true}
-      onClick={props.operations.back}
-    />
-  );
-
-  const [articleInfos, setArticleInfos] = createSignal<[any, ...Article[]]>([
-    backButton,
-  ]);
+  const [articleInfos, setArticleInfos] = createSignal<Article[]>([]);
 
   onMount(
     () =>
       new Promise(async (resolve) => {
         const infos = await getInfos();
-        setArticleInfos([backButton, ...infos]);
+        setArticleInfos(infos);
         resolve(null);
       })
   );
@@ -58,31 +46,51 @@ const ReadingPage: Component<ReadingPageProps> = (props) => {
         "flex-direction": "column",
         "align-items": "center",
         height: "100%",
+        width: "min(80vw, 40rem)",
       }}
     >
       {(item, index) => {
+        const info = item as Article;
         if (index === 0) {
           return (
             <>
               <Blocker style={{ height: "8rem" }} />
               <div
                 style={{
-                  "justify-self": "center",
+                  display: "grid",
+                  "place-items": "center",
                   "margin-block": "0.5rem",
                 }}
               >
-                {item}
+                <Button
+                  icon={"\u{e10e}"}
+                  type="ghost"
+                  size="large"
+                  rounded={true}
+                  onClick={props.operations.back}
+                />
               </div>
+              <Card
+                title={info.title}
+                description={info.description}
+                onClick={() => {
+                  props.operations.setArticleInfo(info);
+                  return true;
+                }}
+                textJustify="flex-end"
+                textAlign="flex-start"
+                height="min(50vw, 18rem)"
+                width="100%"
+                effect="none"
+              />
             </>
           );
         } else {
-          const info = item as Article;
           return (
             <div
               style={{
                 display: "flex",
                 "flex-direction": "column",
-                "justify-self": "center",
                 "margin-block": "0.5rem",
               }}
             >
@@ -96,7 +104,7 @@ const ReadingPage: Component<ReadingPageProps> = (props) => {
                 textJustify="flex-end"
                 textAlign="flex-start"
                 height="min(50vw, 18rem)"
-                width="min(80vw, 40rem)"
+                width="100%"
                 effect="none"
               />
               {index === articleInfos().length - 1 ? (

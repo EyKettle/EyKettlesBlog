@@ -77,7 +77,7 @@ export const Button: Component<ButtonProps> = (props) => {
     if (props.type === "button") {
       element.style.borderStyle = "solid";
       element.style.borderWidth = "0";
-      element.style.borderColor = "var(--border-up)";
+      element.style.borderTopColor = "var(--border-up)";
       element.style.borderTopWidth = "0.0625rem";
       element.style.borderBottomColor = "var(--border-down)";
       element.style.borderBottomWidth = "0.0625rem";
@@ -146,7 +146,6 @@ export const Button: Component<ButtonProps> = (props) => {
         "justify-content": "center",
         "align-items": "center",
         "line-height": "1",
-        "baseline-shift": "baseline",
         "min-height": "2.5rem",
         "min-width": "2.5rem",
         "font-size": defaultStyle().fontSize,
@@ -195,10 +194,6 @@ export const Button: Component<ButtonProps> = (props) => {
       <Show when={props.icon}>
         <div
           style={{
-            display: "flex",
-            "flex-direction": "column",
-            "justify-content": "center",
-            "align-items": "center",
             "white-space": "nowrap",
             width: defaultStyle().fontSize,
             height: defaultStyle().fontSize,
@@ -208,6 +203,8 @@ export const Button: Component<ButtonProps> = (props) => {
             {(char, index) => (
               <span
                 style={{
+                  position: "absolute",
+                  "inset-block": 0,
                   "font-family": "var(--icon-font)",
                   zoom: index() === 0 ? 0.95 : 1,
                   color: props.iconColors ? props.iconColors[index()] : "unset",
@@ -220,13 +217,13 @@ export const Button: Component<ButtonProps> = (props) => {
         </div>
       </Show>
       <Show when={props.label}>
-        <div
+        <span
           style={{
             "margin-inline": parseFloat(defaultStyle().fontSize) / 4 + "rem",
           }}
         >
           {props.label}
-        </div>
+        </span>
       </Show>
     </button>
   );

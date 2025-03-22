@@ -66,6 +66,7 @@ const ChatInputBox: Component<ChatInputBoxProps> = (props) => {
           outline: "none",
           resize: "none",
           "flex-grow": 1,
+          width: "100%",
           background: "none",
         }}
         placeholder={props.placeHolder}
@@ -85,6 +86,7 @@ const ChatInputBox: Component<ChatInputBoxProps> = (props) => {
           display: "grid",
           "grid-template-columns": "auto 6rem",
           height: "2.75rem",
+          width: "100%",
         }}
       >
         <Button

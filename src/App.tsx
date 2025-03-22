@@ -304,6 +304,12 @@ const App: Component = () => {
               };
               getFrontIndex = i;
             }}
+            pageInit={(page) => {
+              page.style.display = "grid";
+              page.style.placeItems = "center";
+              page.style.willChange = "opacity, scale, filter";
+              page.style.overflow = "scroll"
+            }}
             switchMotion={(oldPage, newPage, isForward) =>
               new Promise((resolve) => {
                 newPage.style.scale = isForward ? "0.8" : "1.6";
@@ -374,6 +380,9 @@ const App: Component = () => {
                   resolve(null);
                 }, 200);
               });
+            }}
+            style={{
+              "will-change": "opacity, transform, filter",
             }}
           >
             <NotFoundPage

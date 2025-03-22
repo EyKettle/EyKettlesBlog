@@ -150,11 +150,11 @@ export const PageContainer: Component<PageContainerProps> = (props) => {
   onMount(() => {
     pages = props.children.map((content, index) => {
       const page = document.createElement("div");
+      page.style.position = "absolute";
+      page.style.height = "100%";
+      page.style.width = "100%";
       if (props.pageInit) props.pageInit(page, index);
       else {
-        page.style.position = "absolute";
-        page.style.height = "100vh";
-        page.style.width = "100vw";
         page.style.display = "flex";
         page.style.justifyContent = "center";
       }

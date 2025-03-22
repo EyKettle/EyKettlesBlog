@@ -31,12 +31,11 @@ const ComponentsPage: Component<componentsPageProps> = (props) => {
       style={{
         display: "flex",
         "flex-direction": "column",
-        "padding-top": "12rem",
+        "padding-top": "8.5rem",
         "padding-bottom": "6rem",
         "align-items": "center",
         gap: "1rem",
         width: "100%",
-        overflow: "scroll",
       }}
     >
       <Button
@@ -138,12 +137,9 @@ const ComponentsPage: Component<componentsPageProps> = (props) => {
                 { name: "Page 2" },
               ]}
               pageInit={(page, index) => {
-                page.style.display = "flex";
-                page.style.position = "absolute";
-                page.style.justifyContent = "center";
-                page.style.alignItems = "center";
-                page.style.height = "100%";
-                page.style.width = "100%";
+                page.style.display = "grid";
+                page.style.placeItems = "center";
+                page.style.willChange = "rotate, scale, translate";
                 switch (index) {
                   case 1:
                     page.style.translate = "20rem 0";
