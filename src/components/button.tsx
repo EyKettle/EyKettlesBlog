@@ -52,10 +52,12 @@ export const Button: Component<ButtonProps> = (props) => {
   };
 
   const applyMousedown = () => {
-    if (element) element.style.backgroundColor = `var(--${props.type}-active)`;
+    if (element)
+      element.style.backgroundColor = `var(--color-${props.type}-active)`;
   };
   const applyMouseup = () => {
-    if (element) element.style.backgroundColor = `var(--${props.type}-hover)`;
+    if (element)
+      element.style.backgroundColor = `var(--color-${props.type}-hover)`;
   };
   if (props.getAnimates) props.getAnimates(applyMousedown, applyMouseup);
 
@@ -77,27 +79,27 @@ export const Button: Component<ButtonProps> = (props) => {
     if (props.type === "button") {
       element.style.borderStyle = "solid";
       element.style.borderWidth = "0";
-      element.style.borderTopColor = "var(--border-up)";
+      element.style.borderTopColor = "var(--color-border-up)";
       element.style.borderTopWidth = "0.0625rem";
-      element.style.borderBottomColor = "var(--border-down)";
+      element.style.borderBottomColor = "var(--color-border-down)";
       element.style.borderBottomWidth = "0.0625rem";
     }
     if (props.backgroundColor) {
       element.style.setProperty(
-        `--${props.type}-default`,
+        `--color-${props.type}-default`,
         props.backgroundColor.default
       );
       element.style.setProperty(
-        `--${props.type}-hover`,
+        `--color-${props.type}-hover`,
         props.backgroundColor.hover
       );
       element.style.setProperty(
-        `--${props.type}-active`,
+        `--color-${props.type}-active`,
         props.backgroundColor.active
       );
     }
-    element.style.backgroundColor = `var(--${props.type}-default)`;
-    element.style.color = props.color ? props.color : "var(--theme-text)";
+    element.style.backgroundColor = `var(--color-${props.type}-default)`;
+    element.style.color = props.color ? props.color : "var(--color-theme-text)";
 
     if (props.borderRadius) {
       element.style.borderRadius = props.borderRadius;
@@ -158,11 +160,11 @@ export const Button: Component<ButtonProps> = (props) => {
       }}
       on:mouseenter={(e) => {
         if (!props.disabled && !isTouch)
-          e.currentTarget.style.backgroundColor = `var(--${props.type}-hover)`;
+          e.currentTarget.style.backgroundColor = `var(--color-${props.type}-hover)`;
       }}
       on:mouseleave={(e) => {
         if (!props.disabled && !isTouch)
-          e.currentTarget.style.backgroundColor = `var(--${props.type}-default)`;
+          e.currentTarget.style.backgroundColor = `var(--color-${props.type}-default)`;
       }}
       on:mousedown={(e) => {
         if (!props.disabled && !isTouch && e.button === 0) applyMousedown();
@@ -177,15 +179,15 @@ export const Button: Component<ButtonProps> = (props) => {
       on:touchstart={(e) => {
         isTouch = true;
         if (!props.disabled)
-          e.currentTarget.style.backgroundColor = `var(--${props.type}-hover)`;
+          e.currentTarget.style.backgroundColor = `var(--color-${props.type}-hover)`;
       }}
       on:touchend={(e) => {
         if (!props.disabled)
-          e.currentTarget.style.backgroundColor = `var(--${props.type}-default)`;
+          e.currentTarget.style.backgroundColor = `var(--color-${props.type}-default)`;
       }}
       on:blur={(e) => {
         if (!props.disabled)
-          e.currentTarget.style.backgroundColor = `var(--${props.type}-default)`;
+          e.currentTarget.style.backgroundColor = `var(--color-${props.type}-default)`;
       }}
       on:click={() => {
         if (!props.disabled && !isTouch) props.onClick?.();
@@ -205,7 +207,7 @@ export const Button: Component<ButtonProps> = (props) => {
                 style={{
                   position: "absolute",
                   "inset-block": 0,
-                  "font-family": "var(--icon-font)",
+                  "font-family": "var(--font-icon)",
                   zoom: index() === 0 ? 0.95 : 1,
                   color: props.iconColors ? props.iconColors[index()] : "unset",
                 }}

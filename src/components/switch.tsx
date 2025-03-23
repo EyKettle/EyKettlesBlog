@@ -45,7 +45,7 @@ const SwitchItem: Component<SwitchItemProps> = (props) => {
   };
 
   const reset = () => {
-    element.style.color = "var(--theme-text)";
+    element.style.color = "var(--color-theme-text)";
     element.style.backgroundColor = defaultStyle.backgroundColor;
     element.style.boxShadow = "none";
     element.style.translate = "0 0";
@@ -55,14 +55,14 @@ const SwitchItem: Component<SwitchItemProps> = (props) => {
   props.hooks(reset);
 
   const applyMousedown = () => {
-    element.style.backgroundColor = "var(--switch-press)";
+    element.style.backgroundColor = "var(--color-switch-press)";
     element.style.boxShadow = "none";
     element.style.translate = "0 0";
     element.style.borderTopWidth = "0.0625rem";
   };
   const applyMouseup = () => {
-    element.style.color = "var(--switch-onActive)";
-    element.style.backgroundColor = "var(--switch-active)";
+    element.style.color = "var(--color-switch-onActive)";
+    element.style.backgroundColor = "var(--color-switch-active)";
     element.style.boxShadow = "none";
     element.style.translate = "0 0";
     element.style.borderTopWidth = "0.0625rem";
@@ -92,14 +92,14 @@ const SwitchItem: Component<SwitchItemProps> = (props) => {
 
   onMount(() => {
     if (props.active) {
-      element.style.color = "var(--switch-onActive)";
-      element.style.backgroundColor = "var(--switch-active)";
+      element.style.color = "var(--color-switch-onActive)";
+      element.style.backgroundColor = "var(--color-switch-active)";
       element.style.boxShadow = "none";
       element.style.translate = "0 0";
       element.style.borderTopWidth = "0.0625rem";
       element.style.cursor = "auto";
     } else {
-      element.style.color = "var(--theme-text)";
+      element.style.color = "var(--color-theme-text)";
       element.style.backgroundColor = defaultStyle.backgroundColor;
       element.style.boxShadow = "none";
       element.style.translate = "0 0";
@@ -132,8 +132,8 @@ const SwitchItem: Component<SwitchItemProps> = (props) => {
         "border-width": 0,
         "border-style": "solid",
         "border-top-width": "0",
-        "border-color": "var(--border-down)",
-        color: "var(--theme-text)",
+        "border-color": "var(--color-border-down)",
+        color: "var(--color-theme-text)",
         "transition-property": "background-color, scale",
         "transition-duration": "0.15s",
         "transition-timing-function": "cubic-bezier(0, 0, 0, 1)",
@@ -141,13 +141,13 @@ const SwitchItem: Component<SwitchItemProps> = (props) => {
       on:click={handleClick}
       on:mouseenter={() => {
         if (props.active) return;
-        element.style.backgroundColor = "var(--switch-hover)";
-        element.style.boxShadow = "0 0.0625rem 0 var(--shadow-color)";
+        element.style.backgroundColor = "var(--color-switch-hover)";
+        element.style.boxShadow = "0 0.0625rem 0 var(--color-shadow)";
         element.style.translate = "0 -0.0625rem";
       }}
       on:mouseleave={() => {
         if (props.active) return;
-        element.style.color = "var(--theme-text)";
+        element.style.color = "var(--color-theme-text)";
         element.style.backgroundColor = defaultStyle.backgroundColor;
         element.style.boxShadow = "none";
         element.style.translate = "0 0";
@@ -167,14 +167,14 @@ const SwitchItem: Component<SwitchItemProps> = (props) => {
       }}
       on:touchstart={() => {
         if (props.active) return;
-        element.style.backgroundColor = "var(--switch-hover)";
-        element.style.boxShadow = "0 0.0625rem 0 var(--shadow-color)";
+        element.style.backgroundColor = "var(--color-switch-hover)";
+        element.style.boxShadow = "0 0.0625rem 0 var(--color-shadow)";
         element.style.translate = "0 -0.0625rem";
         element.style.borderTopWidth = "0";
       }}
       on:touchend={() => {
         if (props.active) return;
-        element.style.color = "var(--theme-text)";
+        element.style.color = "var(--color-theme-text)";
         element.style.backgroundColor = defaultStyle.backgroundColor;
         element.style.boxShadow = "none";
         element.style.translate = "0 0";
@@ -211,13 +211,13 @@ export const Switch: Component<SwitchProps> = (props) => {
         gap: "0.4rem",
         padding: "0.5rem",
         "background-color": `${
-          props.backgroundColor ?? "var(--surface-light)"
+          props.backgroundColor ?? "var(--color-surface-light)"
         }`,
         "border-radius": "1rem",
         "border-style": "solid",
-        "border-color": "var(--border-default)",
+        "border-color": "var(--color-border-default)",
         "border-width": "0.0625rem",
-        filter: "drop-shadow(0 0.0625rem 0 var(--auto-shadow))",
+        filter: "drop-shadow(0 0.0625rem 0 var(--color-shadow-auto))",
       }}
     >
       <For each={props.children}>

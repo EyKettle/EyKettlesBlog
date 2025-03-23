@@ -56,10 +56,10 @@ const ChatMessageBubble: Component<ChatMessageBubbleProps> = (props) => {
       case Sender.Own:
         element.style.justifyContent = "end";
         element.style.textAlign = "end";
-        appearance.style.backgroundColor = "var(--chat-own-back-default)";
+        appearance.style.backgroundColor = "var(--color-chat-own-back-default)";
         appearance.style.borderStyle = "solid";
         appearance.style.borderWidth = "0.0625rem";
-        appearance.style.borderColor = "var(--border-default)";
+        appearance.style.borderColor = "var(--color-border-default)";
         switch (props.position) {
           case BubblePosition.Start:
             appearance.style.borderBottomRightRadius = "0";
@@ -77,10 +77,10 @@ const ChatMessageBubble: Component<ChatMessageBubbleProps> = (props) => {
         }
         break;
       case Sender.Other:
-        appearance.style.backgroundColor = "var(--chat-other-back-default)";
+        appearance.style.backgroundColor = "var(--color-chat-other-back-default)";
         appearance.style.borderStyle = "solid";
         appearance.style.borderWidth = "0.0625rem";
-        appearance.style.borderColor = "var(--border-default)";
+        appearance.style.borderColor = "var(--color-border-default)";
         switch (props.position) {
           case BubblePosition.Start:
             appearance.style.borderBottomLeftRadius = "0";

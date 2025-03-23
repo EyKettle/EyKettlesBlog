@@ -31,7 +31,7 @@ interface CardProps {
 export const Card: Component<CardProps> = (props) => {
   let isTouch = false;
 
-  let pressColor = "var(--surface-active)";
+  let pressColor = "var(--color-surface-active)";
   const getTextStyle = (size: string) => {
     return {
       "font-size": `${size}rem`,
@@ -54,9 +54,9 @@ export const Card: Component<CardProps> = (props) => {
         shadowBox.style.opacity = "0.6";
         shadowBox.style.scale = "1";
       }
-      appearanceDiv.style.borderColor = "var(--border-default)";
+      appearanceDiv.style.borderColor = "var(--color-border-default)";
       appearanceDiv.parentElement!.style.zIndex = "1";
-      appearanceDiv.style.backgroundColor = "var(--surface-light)";
+      appearanceDiv.style.backgroundColor = "var(--color-surface-light)";
       if (EFFECT_MAP.rotate.has(props.effect ?? "none")) {
         appearanceDiv.style.transformOrigin = "center";
         appearanceDiv.style.transform = "";
@@ -116,10 +116,10 @@ export const Card: Component<CardProps> = (props) => {
     switch (props.effect) {
       case "all":
         appearanceDiv.parentElement!.style.touchAction = "none";
-        pressColor = "var(--surface-light)";
+        pressColor = "var(--color-surface-light)";
         break;
       case "3d":
-        pressColor = "var(--surface-pressed)";
+        pressColor = "var(--color-surface-pressed)";
         break;
     }
   });
@@ -220,9 +220,9 @@ export const Card: Component<CardProps> = (props) => {
           shadowBox.style.translate = "0 0.625rem";
           shadowBox.style.filter = "blur(0.25rem)";
         }
-        appearanceDiv.style.borderColor = "var(--border-active)";
+        appearanceDiv.style.borderColor = "var(--color-border-active)";
         appearanceDiv.parentElement!.style.zIndex = "2";
-        appearanceDiv.style.backgroundColor = "var(--surface-hover)";
+        appearanceDiv.style.backgroundColor = "var(--color-surface-hover)";
       }}
       on:mouseleave={() => {
         if (!props.disabled && !isTouch) resetStyle();
@@ -257,7 +257,7 @@ export const Card: Component<CardProps> = (props) => {
         }
         if (props.disabled || !appearanceDiv) return;
         if (e.button === 0) {
-          appearanceDiv.style.backgroundColor = "var(--surface-hover)";
+          appearanceDiv.style.backgroundColor = "var(--color-surface-hover)";
           if (props.effect && props.effect !== "none") {
             if (EFFECT_MAP.rotate.has(props.effect)) {
               appearanceDiv.style.transform = "";
@@ -294,11 +294,11 @@ export const Card: Component<CardProps> = (props) => {
         isTouch = true;
         if (props.disabled || !appearanceDiv) return;
         if (props.effect !== "3d") {
-          appearanceDiv.style.borderColor = "var(--border-active)";
+          appearanceDiv.style.borderColor = "var(--color-border-active)";
         }
         if (props.effect) {
           if (props.effect === "none") {
-            appearanceDiv.style.backgroundColor = "var(--surface-hover)";
+            appearanceDiv.style.backgroundColor = "var(--color-surface-hover)";
             return;
           }
           if (EFFECT_MAP.rotate.has(props.effect)) {
@@ -316,7 +316,7 @@ export const Card: Component<CardProps> = (props) => {
             }
           }
           if (EFFECT_MAP.float.has(props.effect)) {
-            appearanceDiv.style.backgroundColor = "var(--surface-hover)";
+            appearanceDiv.style.backgroundColor = "var(--color-surface-hover)";
             {
               appearanceDiv.style.scale = "1.05";
             }
@@ -332,8 +332,8 @@ export const Card: Component<CardProps> = (props) => {
             e.touches[0].clientY >= rect.top - 3 * remValue &&
             e.touches[0].clientY <= rect.bottom + 3 * remValue
           ) {
-            appearanceDiv.style.backgroundColor = "var(--surface-hover)";
-            appearanceDiv.style.borderColor = "var(--border-active)";
+            appearanceDiv.style.backgroundColor = "var(--color-surface-hover)";
+            appearanceDiv.style.borderColor = "var(--color-border-active)";
             appearanceDiv.style.scale = "1.05";
             if (!shadowBox) return;
             shadowBox.style.translate = "0 0.375rem";
@@ -366,7 +366,7 @@ export const Card: Component<CardProps> = (props) => {
           position: "absolute",
           inset: 0,
           "border-radius": "1rem",
-          "background-color": "var(--shadow-color)",
+          "background-color": "var(--color-shadow)",
           opacity: 0.6,
           translate: "0 0.0625rem",
           filter: "blur(0.0625rem)",
@@ -386,9 +386,9 @@ export const Card: Component<CardProps> = (props) => {
           "justify-content": "center",
           "align-items": "center",
           "border-radius": "1rem",
-          "background-color": "var(--surface-light)",
+          "background-color": "var(--color-surface-light)",
           "border-style": "solid",
-          "border-color": "var(--border-default)",
+          "border-color": "var(--color-border-default)",
           "border-width": "0.0625rem",
           padding: "1rem",
           "transition-property": "all",

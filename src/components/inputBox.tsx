@@ -18,10 +18,10 @@ const InputBox: Component<InputBoxProps> = (props) => {
         border: "none",
         "font-size": "1.125rem",
         "text-align": "start",
-        color: "var(--theme-text)",
+        color: "var(--color-theme-text)",
         "border-radius": "0.5rem",
-        "background-color": "var(--input-default)",
-        "box-shadow": "0 0 0 0.0625rem var(--border-default)",
+        "background-color": "var(--color-input-default)",
+        "box-shadow": "0 0 0 0.0625rem var(--color-border-default)",
         padding: "0.625rem",
         "transition-property": "background-color, box-shadow",
         "transition-duration": "0.2s",
@@ -33,21 +33,21 @@ const InputBox: Component<InputBoxProps> = (props) => {
       value={props.value || ""}
       on:mouseenter={() => {
         if (!element || element === document.activeElement) return;
-        element.style.boxShadow = "0 0 0 0.0625rem var(--theme-accent)";
+        element.style.boxShadow = "0 0 0 0.0625rem var(--color-theme-accent)";
       }}
       on:mouseleave={() => {
         if (!element || element === document.activeElement) return;
-        element.style.boxShadow = "0 0 0 0.0625rem var(--border-default)";
+        element.style.boxShadow = "0 0 0 0.0625rem var(--color-border-default)";
       }}
       on:focus={() => {
         if (!element) return;
         element.style.zIndex = "3";
-        element.style.boxShadow = "0 0 0 0.125rem var(--theme-accent)";
+        element.style.boxShadow = "0 0 0 0.125rem var(--color-theme-accent)";
       }}
       on:blur={() => {
         if (!element) return;
         element.style.zIndex = "unset";
-        element.style.boxShadow = "0 0 0 0.0625rem var(--border-default)";
+        element.style.boxShadow = "0 0 0 0.0625rem var(--color-border-default)";
       }}
     />
   );

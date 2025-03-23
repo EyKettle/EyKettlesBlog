@@ -120,12 +120,12 @@ const ComponentsPage: Component<componentsPageProps> = (props) => {
               width: "100%",
               overflow: "hidden",
               position: "relative",
-              "background-color": "var(--surface-dark)",
+              "background-color": "var(--color-surface-dark)",
               "border-radius": "1rem",
               "border-style": "solid",
               "border-top-width": `${props.isDark ? "0" : "0.0625rem"}`,
               "border-bottom-width": `${props.isDark ? "0.0625rem" : "0"}`,
-              "border-color": "var(--border-active)",
+              "border-color": "var(--color-border-active)",
             }}
           >
             <PageContainer

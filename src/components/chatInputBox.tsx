@@ -50,9 +50,9 @@ const ChatInputBox: Component<ChatInputBoxProps> = (props) => {
         "border-style": "solid",
         "border-width": "0.0625rem",
         "border-bottom-width": "0",
-        "border-color": "var(--border-default)",
-        "background-color": "var(--surface-hover)",
-        "box-shadow": "0 0.25rem 0.5rem var(--shadow-color)",
+        "border-color": "var(--color-border-default)",
+        "background-color": "var(--color-surface-hover)",
+        "box-shadow": "0 0.25rem 0.5rem var(--color-shadow)",
         "transition-property": "translate",
         "transition-duration": "0.2s",
         "transition-timing-function": "cubic-bezier(0.5, 0, 0, 1)",
@@ -93,9 +93,9 @@ const ChatInputBox: Component<ChatInputBoxProps> = (props) => {
           label={props.submitLabel}
           borderRadius="1.375rem"
           backgroundColor={{
-            default: "var(--button-main-default)",
-            hover: "var(--button-main-hover)",
-            active: "var(--button-main-active)",
+            default: "var(--color-button-main-default)",
+            hover: "var(--color-button-main-hover)",
+            active: "var(--color-button-main-active)",
           }}
           style={{
             "grid-column-start": 2,

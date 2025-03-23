@@ -57,7 +57,7 @@ const Loading: Component<LoadingProps> = (props) => {
           cy="50"
           r="40"
           fill="none"
-          stroke="var(--theme-accent)"
+          stroke="var(--color-theme-accent)"
           stroke-width="12"
           stroke-linecap="round"
           style={{

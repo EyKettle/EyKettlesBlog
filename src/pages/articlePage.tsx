@@ -190,7 +190,7 @@ const ArticlePage: Component<ArticlePageProps> = (props) => {
                 height={18}
                 width={18}
                 style={{ opacity: 0.6 }}
-                fill="var(--theme-text)"
+                fill="var(--color-theme-text)"
               >
                 <path d="M16,2c-7.73,0-14,6.27-14,14s6.27,14,14,14,14-6.27,14-14S23.73,2,16,2ZM16,28c-6.62,0-12-5.38-12-12s5.38-12,12-12,12,5.38,12,12-5.38,12-12,12Z" />
                 <path d="M21,16h-4v-8c0-.55-.45-1-1-1s-1,.45-1,1v9c0,.55.45,1,1,1h5c.55,0,1-.45,1-1s-.45-1-1-1Z" />
@@ -221,7 +221,7 @@ const ArticlePage: Component<ArticlePageProps> = (props) => {
                 }}
                 on:mouseenter={(e) => {
                   const target = e.target as HTMLDivElement;
-                  target.style.backgroundColor = "var(--surface-hover)";
+                  target.style.backgroundColor = "var(--color-surface-hover)";
                   target.style.opacity = "1";
                 }}
                 on:mouseleave={(e) => {
@@ -231,7 +231,7 @@ const ArticlePage: Component<ArticlePageProps> = (props) => {
                 }}
                 on:touchstart={(e) => {
                   const target = e.target as HTMLDivElement;
-                  target.style.backgroundColor = "var(--surface-hover)";
+                  target.style.backgroundColor = "var(--color-surface-hover)";
                   target.style.opacity = "1";
                 }}
                 on:touchend={(e) => {
@@ -243,7 +243,7 @@ const ArticlePage: Component<ArticlePageProps> = (props) => {
                 <div
                   style={{
                     "border-radius": "50%",
-                    "background-color": "var(--theme-accent-background)",
+                    "background-color": "var(--color-theme-accent-background)",
                     width: "1.5rem",
                     height: "1.5rem",
                     overflow: "hidden",
@@ -275,7 +275,7 @@ const ArticlePage: Component<ArticlePageProps> = (props) => {
             disabled={true}
             width="90vw"
             style={{
-              "background-color": "var(--surface-hover)",
+              "background-color": "var(--color-surface-hover)",
               "padding-inline": "max(1.5rem, 3vw)",
               "padding-block": "1rem 2rem",
               "user-select": "text",
