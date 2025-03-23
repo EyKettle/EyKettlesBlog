@@ -81,6 +81,8 @@ const ChatPage: Component<ChatPageProps> = (props) => {
     return 0;
   };
 
+  const [showInput, setShowInput] = createSignal(true);
+
   return (
     <div
       style={{
@@ -93,7 +95,7 @@ const ChatPage: Component<ChatPageProps> = (props) => {
         "box-sizing": "border-box",
         height: "100%",
         width: "100%",
-        overflow: "scroll",
+        overflow: "hidden",
       }}
     >
       <Button
@@ -110,6 +112,7 @@ const ChatPage: Component<ChatPageProps> = (props) => {
           "justify-content": "center",
           height: "100%",
           width: "100%",
+          overflow: "hidden",
         }}
       >
         <ChatMessageBox
@@ -128,7 +131,7 @@ const ChatPage: Component<ChatPageProps> = (props) => {
           {chatHistory()}
         </ChatMessageBox>
         <ChatInputBox
-          showed={true}
+          showed={showInput()}
           placeHolder="键入消息"
           submitLabel="发送"
           fontSize="1.125rem"
@@ -138,6 +141,50 @@ const ChatPage: Component<ChatPageProps> = (props) => {
             height: "14rem",
             width: "calc(100% - 2rem)",
             "max-width": "40rem",
+          }}
+          functionArea={() => (
+            <Button
+              icon={showInput() ? ">" : "<"}
+              type="ghost"
+              iconStyle={[
+                {
+                  "font-size": "1.25rem",
+                  rotate: "90deg",
+                  translate: `0.3125rem ${showInput() ? "" : "-"}0.0625rem`,
+                },
+              ]}
+              style={{
+                width: "4rem",
+              }}
+              borderRadius="1.375rem"
+              onClick={() => setShowInput(!showInput())}
+            />
+          )}
+          showupMotion={(show, box, textArea) => {
+            if (show) {
+              box.style.height = "14rem";
+              box.style.gap = "0.5rem";
+              textArea.disabled = false;
+              textArea.style.pointerEvents = "auto";
+              textArea.style.height = "auto";
+              (box.lastChild?.lastChild as HTMLDivElement).tabIndex = 0;
+              (box.lastChild?.lastChild as HTMLDivElement).style.pointerEvents =
+                "auto";
+              (box.lastChild?.lastChild as HTMLDivElement).style.scale = "1";
+              (box.lastChild?.lastChild as HTMLDivElement).style.opacity = "1";
+            } else {
+              box.style.height = "4.8125rem";
+              box.style.gap = "0";
+              textArea.disabled = true;
+              textArea.style.pointerEvents = "none";
+              textArea.style.height = "0";
+              (box.lastChild?.lastChild as HTMLDivElement).tabIndex = -1;
+              (box.lastChild?.lastChild as HTMLDivElement).style.pointerEvents =
+                "none";
+              (box.lastChild?.lastChild as HTMLDivElement).style.scale = "0.8";
+              (box.lastChild?.lastChild as HTMLDivElement).style.opacity =
+                "0.6";
+            }
           }}
           onSubmit={(t) => {
             handleSubmit(t);

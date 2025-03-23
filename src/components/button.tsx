@@ -24,6 +24,7 @@ interface ButtonProps {
   };
   borderRadius?: string;
   style?: JSX.CSSProperties;
+  iconStyle?: JSX.CSSProperties[];
   disabled?: boolean;
   onClick?: () => void;
   getAnimates?: (press: () => void, release: () => void) => void;
@@ -32,7 +33,6 @@ interface ButtonProps {
 export const Button: Component<ButtonProps> = (props) => {
   let element: HTMLButtonElement | null = null;
   let isTouch = false;
-  const iconChars = Array.from(props.icon || "");
 
   const [defaultStyle, setDefaultStyle] = createSignal({
     fontSize: "1.05rem",
@@ -201,7 +201,7 @@ export const Button: Component<ButtonProps> = (props) => {
             height: defaultStyle().fontSize,
           }}
         >
-          <For each={iconChars}>
+          <For each={Array.from(props.icon ?? "")}>
             {(char, index) => (
               <span
                 style={{
@@ -210,6 +210,7 @@ export const Button: Component<ButtonProps> = (props) => {
                   "font-family": "var(--font-icon)",
                   zoom: index() === 0 ? 0.95 : 1,
                   color: props.iconColors ? props.iconColors[index()] : "unset",
+                  ...props.iconStyle?.at(index()),
                 }}
               >
                 {char}

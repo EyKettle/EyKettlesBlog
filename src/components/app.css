@@ -237,4 +237,5 @@ textarea {
   background: none;
   font-size: 1rem;
   font-family: inherit;
+  padding: 0;
 }

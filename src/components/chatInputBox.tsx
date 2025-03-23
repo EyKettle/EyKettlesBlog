@@ -3,22 +3,35 @@ import { Button } from "./button";
 import { initReport } from "./utils";
 
 interface ChatInputBoxProps {
-  showed: boolean;
+  showed?: boolean;
   fontSize?: string;
   style?: JSX.CSSProperties;
   placeHolder?: string;
   submitLabel?: string;
   functionArea?: any;
   onSubmit?: (text: string) => boolean;
+  showupMotion?: (
+    isShow: boolean,
+    outerBox: HTMLDivElement,
+    textArea: HTMLTextAreaElement
+  ) => void;
   bindKey?: {
     submit: string;
   };
 }
 
 const ChatInputBox: Component<ChatInputBoxProps> = (props) => {
+  if (props.showed === undefined) props.showed = true;
+
   let element: HTMLDivElement;
   createEffect(() => {
-    if (props.showed) element.style.translate = "0 0";
+    if (props.showupMotion) {
+      props.showupMotion(
+        props.showed ?? true,
+        element,
+        element.firstChild as HTMLTextAreaElement
+      );
+    } else if (props.showed) element.style.translate = "0 0";
     else {
       const height = element.clientHeight;
       element.style.translate = "0 " + height + "px";
@@ -53,7 +66,7 @@ const ChatInputBox: Component<ChatInputBoxProps> = (props) => {
         "border-color": "var(--color-border-default)",
         "background-color": "var(--color-surface-hover)",
         "box-shadow": "0 0.25rem 0.5rem var(--color-shadow)",
-        "transition-property": "translate",
+        "transition-property": "all",
         "transition-duration": "0.2s",
         "transition-timing-function": "cubic-bezier(0.5, 0, 0, 1)",
         ...props.style,
@@ -68,6 +81,9 @@ const ChatInputBox: Component<ChatInputBoxProps> = (props) => {
           "flex-grow": 1,
           width: "100%",
           background: "none",
+          "transition-property": "all",
+          "transition-duration": "0.2s",
+          "transition-timing-function": "cubic-bezier(0.5, 0, 0, 1)",
         }}
         placeholder={props.placeHolder}
         spellcheck={false}
@@ -87,8 +103,10 @@ const ChatInputBox: Component<ChatInputBoxProps> = (props) => {
           "grid-template-columns": "auto 6rem",
           height: "2.75rem",
           width: "100%",
+          gap: "0.5rem",
         }}
       >
+        {props.functionArea}
         <Button
           label={props.submitLabel}
           borderRadius="1.375rem"
