@@ -57,7 +57,7 @@ export const Button: Component<ButtonProps> = (props) => {
   };
   const applyMouseup = () => {
     if (element)
-      element.style.backgroundColor = `var(--color-${props.type}-hover)`;
+      element.style.backgroundColor = `var(--color-${props.type}-default)`;
   };
   if (props.getAnimates) props.getAnimates(applyMousedown, applyMouseup);
 

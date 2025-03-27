@@ -363,7 +363,7 @@ const App: Component = () => {
               container.style.transform = "translateY(12rem)";
               container.style.opacity = "0";
               container.style.filter = "blur(1rem)";
-              new Promise((resolve) => {
+              new Promise<void>((resolve) => {
                 setTimeout(() => {
                   animateMini(
                     container,
@@ -377,7 +377,7 @@ const App: Component = () => {
                       ease: [0.5, 0, 0, 1],
                     }
                   );
-                  resolve(null);
+                  resolve();
                 }, 200);
               });
             }}

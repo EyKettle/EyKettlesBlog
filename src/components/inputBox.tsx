@@ -4,7 +4,31 @@ interface InputBoxProps {
   placeholder?: string;
   value?: string;
   multiline?: boolean;
-  extraStyle?: JSX.CSSProperties;
+  style?: JSX.CSSProperties;
+  onFocus?: (
+    event: FocusEvent & {
+      currentTarget: HTMLInputElement;
+      target: HTMLInputElement;
+    }
+  ) => void;
+  onBlur?: (
+    event: FocusEvent & {
+      currentTarget: HTMLInputElement;
+      target: HTMLInputElement;
+    }
+  ) => void;
+  onChange?: (
+    event: Event & {
+      currentTarget: HTMLInputElement;
+      target: HTMLInputElement;
+    }
+  ) => void;
+  onInput?: (
+    event: InputEvent & {
+      currentTarget: HTMLInputElement;
+      target: HTMLInputElement;
+    }
+  ) => void;
 }
 
 const InputBox: Component<InputBoxProps> = (props) => {
@@ -27,7 +51,7 @@ const InputBox: Component<InputBoxProps> = (props) => {
         "transition-duration": "0.2s",
         "transition-timing-function": "cubic-bezier(0, 0, 0, 1)",
         cursor: "text",
-        ...props.extraStyle,
+        ...props.style,
       }}
       placeholder={props.placeholder || ""}
       value={props.value || ""}
@@ -39,16 +63,20 @@ const InputBox: Component<InputBoxProps> = (props) => {
         if (!element || element === document.activeElement) return;
         element.style.boxShadow = "0 0 0 0.0625rem var(--color-border-default)";
       }}
-      on:focus={() => {
+      on:focus={(e) => {
         if (!element) return;
         element.style.zIndex = "3";
         element.style.boxShadow = "0 0 0 0.125rem var(--color-theme-accent)";
+        props.onFocus?.(e);
       }}
-      on:blur={() => {
+      on:blur={(e) => {
         if (!element) return;
         element.style.zIndex = "unset";
         element.style.boxShadow = "0 0 0 0.0625rem var(--color-border-default)";
+        props.onBlur?.(e);
       }}
+      on:change={props.onChange}
+      on:input={props.onInput}
     />
   );
 };

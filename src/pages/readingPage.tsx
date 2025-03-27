@@ -46,20 +46,26 @@ const ReadingPage: Component<ReadingPageProps> = (props) => {
         "flex-direction": "column",
         "align-items": "center",
         height: "100%",
-        width: "min(80vw, 40rem)",
       }}
     >
       {(item, index) => {
         const info = item as Article;
         if (index === 0) {
           return (
-            <>
+            <div
+              style={{
+                display: "grid",
+                "flex-direction": "column",
+                "justify-content": "center",
+                "margin-block": "0.5rem",
+              }}
+            >
               <Blocker style={{ height: "8rem" }} />
               <div
                 style={{
                   display: "grid",
                   "place-items": "center",
-                  "margin-block": "0.5rem",
+                  "margin-bottom": "1rem",
                 }}
               >
                 <Button
@@ -80,17 +86,18 @@ const ReadingPage: Component<ReadingPageProps> = (props) => {
                 textJustify="flex-end"
                 textAlign="flex-start"
                 height="min(50vw, 18rem)"
-                width="100%"
+                width="min(80vw, 50rem)"
                 effect="none"
               />
-            </>
+            </div>
           );
         } else {
           return (
             <div
               style={{
-                display: "flex",
+                display: "grid",
                 "flex-direction": "column",
+                "justify-content": "center",
                 "margin-block": "0.5rem",
               }}
             >
@@ -104,7 +111,7 @@ const ReadingPage: Component<ReadingPageProps> = (props) => {
                 textJustify="flex-end"
                 textAlign="flex-start"
                 height="min(50vw, 18rem)"
-                width="100%"
+                width="min(80vw, 50rem)"
                 effect="none"
               />
               {index === articleInfos().length - 1 ? (

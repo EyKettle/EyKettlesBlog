@@ -12,7 +12,7 @@ export enum Sender {
 
 export type ChatMessage = {
   sender: Sender;
-  content: string;
+  content: any;
 };
 
 enum BubblePosition {
@@ -56,6 +56,7 @@ const ChatMessageBubble: Component<ChatMessageBubbleProps> = (props) => {
       case Sender.Own:
         element.style.justifyContent = "end";
         element.style.textAlign = "end";
+        appearance.style.color = "var(--color-chat-own-text-default)";
         appearance.style.backgroundColor = "var(--color-chat-own-back-default)";
         appearance.style.borderStyle = "solid";
         appearance.style.borderWidth = "0.0625rem";
@@ -77,7 +78,9 @@ const ChatMessageBubble: Component<ChatMessageBubbleProps> = (props) => {
         }
         break;
       case Sender.Other:
-        appearance.style.backgroundColor = "var(--color-chat-other-back-default)";
+        appearance.style.color = "var(--color-chat-other-text-default)";
+        appearance.style.backgroundColor =
+          "var(--color-chat-other-back-default)";
         appearance.style.borderStyle = "solid";
         appearance.style.borderWidth = "0.0625rem";
         appearance.style.borderColor = "var(--color-border-default)";
@@ -143,6 +146,7 @@ const ChatMessageBubble: Component<ChatMessageBubbleProps> = (props) => {
 };
 
 interface ChatMessageBoxProps {
+  ref?: (vlist: VirtualizerHandle) => void;
   children: ChatMessage[];
   fontSize?: string;
   style?: JSX.CSSProperties;
@@ -190,9 +194,13 @@ const ChatMessageBox: Component<ChatMessageBoxProps> = (props) => {
         lastIndex = props.children.length - 1;
       }, 300);
   });
+
   return (
     <VList
-      ref={(e) => (vlist = e)}
+      ref={(e) => {
+        vlist = e;
+        if (props.ref && vlist) props.ref(vlist);
+      }}
       data={props.children}
       style={{
         "font-size": `${props.fontSize ?? "1rem"}`,

@@ -9,6 +9,30 @@ interface ChatInputBoxProps {
   placeHolder?: string;
   submitLabel?: string;
   functionArea?: any;
+  onFocus?: (
+    event: FocusEvent & {
+      currentTarget: HTMLTextAreaElement;
+      target: HTMLTextAreaElement;
+    }
+  ) => void;
+  onBlur?: (
+    event: FocusEvent & {
+      currentTarget: HTMLTextAreaElement;
+      target: HTMLTextAreaElement;
+    }
+  ) => void;
+  onChange?: (
+    event: Event & {
+      currentTarget: HTMLTextAreaElement;
+      target: HTMLTextAreaElement;
+    }
+  ) => void;
+  onInput?: (
+    event: InputEvent & {
+      currentTarget: HTMLTextAreaElement;
+      target: HTMLTextAreaElement;
+    }
+  ) => void;
   onSubmit?: (text: string) => boolean;
   showupMotion?: (
     isShow: boolean,
@@ -18,12 +42,19 @@ interface ChatInputBoxProps {
   bindKey?: {
     submit: string;
   };
+  getRef?: (outerBox: HTMLDivElement, textArea: HTMLTextAreaElement) => void;
 }
 
 const ChatInputBox: Component<ChatInputBoxProps> = (props) => {
   if (props.showed === undefined) props.showed = true;
 
   let element: HTMLDivElement;
+
+  onMount(() => {
+    if (props.getRef)
+      props.getRef(element, element.firstChild as HTMLTextAreaElement);
+  });
+
   createEffect(() => {
     if (props.showupMotion) {
       props.showupMotion(
@@ -50,6 +81,7 @@ const ChatInputBox: Component<ChatInputBoxProps> = (props) => {
   let submitRelease = () => initReport();
   return (
     <div
+      aria-disabled={!props.showed}
       ref={(e) => (element = e)}
       style={{
         display: "flex",
@@ -73,6 +105,7 @@ const ChatInputBox: Component<ChatInputBoxProps> = (props) => {
       }}
     >
       <textarea
+        disabled={!props.showed}
         style={{
           "font-size": `${props.fontSize ?? "1rem"}`,
           border: "none",
@@ -96,8 +129,13 @@ const ChatInputBox: Component<ChatInputBoxProps> = (props) => {
             handleSubmit();
           }
         }}
+        on:focus={props.onFocus}
+        on:blur={props.onBlur}
+        on:change={props.onChange}
+        on:input={props.onInput}
       />
       <div
+        aria-disabled={!props.showed}
         style={{
           display: "grid",
           "grid-template-columns": "auto 6rem",
@@ -108,6 +146,7 @@ const ChatInputBox: Component<ChatInputBoxProps> = (props) => {
       >
         {props.functionArea}
         <Button
+          disabled={!props.showed}
           label={props.submitLabel}
           borderRadius="1.375rem"
           backgroundColor={{
@@ -115,6 +154,7 @@ const ChatInputBox: Component<ChatInputBoxProps> = (props) => {
             hover: "var(--color-button-main-hover)",
             active: "var(--color-button-main-active)",
           }}
+          color="var(--color-button-main-text)"
           style={{
             "grid-column-start": 2,
           }}

@@ -3,6 +3,7 @@ import {
   createEffect,
   createSignal,
   For,
+  JSX,
   onCleanup,
   onMount,
 } from "solid-js";
@@ -16,7 +17,12 @@ interface SwitchProps {
   disabled?: boolean;
   current?: number;
   children: SwitchItem[];
+  border?: {
+    width?: string;
+    color?: string;
+  };
   backgroundColor?: string;
+  style?: JSX.CSSProperties;
   onChange?: (index: number) => void;
 }
 
@@ -28,6 +34,7 @@ interface SwitchItemProps {
   callback: (index: number) => void;
   event: () => void;
   hooks: (reset: () => void) => void;
+  style?: JSX.CSSProperties;
 }
 
 const SwitchItem: Component<SwitchItemProps> = (props) => {
@@ -122,7 +129,9 @@ const SwitchItem: Component<SwitchItemProps> = (props) => {
     <button
       ref={(e) => (element = e)}
       style={{
+        "flex-grow": 1,
         display: "flex",
+        "justify-content": "center",
         "align-items": "center",
         border: "none",
         padding: "0.5rem 1rem",
@@ -137,6 +146,7 @@ const SwitchItem: Component<SwitchItemProps> = (props) => {
         "transition-property": "background-color, scale",
         "transition-duration": "0.15s",
         "transition-timing-function": "cubic-bezier(0, 0, 0, 1)",
+        ...props.style,
       }}
       on:click={handleClick}
       on:mouseenter={() => {
@@ -215,9 +225,12 @@ export const Switch: Component<SwitchProps> = (props) => {
         }`,
         "border-radius": "1rem",
         "border-style": "solid",
-        "border-color": "var(--color-border-default)",
-        "border-width": "0.0625rem",
+        "border-color": `${
+          props.border?.color ?? "var(--color-border-default)"
+        }`,
+        "border-width": `${props.border?.width ?? "0.0625rem"}`,
         filter: "drop-shadow(0 0.0625rem 0 var(--color-shadow-auto))",
+        ...props.style,
       }}
     >
       <For each={props.children}>

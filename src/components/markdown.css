@@ -1,11 +1,21 @@
 .markdown-body {
+  display: grid;
+
   h1 {
     justify-self: center;
+  }
+  h1,
+  h2 {
+    margin-block: 1.25rem;
+  }
+  h3 {
+    margin-block: 1rem;
   }
 
   p {
     margin-inline: 0;
-    padding-block: 0.25rem !important;
+    padding-block: 0 !important;
+    line-height: 2;
   }
 
   hr {
@@ -25,14 +35,16 @@
   }
 
   ul {
+    margin-block: 0.5rem;
     padding-inline: 0;
     ul {
+      margin-block: 0;
       padding-left: 1.25rem;
       padding-right: 0;
     }
 
     li {
-      line-height: 1.5rem;
+      line-height: 1.8;
       list-style: none;
     }
     li:not(:has(input[type="checkbox"]))::before {

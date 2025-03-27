@@ -14,6 +14,13 @@ const EFFECT_MAP = {
   float: new Set<Effect>(["all", "float"]),
 };
 
+type Shadow = {
+  color: string;
+  offsetX: string;
+  offsetY: string;
+  blurRadius: string;
+};
+
 interface CardProps {
   title?: string;
   description?: string;
@@ -23,12 +30,22 @@ interface CardProps {
   textJustify?: string;
   height?: string;
   width?: string;
+  shadow?:
+    | "none"
+    | {
+        default: Shadow;
+        hover?: Shadow;
+        active?: Shadow;
+      };
   style?: JSX.CSSProperties;
   disabled?: boolean;
+  interactType?: "hover" | "click";
   onClick?: () => boolean;
 }
 
 export const Card: Component<CardProps> = (props) => {
+  if (!props.interactType) props.interactType = "click";
+
   let isTouch = false;
 
   let pressColor = "var(--color-surface-active)";
@@ -228,7 +245,13 @@ export const Card: Component<CardProps> = (props) => {
         if (!props.disabled && !isTouch) resetStyle();
       }}
       on:mousedown={(e) => {
-        if (props.disabled || isTouch || !appearanceDiv) return;
+        if (
+          props.disabled ||
+          props.interactType === "hover" ||
+          isTouch ||
+          !appearanceDiv
+        )
+          return;
         if (e.button === 0) {
           appearanceDiv.style.backgroundColor = pressColor;
           if (props.effect && props.effect !== "none") {
@@ -255,7 +278,8 @@ export const Card: Component<CardProps> = (props) => {
           isTouch = false;
           return;
         }
-        if (props.disabled || !appearanceDiv) return;
+        if (props.disabled || props.interactType === "hover" || !appearanceDiv)
+          return;
         if (e.button === 0) {
           appearanceDiv.style.backgroundColor = "var(--color-surface-hover)";
           if (props.effect && props.effect !== "none") {
@@ -278,7 +302,13 @@ export const Card: Component<CardProps> = (props) => {
         }
       }}
       on:mousemove={(e) => {
-        if (props.disabled || isTouch || !appearanceDiv) return;
+        if (
+          props.disabled ||
+          props.interactType === "hover" ||
+          isTouch ||
+          !appearanceDiv
+        )
+          return;
         if (e.buttons === 1) {
           if (props.effect === "all") {
             handleRotate(appearanceDiv, e.clientX, e.clientY);
@@ -292,7 +322,8 @@ export const Card: Component<CardProps> = (props) => {
       }}
       on:touchstart={(e) => {
         isTouch = true;
-        if (props.disabled || !appearanceDiv) return;
+        if (props.disabled || props.interactType === "hover" || !appearanceDiv)
+          return;
         if (props.effect !== "3d") {
           appearanceDiv.style.borderColor = "var(--color-border-active)";
         }
@@ -324,7 +355,12 @@ export const Card: Component<CardProps> = (props) => {
         }
       }}
       on:touchmove={(e) => {
-        if (!props.disabled && appearanceDiv && props.effect === "all") {
+        if (
+          !props.disabled &&
+          props.interactType === "click" &&
+          appearanceDiv &&
+          props.effect === "all"
+        ) {
           const rect = appearanceDiv.getBoundingClientRect();
           if (
             e.touches[0].clientX >= rect.left - 3 * remValue &&
@@ -347,12 +383,12 @@ export const Card: Component<CardProps> = (props) => {
         }
       }}
       on:touchend={() => {
-        if (!props.disabled) {
+        if (!props.disabled && props.interactType === "click") {
           resetStyle();
         }
       }}
       on:blur={() => {
-        if (!props.disabled) resetStyle();
+        if (!props.disabled && props.interactType === "click") resetStyle();
       }}
       on:click={() => {
         if (!props.disabled && !isTouch && props.onClick) {
@@ -360,20 +396,22 @@ export const Card: Component<CardProps> = (props) => {
         }
       }}
     >
-      <div
-        ref={(e) => (shadowBox = e)}
-        style={{
-          position: "absolute",
-          inset: 0,
-          "border-radius": "1rem",
-          "background-color": "var(--color-shadow)",
-          opacity: 0.6,
-          translate: "0 0.0625rem",
-          filter: "blur(0.0625rem)",
-          transition: "all 0.15s cubic-bezier(0.2, 0, 0, 1)",
-          "pointer-events": "none",
-        }}
-      />
+      <Show when={props.shadow !== "none"}>
+        <div
+          ref={(e) => (shadowBox = e)}
+          style={{
+            position: "absolute",
+            inset: 0,
+            "border-radius": "1rem",
+            "background-color": "var(--color-shadow)",
+            opacity: 0.6,
+            translate: "0 0.0625rem",
+            filter: "blur(0.0625rem)",
+            transition: "all 0.15s cubic-bezier(0.2, 0, 0, 1)",
+            "pointer-events": "none",
+          }}
+        />
+      </Show>
       <div
         ref={(e) => (appearanceDiv = e)}
         style={{
