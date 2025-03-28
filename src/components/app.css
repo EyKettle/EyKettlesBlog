@@ -239,3 +239,23 @@ textarea {
   font-family: inherit;
   padding: 0;
 }
+
+@keyframes loadingPath {
+  0% {
+    stroke-dasharray: 40 300;
+    stroke-dashoffset: -150;
+  }
+  100% {
+    stroke-dasharray: 100 300;
+    stroke-dashoffset: -90;
+  }
+}
+
+@keyframes loadingRotate {
+  0% {
+    rotate: 0;
+  }
+  100% {
+    rotate: 360deg;
+  }
+}

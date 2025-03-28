@@ -291,7 +291,7 @@ const ArticlePage: Component<ArticlePageProps> = (props) => {
               when={content()}
               fallback={
                 <Loading
-                  extraStyle={{
+                  style={{
                     "margin-top": "2rem",
                   }}
                 />

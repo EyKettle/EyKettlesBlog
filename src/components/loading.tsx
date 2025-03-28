@@ -1,43 +1,11 @@
-import { animate, animateMini } from "motion";
-import { Component, JSX, onMount, Show } from "solid-js";
+import { Component, JSX, Show } from "solid-js";
 
 interface LoadingProps {
   text?: string;
-  extraStyle?: JSX.CSSProperties;
+  style?: JSX.CSSProperties;
 }
 
 const Loading: Component<LoadingProps> = (props) => {
-  let circle: SVGCircleElement;
-
-  onMount(() => {
-    if (circle) {
-      animate(
-        circle,
-        {
-          pathLength: [0.1, 0.4],
-          pathOffset: [0.4, 0.1],
-        },
-        {
-          duration: 0.5,
-          repeat: Infinity,
-          repeatType: "reverse",
-          ease: [0.2, 0, 0.8, 1],
-        }
-      );
-      animateMini(
-        circle,
-        {
-          rotate: ["0 0 1 0deg", "0 0 1 360deg"],
-        },
-        {
-          duration: 1,
-          repeat: Infinity,
-          ease: [0.2, 0.1, 0.8, 0.9],
-        }
-      );
-    }
-  });
-
   return (
     <div
       style={{
@@ -47,12 +15,11 @@ const Loading: Component<LoadingProps> = (props) => {
         "align-items": "center",
         height: "100%",
         width: "100%",
-        ...props.extraStyle,
+        ...props.style,
       }}
     >
       <svg width="40" height="40" viewBox="0 0 100 100">
         <circle
-          ref={(el) => (circle = el)}
           cx="50"
           cy="50"
           r="40"
@@ -62,6 +29,8 @@ const Loading: Component<LoadingProps> = (props) => {
           stroke-linecap="round"
           style={{
             "transform-origin": "50% 50%",
+            animation:
+              "loadingRotate 1s cubic-bezier(0.2, 0.1, 0.8, 0.9) infinite, loadingPath 0.5s cubic-bezier(0.4, 0, 0.6, 1) infinite alternate",
           }}
         />
       </svg>

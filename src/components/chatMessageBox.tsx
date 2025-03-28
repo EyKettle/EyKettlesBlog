@@ -111,7 +111,7 @@ const ChatMessageBubble: Component<ChatMessageBubbleProps> = (props) => {
         display: "flex",
         padding: "0.125rem",
         "text-wrap": "wrap",
-        "white-space": "break-spaces",
+        "white-space": "pre-wrap",
       }}
     >
       <div
@@ -127,19 +127,17 @@ const ChatMessageBubble: Component<ChatMessageBubbleProps> = (props) => {
           ...props.style,
         }}
       >
-        <div>
-          <span
-            style={{
-              // //@ts-ignore
-              // "text-box-trim": "trim-start",
-              // "text-box-edge": "cap alphabetic",
-              // "margin-top": "0.1875rem",
-              "text-align": "start",
-            }}
-          >
-            {props.children.content}
-          </span>
-        </div>
+        <span
+          style={{
+            // //@ts-ignore
+            // "text-box-trim": "trim-start",
+            // "text-box-edge": "cap alphabetic",
+            // "margin-top": "0.1875rem",
+            "text-align": "start",
+          }}
+        >
+          {props.children.content}
+        </span>
       </div>
     </div>
   );

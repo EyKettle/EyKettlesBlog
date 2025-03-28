@@ -205,7 +205,7 @@ const App: Component = () => {
           }}
         >
           <Switch
-            current={locales.indexOf(locale())}
+            default={locales.indexOf(locale())}
             backgroundColor="var(--color-surface-glass-dark)"
           >
             {[

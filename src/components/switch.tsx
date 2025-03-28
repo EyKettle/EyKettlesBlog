@@ -8,20 +8,21 @@ import {
   onMount,
 } from "solid-js";
 
-type SwitchItem = {
+export type SwitchItem = {
   label: string;
   onClick: () => void;
 };
 
 interface SwitchProps {
   disabled?: boolean;
-  current?: number;
+  default?: number;
   children: SwitchItem[];
   border?: {
     width?: string;
     color?: string;
   };
   backgroundColor?: string;
+  fontSize?: string;
   style?: JSX.CSSProperties;
   onChange?: (index: number) => void;
 }
@@ -34,6 +35,7 @@ interface SwitchItemProps {
   callback: (index: number) => void;
   event: () => void;
   hooks: (reset: () => void) => void;
+  fontSize?: string;
   style?: JSX.CSSProperties;
 }
 
@@ -135,7 +137,7 @@ const SwitchItem: Component<SwitchItemProps> = (props) => {
         "align-items": "center",
         border: "none",
         padding: "0.5rem 1rem",
-        "font-size": "1.05rem",
+        "font-size": `${props.fontSize ?? "1.05rem"}`,
         "background-color": defaultStyle.backgroundColor,
         "border-radius": "0.5rem",
         "border-width": 0,
@@ -201,7 +203,7 @@ const SwitchItem: Component<SwitchItemProps> = (props) => {
 };
 
 export const Switch: Component<SwitchProps> = (props) => {
-  const [activeIndex, setActiveIndex] = createSignal(props.current ?? 0);
+  const [activeIndex, setActiveIndex] = createSignal(props.default ?? 0);
   const handleSwitch = (index: number) => {
     const prev = activeIndex();
     setActiveIndex(index);
@@ -229,7 +231,7 @@ export const Switch: Component<SwitchProps> = (props) => {
           props.border?.color ?? "var(--color-border-default)"
         }`,
         "border-width": `${props.border?.width ?? "0.0625rem"}`,
-        filter: "drop-shadow(0 0.0625rem 0 var(--color-shadow-auto))",
+        "box-shadow": "0 0.0625rem 0 var(--color-shadow-auto)",
         ...props.style,
       }}
     >
@@ -245,6 +247,7 @@ export const Switch: Component<SwitchProps> = (props) => {
               resetHandles[index()] = r;
             }}
             disabled={props.disabled}
+            fontSize={props.fontSize}
           />
         )}
       </For>

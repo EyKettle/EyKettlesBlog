@@ -107,7 +107,7 @@ const ComponentsPage: Component<componentsPageProps> = (props) => {
           }}
         >
           <Switch
-            current={0}
+            default={0}
             children={[
               { label: "Page 0", onClick: () => switchTo(0) },
               { label: "Page 1", onClick: () => switchTo(1) },
