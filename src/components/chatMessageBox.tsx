@@ -149,6 +149,7 @@ interface ChatMessageBoxProps {
   fontSize?: string;
   style?: JSX.CSSProperties;
   paddingBottom?: string;
+  snapOffset?: number;
   getLastMsg?: (lastBubble: HTMLDivElement) => void;
   getMethods?: (
     scrollTo: (position: number) => void,
@@ -187,10 +188,17 @@ const ChatMessageBox: Component<ChatMessageBoxProps> = (props) => {
 
   let lastIndex = 0;
   createEffect(() => {
-    if (props.children)
+    if (props.children) {
+      if (
+        props.snapOffset &&
+        vlist &&
+        vlist.scrollSize - vlist.scrollOffset <= props.snapOffset
+      )
+        scrollToBottom();
       setTimeout(() => {
         lastIndex = props.children.length - 1;
       }, 300);
+    }
   });
 
   return (
