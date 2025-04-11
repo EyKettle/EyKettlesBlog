@@ -195,16 +195,15 @@ const ArticlePage: Component<ArticlePageProps> = (props) => {
                 style={{
                   display: "inline",
                   opacity: 0.6,
-                  translate: "0 -1px",
                 }}
               >
                 {articleInfo()!.date}
               </label>
               <div
                 style={{
-                  display: "inline",
+                  display: "inline-flex",
+                  "align-items": "center",
                   padding: "0.375rem 0.5rem",
-                  "padding-bottom": "0.5rem",
                   "padding-right": "0.75rem",
                   "margin-left": "0.5rem",
                   "border-radius": "0.75rem",
@@ -244,7 +243,6 @@ const ArticlePage: Component<ArticlePageProps> = (props) => {
                   style={{
                     "clip-path": "circle()",
                     "pointer-events": "none",
-                    "vertical-align": "text-bottom",
                     "margin-right": "0.25rem",
                   }}
                 />

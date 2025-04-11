@@ -143,9 +143,9 @@ export const Button: Component<ButtonProps> = (props) => {
       ref={(e) => (element = e)}
       style={{
         display: "inline-grid",
-        "grid-template-columns": `${
-          props.icon && defaultStyle().fontSize
-        } auto`,
+        "grid-template-columns": `${props.icon && defaultStyle().fontSize} ${
+          props.label && "auto"
+        }`,
         "flex-shrink": 0,
         "align-items": "center",
         "vertical-align": "sub",
@@ -198,6 +198,8 @@ export const Button: Component<ButtonProps> = (props) => {
       <Show when={props.icon}>
         <div
           style={{
+            display: "grid",
+            "place-items": "center",
             "white-space": "nowrap",
           }}
         >

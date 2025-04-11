@@ -127,8 +127,8 @@ const ChatPage: Component<ChatPageProps> = (props) => {
         </ChatMessageBox>
         <ChatInputBox
           showed={showInput()}
-          placeHolder="键入消息"
-          submitLabel="发送"
+          placeHolder={t("chatPage.placeholder")}
+          submitLabel={t("chatPage.submit")}
           fontSize="1.125rem"
           style={{
             position: "absolute",
@@ -145,7 +145,7 @@ const ChatPage: Component<ChatPageProps> = (props) => {
                 {
                   "font-size": "1.25rem",
                   rotate: "90deg",
-                  translate: `0.3125rem ${showInput() ? "" : "-"}0.0625rem`,
+                  translate: `2px ${showInput() ? "" : "-"}0.0625rem`,
                 },
               ]}
               style={{

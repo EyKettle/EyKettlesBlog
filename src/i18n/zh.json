@@ -55,6 +55,8 @@
     "enterChatPage": "进入对话测试页面"
   },
   "chatPage": {
-    "systemTip": "这是一个用于测试对话相关组件的界面\n数据不被记录"
+    "systemTip": "这是一个用于测试对话相关组件的界面\n数据不被记录",
+    "placeholder": "键入消息",
+    "submit": "发送"
   }
 }

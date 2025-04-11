@@ -196,13 +196,7 @@ const SwitchItem: Component<SwitchItemProps> = (props) => {
         reset();
       }}
     >
-      <span
-        style={{
-          translate: "0 -1px",
-        }}
-      >
-        {props.text}
-      </span>
+      {props.text}
     </button>
   );
 };

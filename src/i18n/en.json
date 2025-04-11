@@ -55,6 +55,8 @@
     "enterChatPage": "Enter Chat Test Page"
   },
   "chatPage": {
-    "systemTip": "A page for chat component testing.\nNo data storage."
+    "systemTip": "A page for chat component testing.\nNo data storage.",
+    "placeholder": "Input text",
+    "submit": "Submit"
   }
 }
