@@ -132,9 +132,8 @@ const SwitchItem: Component<SwitchItemProps> = (props) => {
       ref={(e) => (element = e)}
       style={{
         "flex-grow": 1,
-        display: "flex",
-        "justify-content": "center",
-        "align-items": "center",
+        display: "grid",
+        "place-items": "center",
         border: "none",
         padding: "0.5rem 1rem",
         "font-size": `${props.fontSize ?? "1.05rem"}`,
@@ -197,7 +196,13 @@ const SwitchItem: Component<SwitchItemProps> = (props) => {
         reset();
       }}
     >
-      {props.text}
+      <span
+        style={{
+          translate: "0 -1px",
+        }}
+      >
+        {props.text}
+      </span>
     </button>
   );
 };
@@ -217,8 +222,7 @@ export const Switch: Component<SwitchProps> = (props) => {
   return (
     <div
       style={{
-        display: "flex",
-        "justify-content": "center",
+        display: "inline-flex",
         "min-height": "2.5rem",
         gap: "0.4rem",
         padding: "0.5rem",

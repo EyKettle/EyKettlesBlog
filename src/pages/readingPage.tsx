@@ -4,6 +4,7 @@ import { Button } from "../components/button";
 import { VirtualizerHandle, VList } from "virtua/solid";
 import { Article, getInfos } from "../articles/methods";
 import Blocker from "../components/blocker";
+import { backButton } from "../controls/templates";
 
 interface ReadingPageProps {
   translator: any;
@@ -68,13 +69,7 @@ const ReadingPage: Component<ReadingPageProps> = (props) => {
                   "margin-bottom": "1rem",
                 }}
               >
-                <Button
-                  icon={"\u{e10e}"}
-                  type="ghost"
-                  size="large"
-                  rounded={true}
-                  onClick={props.operations.back}
-                />
+                {backButton(props.operations.back)}
               </div>
               <Card
                 title={info.title}
@@ -87,7 +82,7 @@ const ReadingPage: Component<ReadingPageProps> = (props) => {
                 textAlign="flex-start"
                 height="min(50vw, 18rem)"
                 width="min(80vw, 50rem)"
-                effect="none"
+                effect="3d"
               />
             </div>
           );
@@ -112,7 +107,7 @@ const ReadingPage: Component<ReadingPageProps> = (props) => {
                 textAlign="flex-start"
                 height="min(50vw, 18rem)"
                 width="min(80vw, 50rem)"
-                effect="none"
+                effect="3d"
               />
               {index === articleInfos().length - 1 ? (
                 <Blocker style={{ height: "6rem" }} />

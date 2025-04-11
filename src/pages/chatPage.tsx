@@ -8,6 +8,7 @@ import { testChatData } from "../components/testData";
 import { animateMini } from "motion";
 import ChatInputBox from "../components/chatInputBox";
 import { initReport } from "../components/utils";
+import { backButton } from "../controls/templates";
 
 interface ChatPageProps {
   translator: any;
@@ -98,13 +99,7 @@ const ChatPage: Component<ChatPageProps> = (props) => {
         overflow: "hidden",
       }}
     >
-      <Button
-        icon={"\u{e10e}"}
-        type="ghost"
-        size="large"
-        rounded={true}
-        onClick={props.operations.back}
-      />
+      {backButton(props.operations.back)}
       <div
         style={{
           display: "flex",

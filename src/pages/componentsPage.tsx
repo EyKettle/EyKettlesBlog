@@ -8,6 +8,8 @@ import Loading from "../components/loading";
 import { animateMini } from "motion";
 import Squircle from "../components/squircle";
 import { initReport } from "../components/utils";
+import MemoVlist from "../components/memoVlist";
+import { backButton } from "../controls/templates";
 
 interface componentsPageProps {
   translator: any;
@@ -38,13 +40,7 @@ const ComponentsPage: Component<componentsPageProps> = (props) => {
         width: "100%",
       }}
     >
-      <Button
-        icon={"\u{e10e}"}
-        type="ghost"
-        size="large"
-        rounded={true}
-        onClick={props.operations.back}
-      />
+      {backButton(props.operations.back)}
       <div
         style={{
           display: "flex",
@@ -249,6 +245,22 @@ const ComponentsPage: Component<componentsPageProps> = (props) => {
           >
             <strong style={{ color: "white" }}>Squircle Test</strong>
           </Squircle>
+        </div>
+        <div style={{width: "128px",height: "256px",...styleOfSection}}>
+          {/* <MemoVlist data={["这是", "列表"]}>
+            {(item, index) => {
+              return (
+                <div
+                  style={{
+                    height: "96px",
+                    width: "128px",
+                  }}
+                >
+                  {index + ": " + item}
+                </div>
+              );
+            }}
+          </MemoVlist> */}
         </div>
         <Button
           icon={"\ue0ab"}

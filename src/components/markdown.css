@@ -1,8 +1,9 @@
 .markdown-body {
-  display: grid;
+  display: inline;
 
   h1 {
-    justify-self: center;
+    display: grid;
+    justify-content: center;
   }
   h1,
   h2 {
@@ -69,7 +70,7 @@
       appearance: none;
       align-self: flex-start;
       vertical-align: middle;
-      translate: 0 -0.0625rem;
+      translate: 0 -2px;
       height: 1rem;
       width: 1rem;
       margin: 0;
@@ -84,9 +85,8 @@
       font-family: var(--font-icon);
       content: "\e001";
       font-weight: bold;
-      display: flex;
-      justify-content: center;
-      align-items: center;
+      display: grid;
+      place-items: center;
       height: 100%;
       width: 100%;
     }

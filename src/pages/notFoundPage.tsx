@@ -1,5 +1,6 @@
 import { Component } from "solid-js";
 import { Button } from "../components/button";
+import { backButton } from "../controls/templates";
 
 interface NotFoundPageProps {
   translator: any;
@@ -20,13 +21,7 @@ const NotFoundPage: Component<NotFoundPageProps> = (props) => {
         gap: "2rem",
       }}
     >
-      <Button
-        icon={"\u{e10e}"}
-        type="ghost"
-        size="large"
-        rounded={true}
-        onClick={props.operations.back}
-      />
+      {backButton(props.operations.back)}
       <h1 style={{ margin: "0 1rem", "font-size": "min(2rem, 6vw)" }}>
         {props.translator("errors.404")}
       </h1>

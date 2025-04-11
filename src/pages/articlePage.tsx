@@ -20,6 +20,7 @@ import {
   updateArticleHistory,
 } from "../localStorage";
 import { Article, getInfos } from "../articles/methods";
+import { backButton } from "../controls/templates";
 
 interface ArticlePageProps {
   translator: any;
@@ -158,13 +159,7 @@ const ArticlePage: Component<ArticlePageProps> = (props) => {
         overflow: "scroll",
       }}
     >
-      <Button
-        icon={"\u{e10e}"}
-        type="ghost"
-        size="large"
-        rounded={true}
-        onClick={props.operations.back}
-      />
+      {backButton(props.operations.back)}
       <div
         style={{
           display: "grid",
@@ -177,10 +172,11 @@ const ArticlePage: Component<ArticlePageProps> = (props) => {
         >
           <div
             style={{
-              display: "flex",
+              display: "inline-flex",
               gap: "0.25rem",
               "justify-content": "end",
               "align-items": "center",
+              "vertical-align": "middle",
               "margin-right": "0.75rem",
             }}
           >
@@ -197,20 +193,19 @@ const ArticlePage: Component<ArticlePageProps> = (props) => {
               </svg>
               <label
                 style={{
-                  display: "flex",
-                  "justify-content": "center",
-                  "align-items": "center",
+                  display: "inline",
                   opacity: 0.6,
+                  translate: "0 -1px",
                 }}
               >
                 {articleInfo()!.date}
               </label>
               <div
                 style={{
-                  display: "flex",
+                  display: "inline",
                   padding: "0.375rem 0.5rem",
-                  "align-items": "center",
-                  gap: "0.25rem",
+                  "padding-bottom": "0.5rem",
+                  "padding-right": "0.75rem",
                   "margin-left": "0.5rem",
                   "border-radius": "0.75rem",
                   opacity: 0.6,
@@ -240,28 +235,22 @@ const ArticlePage: Component<ArticlePageProps> = (props) => {
                   target.style.opacity = "0.6";
                 }}
               >
-                <div
+                <img
+                  id="author-avatar"
+                  alt="Author"
+                  src={imgProps().src}
+                  height={imgProps().height}
+                  width={imgProps().width}
                   style={{
-                    "border-radius": "50%",
-                    "background-color": "var(--color-theme-accent-background)",
-                    width: "1.5rem",
-                    height: "1.5rem",
-                    overflow: "hidden",
+                    "clip-path": "circle()",
                     "pointer-events": "none",
+                    "vertical-align": "text-bottom",
+                    "margin-right": "0.25rem",
                   }}
-                >
-                  <img
-                    id="author-avatar"
-                    alt="Author"
-                    src={imgProps().src}
-                    height={imgProps().height}
-                    width={imgProps().width}
-                  />
-                </div>
+                />
                 <label
                   style={{
                     "font-size": "1.25rem",
-                    "justify-self": "start",
                     "font-weight": "bold",
                     "pointer-events": "none",
                   }}

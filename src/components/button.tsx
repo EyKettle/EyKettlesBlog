@@ -57,7 +57,7 @@ export const Button: Component<ButtonProps> = (props) => {
   };
   const applyMouseup = () => {
     if (element)
-      element.style.backgroundColor = `var(--color-${props.type}-default)`;
+      element.style.backgroundColor = `var(--color-${props.type}-hover)`;
   };
   if (props.getAnimates) props.getAnimates(applyMousedown, applyMouseup);
 
@@ -142,11 +142,13 @@ export const Button: Component<ButtonProps> = (props) => {
     <button
       ref={(e) => (element = e)}
       style={{
-        display: "flex",
+        display: "inline-grid",
+        "grid-template-columns": `${
+          props.icon && defaultStyle().fontSize
+        } auto`,
         "flex-shrink": 0,
-        "flex-direction": "row",
-        "justify-content": "center",
         "align-items": "center",
+        "vertical-align": "sub",
         "line-height": "1",
         "min-height": "2.5rem",
         "min-width": "2.5rem",
@@ -197,16 +199,12 @@ export const Button: Component<ButtonProps> = (props) => {
         <div
           style={{
             "white-space": "nowrap",
-            width: defaultStyle().fontSize,
-            height: defaultStyle().fontSize,
           }}
         >
           <For each={Array.from(props.icon ?? "")}>
             {(char, index) => (
               <span
                 style={{
-                  position: "absolute",
-                  "inset-block": 0,
                   "font-family": "var(--font-icon)",
                   zoom: index() === 0 ? 0.95 : 1,
                   color: props.iconColors ? props.iconColors[index()] : "unset",
