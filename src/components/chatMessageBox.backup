@@ -1,0 +1,339 @@
+import { Component, createSignal, JSX, onMount } from "solid-js";
+import { VirtualizerHandle, VList } from "virtua/solid";
+import { parseElement, separateValueAndUnit } from "./utils";
+import Blocker from "./blocker";
+import { ScrollToIndexOpts } from "virtua";
+import { insert } from "solid-js/web";
+
+export enum Sender {
+  System,
+  Own,
+  Other,
+}
+
+export type ChatMessage = {
+  sender: Sender;
+  content: any;
+};
+
+enum BubblePosition {
+  Start,
+  Middle,
+  End,
+}
+
+interface ChatMessageBubbleProps {
+  children: ChatMessage;
+  fontSize?: string;
+  style?: JSX.CSSProperties;
+  position: BubblePosition;
+  ref?: (appearanceRef: HTMLDivElement, elementRef: HTMLDivElement) => void;
+}
+
+const ChatMessageBubble: Component<ChatMessageBubbleProps> = (props) => {
+  let element: HTMLDivElement;
+  let appearance: HTMLDivElement;
+  onMount(() => {
+    const fontSize = separateValueAndUnit(props.fontSize ?? "1rem") ?? {
+      value: 1,
+      unit: "rem",
+    };
+    appearance.style.borderRadius = 1 * fontSize.value + fontSize.unit;
+    appearance.style.minHeight = 1.5 * fontSize.value + fontSize.unit;
+    appearance.style.paddingBlock = 0.25 * fontSize.value + fontSize.unit;
+    appearance.style.paddingInline = 0.75 * fontSize.value + fontSize.unit;
+    if (props.position === BubblePosition.Start)
+      appearance.style.marginTop = "0.25rem";
+
+    element.style.justifyContent = "start";
+    element.style.textAlign = "start";
+    switch (props.children.sender) {
+      case Sender.System:
+        element.style.opacity = "0.6";
+        appearance.style.backgroundColor = "transparent";
+        appearance.style.border = "none";
+        appearance.style.transformOrigin = "left";
+        break;
+      case Sender.Own:
+        element.style.justifyContent = "end";
+        element.style.textAlign = "end";
+        appearance.style.color = "var(--color-chat-own-text-default)";
+        appearance.style.backgroundColor = "var(--color-chat-own-back-default)";
+        appearance.style.borderStyle = "solid";
+        appearance.style.borderWidth = "0.0625rem";
+        appearance.style.borderColor = "var(--color-border-default)";
+        switch (props.position) {
+          case BubblePosition.Start:
+            appearance.style.borderBottomRightRadius = "0";
+            appearance.style.transformOrigin = "bottom right";
+            break;
+          case BubblePosition.Middle:
+            appearance.style.borderTopRightRadius = "0";
+            appearance.style.borderBottomRightRadius = "0";
+            appearance.style.transformOrigin = "right";
+            break;
+          case BubblePosition.End:
+            appearance.style.borderTopRightRadius = "0";
+            appearance.style.transformOrigin = "top right";
+            break;
+        }
+        break;
+      case Sender.Other:
+        appearance.style.color = "var(--color-chat-other-text-default)";
+        appearance.style.backgroundColor =
+          "var(--color-chat-other-back-default)";
+        appearance.style.borderStyle = "solid";
+        appearance.style.borderWidth = "0.0625rem";
+        appearance.style.borderColor = "var(--color-border-default)";
+        switch (props.position) {
+          case BubblePosition.Start:
+            appearance.style.borderBottomLeftRadius = "0";
+            appearance.style.transformOrigin = "bottom left";
+            break;
+          case BubblePosition.Middle:
+            appearance.style.borderTopLeftRadius = "0";
+            appearance.style.borderBottomLeftRadius = "0";
+            appearance.style.transformOrigin = "left";
+            break;
+          case BubblePosition.End:
+            appearance.style.borderTopLeftRadius = "0";
+            appearance.style.transformOrigin = "top left";
+            break;
+        }
+        break;
+    }
+
+    props.ref?.(appearance, element);
+  });
+  return (
+    <div
+      ref={(e) => (element = e)}
+      style={{
+        display: "inline-flex",
+        width: "100%",
+        padding: "0.125rem",
+        "text-wrap": "wrap",
+        "white-space": "pre-wrap",
+        "box-sizing": "border-box",
+      }}
+    >
+      <div
+        ref={(e) => (appearance = e)}
+        style={{
+          display: "inline-flex",
+          "text-align": "start",
+          "justify-content": "center",
+          "align-items": "center",
+          "transition-property": "opacity, scale, filter",
+          "transition-duration": "0.3s",
+          "transition-timing-function": "cubic-bezier(0.5, 0, 0, 1)",
+          "will-change": "scale, filter",
+          ...props.style,
+        }}
+      >
+        {props.children.content}
+      </div>
+    </div>
+  );
+};
+
+interface ChatMessageBoxProps {
+  ref?: (vlist: VirtualizerHandle) => void;
+  initData?: ChatMessage[];
+  fontSize?: string;
+  style?: JSX.CSSProperties;
+  bubbleStyle?: JSX.CSSProperties;
+  paddingBottom?: string;
+  snapOffset?: number;
+  getOperation?: (
+    append: (info: ChatMessage, open?: boolean) => number,
+    remove: (index: number) => void,
+    set: (index: number, content: any) => void,
+    open: (index: number) => void,
+    close: (index: number) => void,
+    getList: () => ReadonlyArray<ChatMessage>
+  ) => void;
+  getMethods?: (
+    scrollTo: (position: number) => void,
+    scrollToBottom: () => void,
+    getPosition: () => number,
+    getIndex: () => number,
+    scrollToIndex: (index: number, opts?: ScrollToIndexOpts) => void
+  ) => void;
+  showupMotion?: (element: HTMLDivElement) => Promise<void>;
+}
+
+const ChatMessageBox: Component<ChatMessageBoxProps> = (props) => {
+  let vlist: VirtualizerHandle | undefined;
+  let msgList = props.initData ?? [];
+  const [innerList, setInnerList] = createSignal<ChatMessage[]>(msgList);
+  let memoBubble = new Map<number, HTMLDivElement>();
+
+  const snap = () => {
+    if (
+      props.snapOffset &&
+      vlist &&
+      vlist.scrollSize - vlist.scrollOffset <= props.snapOffset
+    )
+      scrollToBottom();
+  };
+
+  const append = (info: ChatMessage, open?: boolean) => {
+    const index = msgList.push(info) - 1;
+    const bubble = parseElement<HTMLDivElement>(
+      createBubble(info, getPos(msgList, index, info))
+    );
+    if (bubble) {
+      memoBubble.set(index, bubble);
+      if (props.showupMotion)
+        props.showupMotion(bubble.firstChild as HTMLDivElement).then(() => {
+          if (!open) memoBubble.delete(index);
+        });
+      else if (!open) memoBubble.delete(index);
+      setInnerList(msgList);
+      snap();
+    }
+    console.log(index, msgList);
+
+    return index;
+  };
+  const remove = (index: number) => {
+    msgList.splice(index, 1);
+    setInnerList(msgList);
+  };
+  const set = (index: number, content: any) => {
+    if (memoBubble.has(index)) {
+      const element = memoBubble.get(index)?.firstElementChild;
+      if (element instanceof HTMLDivElement) {
+        element.innerHTML = "";
+        insert(element, content);
+      }
+    } else if (index >= 0 && index < msgList.length)
+      setInnerList((prev) => {
+        let value = [...prev];
+        value[index].content = content;
+        return value;
+      });
+  };
+  const open = (index: number) => {
+    const info = msgList.at(index);
+    const bubble =
+      info &&
+      parseElement<HTMLDivElement>(
+        createBubble(info, getPos(msgList, index, info))
+      );
+    if (bubble) memoBubble.set(index, bubble);
+  };
+  const close = (index: number) => {
+    memoBubble.delete(index);
+    console.log(memoBubble);
+  };
+  const getList = (): ReadonlyArray<ChatMessage> => msgList;
+  props.getOperation?.(append, remove, set, open, close, getList);
+
+  const scrollTo = (position: number) => {
+    if (vlist) vlist.scrollTo(position);
+  };
+  const scrollToBottom = () => {
+    if (vlist) vlist.scrollTo(vlist.scrollSize);
+  };
+  const getPosition = (): number => {
+    return vlist ? vlist.scrollOffset : 0;
+  };
+  const getIndex = (): number => {
+    return vlist ? vlist.findEndIndex() : 0;
+  };
+  const scrollToIndex = (index: number, opts?: ScrollToIndexOpts) => {
+    if (vlist) vlist.scrollToIndex(index, opts);
+  };
+  props.getMethods?.(
+    scrollTo,
+    scrollToBottom,
+    getPosition,
+    getIndex,
+    scrollToIndex
+  );
+
+  const getPos = (
+    list: ChatMessage[] | ReadonlyArray<ChatMessage>,
+    index: number,
+    info: ChatMessage
+  ) => {
+    if (list.length > 0) {
+      const isSameAsPreviousSender =
+        index > 0 && info.sender === list[index - 1].sender;
+      const isSameAsNextSender =
+        index < list.length - 1 && info.sender === list[index + 1].sender;
+      return isSameAsPreviousSender
+        ? isSameAsNextSender
+          ? BubblePosition.Middle
+          : BubblePosition.End
+        : BubblePosition.Start;
+    } else return BubblePosition.Start;
+  };
+
+  const createBubble = (info: ChatMessage, pos: BubblePosition) => {
+    return (
+      <ChatMessageBubble
+        position={pos}
+        fontSize={props.fontSize}
+        children={info}
+        style={props.bubbleStyle}
+      />
+    );
+  };
+  // createEffect(() => {
+  //   if (props.children.length > 0 && props.children.length !== lastLength) {
+  //     lastLength = props.children.length;
+  //     const index = props.children.length - 1;
+  //     const info = props.children[index];
+  //     const bubble = parseElement<HTMLDivElement>(
+  //       createBubble(info, getPos(index, info))
+  //     );
+  //     if (bubble) {
+  //       memoBubble.set(index, bubble);
+  //       props
+  //         .showupMotion?.(bubble.firstChild as HTMLDivElement)
+  //         .then(() => memoBubble.delete(index));
+  //     }
+  //     setInnerList(props.children);
+  //     snap();
+  //   }
+  // });
+
+  return (
+    <VList
+      ref={(e) => {
+        vlist = e;
+        if (vlist) props.ref?.(vlist);
+      }}
+      data={innerList()}
+      style={{
+        "font-size": `${props.fontSize ?? "1rem"}`,
+        "user-select": "text",
+        ...props.style,
+      }}
+    >
+      {(item, index) => {
+        const tail =
+          index === msgList.length - 1 && props.paddingBottom ? (
+            <Blocker
+              style={{
+                height: props.paddingBottom,
+              }}
+            />
+          ) : null;
+
+        const memo = memoBubble.get(index);
+        return (
+          <>
+            {memo ? memo : createBubble(item, getPos(msgList, index, item))}
+            {tail}
+          </>
+        );
+      }}
+    </VList>
+  );
+};
+
+export default ChatMessageBox;

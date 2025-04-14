@@ -55,11 +55,11 @@ export const Button: Component<ButtonProps> = (props) => {
     if (element)
       element.style.backgroundColor = `var(--color-${props.type}-active)`;
   };
-  const applyMouseup = () => {
+  const applyMouseleave = () => {
     if (element)
-      element.style.backgroundColor = `var(--color-${props.type}-hover)`;
+      element.style.backgroundColor = `var(--color-${props.type}-default)`;
   };
-  if (props.getAnimates) props.getAnimates(applyMousedown, applyMouseup);
+  props.getAnimates?.(applyMousedown, applyMouseleave);
 
   createEffect(() => {
     if (!element) return;
@@ -164,9 +164,8 @@ export const Button: Component<ButtonProps> = (props) => {
         if (!props.disabled && !isTouch)
           e.currentTarget.style.backgroundColor = `var(--color-${props.type}-hover)`;
       }}
-      on:mouseleave={(e) => {
-        if (!props.disabled && !isTouch)
-          e.currentTarget.style.backgroundColor = `var(--color-${props.type}-default)`;
+      on:mouseleave={() => {
+        if (!props.disabled && !isTouch) applyMouseleave();
       }}
       on:mousedown={(e) => {
         if (!props.disabled && !isTouch && e.button === 0) applyMousedown();
@@ -176,7 +175,8 @@ export const Button: Component<ButtonProps> = (props) => {
           isTouch = false;
           return;
         }
-        if (!props.disabled && e.button === 0) applyMouseup();
+        if (!props.disabled && e.button === 0)
+          e.currentTarget.style.backgroundColor = `var(--color-${props.type}-hover)`;
       }}
       on:touchstart={(e) => {
         isTouch = true;

@@ -28,7 +28,6 @@ import ComponentsPage from "./pages/componentsPage";
 import { Article, getInfos } from "./articles/methods";
 import { Config, loadConfig, saveConfig } from "./localStorage";
 import ChatPage from "./pages/chatPage";
-import { initReport } from "./components/utils";
 
 export enum Pages {
   NotFound = 0,
@@ -82,10 +81,8 @@ const App: Component = () => {
     }
   };
 
-  let switchTo = (_index: number, _param?: string) => initReport();
-  let getFrontIndex = (): number => {
-    throw new Error("Not initialized");
-  };
+  let switchTo: (_index: number, _param?: string) => void;
+  let getFrontIndex: () => number;
 
   const updateTitle = (frontPage?: Pages) => {
     if (!dict()) return;
@@ -118,17 +115,17 @@ const App: Component = () => {
     updateTitle();
   });
 
-  let savePosition = () => initReport();
-  let loadPosition = () => initReport();
+  let savePosition: () => void;
+  let loadPosition: () => void;
 
-  let saveChatPos = () => initReport();
-  let loadChatPos = () => initReport();
+  let saveChatPos: () => void;
+  let loadChatPos: () => void;
 
-  let saveArticlePos = () => initReport();
-  let loadArticlePos = () => initReport();
+  let saveArticlePos: () => void;
+  let loadArticlePos: () => void;
 
   let articleInfo: Article | undefined = undefined;
-  let setArticle = (_info?: Article) => initReport();
+  let setArticle: (_info?: Article) => void;
   const loadArticle = () => {
     if (!articleInfo) {
       console.warn("No article info");
@@ -246,9 +243,9 @@ const App: Component = () => {
               },
               {
                 name: Pages[Pages.Reading],
-                onPrepare: loadPosition,
+                onPrepare: () => loadPosition(),
                 onRouted: () => updateTitle(Pages.Reading),
-                onLeave: savePosition,
+                onLeave: () => savePosition(),
               },
               {
                 name: Pages[Pages.Article],
@@ -281,8 +278,8 @@ const App: Component = () => {
                     // });
                     resolve(null);
                   }),
-                onPrepare: loadArticlePos,
-                onLeave: saveArticlePos,
+                onPrepare: () => loadArticlePos(),
+                onLeave: () => saveArticlePos(),
               },
               {
                 name: Pages[Pages.ComponentLibrary],
@@ -290,8 +287,8 @@ const App: Component = () => {
               },
               {
                 name: Pages[Pages.Chat],
-                onPrepare: loadChatPos,
-                onLeave: saveChatPos,
+                onPrepare: () => loadChatPos(),
+                onLeave: () => saveChatPos(),
               },
             ]}
             homeIndex={Pages.Home}
@@ -308,7 +305,7 @@ const App: Component = () => {
               page.style.display = "grid";
               page.style.placeItems = "center";
               page.style.willChange = "opacity, scale, filter";
-              page.style.overflow = "scroll"
+              page.style.overflow = "scroll";
             }}
             switchMotion={(oldPage, newPage, isForward) =>
               new Promise((resolve) => {
@@ -391,7 +388,7 @@ const App: Component = () => {
             />
             <HomePage
               translator={t}
-              operations={{ switchTo }}
+              operations={{ switchTo: (t) => switchTo(t) }}
               showDarkModeTip={isExistDarkModePlugin()}
             />
             <ReadingPage

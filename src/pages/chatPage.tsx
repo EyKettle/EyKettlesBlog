@@ -4,10 +4,8 @@ import ChatMessageBox, {
   ChatMessage,
   Sender,
 } from "../components/chatMessageBox";
-import { testChatData } from "../components/testData";
-import { animateMini } from "motion";
+import { animate } from "motion";
 import ChatInputBox from "../components/chatInputBox";
-import { initReport } from "../components/utils";
 import { backButton } from "../controls/templates";
 
 interface ChatPageProps {
@@ -23,66 +21,41 @@ const ChatPage: Component<ChatPageProps> = (props) => {
   const t = props.translator;
 
   createEffect(() => {
-    if (t) {
-      setChatHistory((prev) => {
-        let value = [...prev];
-        if (value.length > 0) value.shift();
-        value.unshift({
-          sender: Sender.System,
-          content: t("chatPage.systemTip"),
-        });
-        return value;
-      });
-    }
-  });
-
-  const [chatHistory, setChatHistory] = createSignal<ChatMessage[]>([]);
-
-  let lastMsg: HTMLDivElement | null = null;
-  createEffect(() => {
-    if (lastMsg)
-      animateMini(
-        lastMsg,
-        {
-          scale: [0.6, 1],
-          opacity: [0, 1],
-          filter: ["blur(0.5rem)", "blur(0)"],
-        },
-        { duration: 0.2, ease: [0.5, 0, 0, 1] }
-      );
+    if (t) set(0, t("chatPage.systemTip"));
   });
 
   let position: number | undefined;
-  const savePosition = () => {
-    position = getPosition();
-  };
-  const loadPosition = () => {
-    scrollTo(position ?? 0);
-  };
+  const savePosition = () => (position = getPosition());
+  const loadPosition = () => scrollTo(position ?? 0, 0);
   props.getMethods(savePosition, loadPosition);
 
+  let append: (info: ChatMessage, open?: boolean) => number;
+  let remove: (index: number) => void;
+  let set: (index: number, content: any) => void;
+  let open: (index: number) => void;
+  let close: (index: number) => void;
+  let getList: () => ReadonlyArray<ChatMessage>;
+
   const handleSubmit = (msg: string) => {
-    setChatHistory((prev) => {
-      let value = [...prev];
-      value.push({
-        sender: Sender.Own,
-        content: msg,
-      });
-      return value;
+    append({
+      sender: Sender.Own,
+      content: msg,
     });
   };
-  let scrollTo = (_pos: number) => initReport();
-  let scrollToBottom = (_force = false) => initReport();
-  let getPosition = () => {
-    initReport();
-    return 0;
-  };
-  let getIndex = () => {
-    initReport();
-    return 0;
-  };
+  let scrollTo: (pos: number, dur?: number) => void;
+  let scrollToBottom: () => void;
+  let getPosition: () => number;
+  let getStartIndex: () => number;
+  let getEndIndex: () => number;
 
   const [showInput, setShowInput] = createSignal(true);
+
+  onMount(() => {
+    append({
+      sender: Sender.System,
+      content: t("chatPage.systemTip"),
+    });
+  });
 
   return (
     <div
@@ -112,19 +85,50 @@ const ChatPage: Component<ChatPageProps> = (props) => {
       >
         <ChatMessageBox
           fontSize="1.125rem"
-          getLastMsg={(bubble) => (lastMsg = bubble)}
           paddingBottom="16rem"
-          getMethods={(to, bottom, pos, i) => {
-            scrollTo = to;
-            scrollToBottom = (force = false) => {
-              if (force || getIndex() === chatHistory().length - 1) bottom();
-            };
-            getPosition = pos;
-            getIndex = i;
+          snapOffset={64}
+          getListOps={(a, r, s, o, c, l) => {
+            append = a;
+            remove = r;
+            set = s;
+            open = o;
+            close = c;
+            getList = l;
           }}
-        >
-          {chatHistory()}
-        </ChatMessageBox>
+          getScrollOps={(t, b, p, s, e) => {
+            scrollTo = t;
+            scrollToBottom = b;
+            getPosition = p;
+            getStartIndex = s;
+            getEndIndex = e;
+          }}
+          showupMotion={(bubble) =>
+            new Promise<void>((resolve) => {
+              animate(
+                bubble,
+                {
+                  opacity: [0, 1],
+                  filter: ["blur(0.5rem)", "blur(0)"],
+                },
+                {
+                  duration: 0.2,
+                  ease: [0.5, 0, 0, 1],
+                }
+              );
+              animate(
+                bubble,
+                {
+                  scale: [0.6, 1],
+                },
+                {
+                  type: "spring",
+                  duration: 0.3,
+                  bounce: 0.3,
+                }
+              ).then(resolve);
+            })
+          }
+        />
         <ChatInputBox
           showed={showInput()}
           placeHolder={t("chatPage.placeholder")}
@@ -183,28 +187,15 @@ const ChatPage: Component<ChatPageProps> = (props) => {
           }}
           onSubmit={(t) => {
             handleSubmit(t);
-            scrollToBottom(true);
+            scrollToBottom();
             new Promise((r) => {
               setTimeout(() => {
-                setChatHistory((prev) => {
-                  let value = [...prev];
-                  value.push({
-                    sender: Sender.Other,
-                    content: "你需要重复对方的消息",
-                  });
-                  return value;
+                append({
+                  sender: Sender.Other,
+                  content: "你需要重复对方的消息",
                 });
-                scrollToBottom();
                 setTimeout(() => {
-                  setChatHistory((prev) => {
-                    let value = [...prev];
-                    value.push({
-                      sender: Sender.Other,
-                      content: t,
-                    });
-                    return value;
-                  });
-                  scrollToBottom();
+                  append({ sender: Sender.Other, content: t });
                 }, t.length * 100);
                 r(null);
               }, Math.random() * 1000 + 600);

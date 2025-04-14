@@ -7,7 +7,6 @@ import InputBox from "../components/inputBox";
 import Loading from "../components/loading";
 import { animateMini } from "motion";
 import Squircle from "../components/squircle";
-import { initReport } from "../components/utils";
 import MemoVlist from "../components/memoVlist";
 import { backButton } from "../controls/templates";
 
@@ -26,7 +25,7 @@ const ComponentsPage: Component<componentsPageProps> = (props) => {
     display: "flex",
     gap: "1rem",
   } as JSX.CSSProperties;
-  let switchTo = (_index: number, _param?: string) => initReport();
+  let switchTo: (_index: number, _param?: string) => void;
 
   return (
     <div
@@ -245,22 +244,6 @@ const ComponentsPage: Component<componentsPageProps> = (props) => {
           >
             <strong style={{ color: "white" }}>Squircle Test</strong>
           </Squircle>
-        </div>
-        <div style={{width: "128px",height: "256px",...styleOfSection}}>
-          {/* <MemoVlist data={["这是", "列表"]}>
-            {(item, index) => {
-              return (
-                <div
-                  style={{
-                    height: "96px",
-                    width: "128px",
-                  }}
-                >
-                  {index + ": " + item}
-                </div>
-              );
-            }}
-          </MemoVlist> */}
         </div>
         <Button
           icon={"\ue0ab"}

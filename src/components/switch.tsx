@@ -207,7 +207,7 @@ export const Switch: Component<SwitchProps> = (props) => {
     const prev = activeIndex();
     setActiveIndex(index);
     resetHandles[prev]();
-    if (props.onChange) props.onChange(index);
+    props.onChange?.(index);
   };
   let resetHandles: (() => void)[] = Array(props.children.length).fill(() =>
     console.warn("Switch item not found")
