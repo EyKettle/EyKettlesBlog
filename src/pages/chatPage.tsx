@@ -1,4 +1,11 @@
-import { Component, createEffect, createSignal, onMount } from "solid-js";
+import {
+  Component,
+  createEffect,
+  createRoot,
+  createSignal,
+  onCleanup,
+  onMount,
+} from "solid-js";
 import { Button } from "../components/button";
 import ChatMessageBox, {
   ChatMessage,
@@ -7,6 +14,8 @@ import ChatMessageBox, {
 import { animate } from "motion";
 import ChatInputBox from "../components/chatInputBox";
 import { backButton } from "../controls/templates";
+import { SolidMarkdown } from "solid-markdown";
+import remarkGfm from "remark-gfm";
 
 interface ChatPageProps {
   translator: any;
@@ -25,7 +34,7 @@ const ChatPage: Component<ChatPageProps> = (props) => {
 
   let append: (info: ChatMessage, open?: boolean) => number;
   let remove: (index: number) => void;
-  let set: (index: number, content: any) => void;
+  let set: (index: number, content: any, snap?: boolean) => void;
   let open: (index: number) => void;
   let close: (index: number) => void;
   let getList: () => ReadonlyArray<ChatMessage>;
@@ -36,19 +45,61 @@ const ChatPage: Component<ChatPageProps> = (props) => {
       content: msg,
     });
   };
-  let scrollTo: (pos: number, dur?: number) => void;
   let scrollToBottom: () => void;
-  let getPosition: () => number;
-  let getStartIndex: () => number;
-  let getEndIndex: () => number;
+  let alignBottom: (sudden?: boolean) => void;
 
   const [showInput, setShowInput] = createSignal(true);
+
+  const testStream = () =>
+    new Promise<void>(async (resolve) => {
+      const content = (await import("../articles/new.md?raw")).default;
+      const [text, setText] = createSignal("");
+      const markdown = createRoot((dispose) => ({
+        element: (
+          <SolidMarkdown
+            // TODO: 改成消息专用的
+            class="markdown-body"
+            remarkPlugins={[remarkGfm]}
+            children={text()}
+            renderingStrategy="reconcile"
+          ></SolidMarkdown>
+        ),
+        dispose,
+      }));
+      const targetIndex = append(
+        {
+          sender: Sender.Other,
+          content: markdown.element,
+        },
+        true
+      );
+      for (let i = 0; i < content.length; i += 3)
+        await new Promise<void>((resolve) =>
+          setTimeout(() => {
+            setText(content.substring(0, i));
+            alignBottom(true);
+            resolve();
+          }, 80)
+        );
+      close(targetIndex);
+      markdown.dispose();
+      resolve();
+    });
+  const handleKeydown = (e: KeyboardEvent) => {
+    if (e.key === "S" && e.shiftKey) testStream();
+  };
 
   onMount(() => {
     append({
       sender: Sender.System,
       content: t("chatPage.systemTip"),
     });
+
+    document.addEventListener("keydown", handleKeydown);
+  });
+
+  onCleanup(() => {
+    document.removeEventListener("keydown", handleKeydown);
   });
 
   return (
@@ -89,12 +140,9 @@ const ChatPage: Component<ChatPageProps> = (props) => {
             close = c;
             getList = l;
           }}
-          getScrollOps={(t, b, p, s, e) => {
-            scrollTo = t;
+          getScrollOps={(t, b, p, s, e, i, a) => {
             scrollToBottom = b;
-            getPosition = p;
-            getStartIndex = s;
-            getEndIndex = e;
+            alignBottom = a;
           }}
           showupMotion={(bubble) =>
             new Promise<void>((resolve) => {

@@ -1,9 +1,9 @@
-import { Component, createEffect, createSignal, JSX } from "solid-js";
+import { Component, createSignal, JSX } from "solid-js";
 import { VirtualizerHandle, VList } from "virtua/solid";
 import { blocker, separateValueAndUnit } from "./utils";
 import { ScrollToIndexOpts } from "virtua";
-import { insert } from "solid-js/web";
 import { animate, motionValue } from "motion";
+import { insert } from "solid-js/web";
 
 export enum Sender {
   System,
@@ -154,7 +154,7 @@ interface ChatMessageBoxProps {
   getListOps?: (
     append: (info: ChatMessage, open?: boolean) => number,
     remove: (index: number) => void,
-    set: (index: number, content: any) => void,
+    set: (index: number, content: any, snap?: boolean) => void,
     open: (index: number) => void,
     close: (index: number) => void,
     getList: () => ReadonlyArray<ChatMessage>
@@ -165,7 +165,8 @@ interface ChatMessageBoxProps {
     getPosition: () => number,
     getStartIndex: () => number,
     getEndIndex: () => number,
-    scrollToIndex: (index: number, opts?: ScrollToIndexOpts) => void
+    scrollToIndex: (index: number, opts?: ScrollToIndexOpts) => void,
+    alignBottom: (sudden?: boolean) => void
   ) => void;
 }
 
@@ -183,22 +184,22 @@ const ChatMessageBox: Component<ChatMessageBoxProps> = (props) => {
     Array<ChatBubble | HTMLDivElement>
   >([]);
 
-  const snap = () => {
+  const alignBottom = (sudden?: boolean) => {
     if (
       props.snapOffset &&
       vlist &&
       vlist.scrollSize - (vlist.scrollOffset + vlist.viewportSize) <=
         props.snapOffset
     )
-      scrollToBottom();
+      scrollToBottom(sudden ? 0 : undefined);
   };
-  const submitUpdate = (scroll?: boolean) => {
+  const submitUpdate = (scroll?: boolean, sudden?: boolean) => {
     setRenderList([
       blocker(props.paddingTop),
       ...msgList,
       blocker(props.paddingBottom),
     ]);
-    if (scroll) snap();
+    if (scroll) alignBottom(sudden);
   };
 
   const getPos = (
@@ -217,20 +218,6 @@ const ChatMessageBox: Component<ChatMessageBoxProps> = (props) => {
           : BubblePosition.End
         : BubblePosition.Start;
     } else return BubblePosition.Start;
-  };
-  const createBubble = (
-    info: ChatBubble,
-    onMount: (appearanceRef: HTMLDivElement, elementRef: HTMLDivElement) => void
-  ) => {
-    return (
-      <ChatMessageBubble
-        ref={onMount}
-        position={info.pos}
-        fontSize={props.fontSize}
-        children={info}
-        style={props.bubbleStyle}
-      />
-    );
   };
 
   const append = (info: ChatMessage, open?: boolean) => {
@@ -300,7 +287,7 @@ const ChatMessageBox: Component<ChatMessageBoxProps> = (props) => {
     memoBubble.delete(index);
     submitUpdate();
   };
-  const set = (index: number, content: any) => {
+  const set = (index: number, content: any, snap?: boolean) => {
     const target = msgList[index];
     if (target) {
       target.content = content;
@@ -311,7 +298,7 @@ const ChatMessageBox: Component<ChatMessageBoxProps> = (props) => {
           insert(element, content);
         }
       }
-      submitUpdate();
+      submitUpdate(snap, true);
     }
   };
   const open = (index: number) => {
@@ -357,7 +344,8 @@ const ChatMessageBox: Component<ChatMessageBoxProps> = (props) => {
     getPosition,
     getStartIndex,
     getEndIndex,
-    scrollToIndex
+    scrollToIndex,
+    alignBottom
   );
 
   return (
@@ -377,9 +365,11 @@ const ChatMessageBox: Component<ChatMessageBoxProps> = (props) => {
         const realIndex = index - 1;
         const memo = memoBubble.get(realIndex)?.ref;
         if (item instanceof HTMLDivElement) return item;
-        return memo
-          ? memo
-          : createBubble(item, (a) => {
+        return memo ? (
+          memo
+        ) : (
+          <ChatMessageBubble
+            ref={(a) => {
               const target = memoBubble.get(realIndex);
               const element = a.parentElement as HTMLDivElement;
               if (target) {
@@ -395,7 +385,13 @@ const ChatMessageBox: Component<ChatMessageBoxProps> = (props) => {
                   }
                 }
               }
-            });
+            }}
+            position={item.pos}
+            fontSize={props.fontSize}
+            children={item}
+            style={props.bubbleStyle}
+          />
+        );
       }}
     </VList>
   );

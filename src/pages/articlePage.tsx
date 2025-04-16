@@ -6,7 +6,6 @@ import {
   Show,
   Suspense,
 } from "solid-js";
-import { Button } from "../components/button";
 import { SolidMarkdown } from "solid-markdown";
 import { Card } from "../components/card";
 import remarkGfm from "remark-gfm";
