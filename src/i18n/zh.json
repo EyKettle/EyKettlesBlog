@@ -56,7 +56,7 @@
   },
   "chatPage": {
     "systemTip": "这是一个用于测试对话相关组件的界面\n数据不被记录",
-    "placeholder": "键入消息",
+    "placeholder": "键入消息，Shift + S 测试Markdown流式输出",
     "submit": "发送"
   }
 }

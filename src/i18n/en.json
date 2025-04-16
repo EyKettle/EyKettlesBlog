@@ -56,7 +56,7 @@
   },
   "chatPage": {
     "systemTip": "A page for chat component testing.\nNo data storage.",
-    "placeholder": "Input text",
+    "placeholder": "Input text, Shift + S to test markdown streaming",
     "submit": "Submit"
   }
 }
