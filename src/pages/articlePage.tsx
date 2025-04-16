@@ -241,7 +241,7 @@ const ArticlePage: Component<ArticlePageProps> = (props) => {
                   height={imgProps().height}
                   width={imgProps().width}
                   style={{
-                    "clip-path": "circle()",
+                    "border-radius": "50%",
                     "pointer-events": "none",
                     "margin-right": "0.25rem",
                   }}

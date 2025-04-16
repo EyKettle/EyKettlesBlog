@@ -115,12 +115,6 @@ const App: Component = () => {
     updateTitle();
   });
 
-  let savePosition: () => void;
-  let loadPosition: () => void;
-
-  let saveChatPos: () => void;
-  let loadChatPos: () => void;
-
   let saveArticlePos: () => void;
   let loadArticlePos: () => void;
 
@@ -243,12 +237,11 @@ const App: Component = () => {
               },
               {
                 name: Pages[Pages.Reading],
-                onPrepare: () => loadPosition(),
                 onRouted: () => updateTitle(Pages.Reading),
-                onLeave: () => savePosition(),
               },
               {
                 name: Pages[Pages.Article],
+                memoPosition: false,
                 onRouted: (_, param) =>
                   new Promise(async (resolve) => {
                     if (param)
@@ -287,8 +280,6 @@ const App: Component = () => {
               },
               {
                 name: Pages[Pages.Chat],
-                onPrepare: () => loadChatPos(),
-                onLeave: () => saveChatPos(),
               },
             ]}
             homeIndex={Pages.Home}
@@ -400,10 +391,6 @@ const App: Component = () => {
                   switchTo(Pages.Article, article.fileName);
                 },
               }}
-              getMethods={(save, load) => {
-                savePosition = save;
-                loadPosition = load;
-              }}
             />
             <ArticlePage
               translator={t}
@@ -428,10 +415,6 @@ const App: Component = () => {
             <ChatPage
               translator={t}
               operations={{ back: () => switchTo(Pages.ComponentLibrary) }}
-              getMethods={(save, load) => {
-                saveChatPos = save;
-                loadChatPos = load;
-              }}
             />
           </PageContainer>
         </Suspense>

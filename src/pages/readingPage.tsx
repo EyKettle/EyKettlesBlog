@@ -12,7 +12,6 @@ interface ReadingPageProps {
     back: () => void;
     setArticleInfo: (article: Article) => void;
   };
-  getMethods: (savePosition: () => void, loadPosition: () => void) => void;
 }
 
 const ReadingPage: Component<ReadingPageProps> = (props) => {
@@ -29,14 +28,6 @@ const ReadingPage: Component<ReadingPageProps> = (props) => {
   );
 
   let vlist: VirtualizerHandle | undefined;
-  let position: number | undefined;
-  const savePosition = () => {
-    if (vlist) position = vlist.scrollOffset;
-  };
-  const loadPosition = () => {
-    if (vlist) vlist.scrollTo(position ?? 0);
-  };
-  props.getMethods(savePosition, loadPosition);
 
   return (
     <VList

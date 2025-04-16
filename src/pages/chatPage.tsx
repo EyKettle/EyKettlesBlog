@@ -14,7 +14,6 @@ interface ChatPageProps {
   operations: {
     back: () => void;
   };
-  getMethods: (savePosition: () => void, loadPosition: () => void) => void;
 }
 
 const ChatPage: Component<ChatPageProps> = (props) => {
@@ -23,11 +22,6 @@ const ChatPage: Component<ChatPageProps> = (props) => {
   createEffect(() => {
     if (t) set(0, t("chatPage.systemTip"));
   });
-
-  let position: number | undefined;
-  const savePosition = () => (position = getPosition());
-  const loadPosition = () => scrollTo(position ?? 0, 0);
-  props.getMethods(savePosition, loadPosition);
 
   let append: (info: ChatMessage, open?: boolean) => number;
   let remove: (index: number) => void;
