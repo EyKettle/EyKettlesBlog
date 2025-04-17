@@ -1,7 +1,6 @@
 import {
   Component,
   createEffect,
-  createRoot,
   createSignal,
   onCleanup,
   onMount,
@@ -10,12 +9,11 @@ import { Button } from "../components/button";
 import ChatMessageBox, {
   ChatMessage,
   Sender,
-} from "../components/chatMessageBox";
+} from "../components/chat/chatMessageBox";
 import { animate } from "motion";
-import ChatInputBox from "../components/chatInputBox";
+import ChatInputBox from "../components/chat/chatInputBox";
 import { backButton } from "../controls/templates";
-import { SolidMarkdown } from "solid-markdown";
-import remarkGfm from "remark-gfm";
+import { createMarkdownMessage } from "../components/chat/MessageUtils";
 
 interface ChatPageProps {
   translator: any;
@@ -50,41 +48,20 @@ const ChatPage: Component<ChatPageProps> = (props) => {
 
   const [showInput, setShowInput] = createSignal(true);
 
-  const testStream = () =>
-    new Promise<void>(async (resolve) => {
-      const content = (await import("../articles/new.md?raw")).default;
-      const [text, setText] = createSignal("");
-      const markdown = createRoot((dispose) => ({
-        element: (
-          <SolidMarkdown
-            // TODO: 改成消息专用的
-            class="markdown-body"
-            remarkPlugins={[remarkGfm]}
-            children={text()}
-            renderingStrategy="reconcile"
-          ></SolidMarkdown>
-        ),
-        dispose,
-      }));
-      const targetIndex = append(
-        {
-          sender: Sender.Other,
-          content: markdown.element,
-        },
-        true
+  const testStream = async () => {
+    const markdownMessage = createMarkdownMessage(
+      { append, set, close, alignBottom },
+      Sender.Other
+    );
+    const content = (await import("../articles/new.md?raw")).default;
+    for (let i = 0; i < content.length; i += 3)
+      await new Promise<void>((resolve) =>
+        setTimeout(() => {
+          markdownMessage.push(content.substring(i, i + 3));
+          resolve();
+        }, 80)
       );
-      for (let i = 0; i < content.length; i += 3)
-        await new Promise<void>((resolve) =>
-          setTimeout(() => {
-            setText(content.substring(0, i));
-            alignBottom(true);
-            resolve();
-          }, 80)
-        );
-      close(targetIndex);
-      markdown.dispose();
-      resolve();
-    });
+  };
   const handleKeydown = (e: KeyboardEvent) => {
     if (e.key === "S" && e.shiftKey) testStream();
   };
@@ -153,7 +130,7 @@ const ChatPage: Component<ChatPageProps> = (props) => {
                   filter: ["blur(0.5rem)", "blur(0)"],
                 },
                 {
-                  duration: 0.2,
+                  duration: 0.3,
                   ease: [0.5, 0, 0, 1],
                 }
               );
@@ -164,7 +141,7 @@ const ChatPage: Component<ChatPageProps> = (props) => {
                 },
                 {
                   type: "spring",
-                  duration: 0.3,
+                  duration: 0.4,
                   bounce: 0.3,
                 }
               ).then(resolve);

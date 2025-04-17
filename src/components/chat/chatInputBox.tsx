@@ -1,5 +1,5 @@
 import { Component, createEffect, JSX, onMount } from "solid-js";
-import { Button } from "./button";
+import { Button } from "../button";
 
 interface ChatInputBoxProps {
   showed?: boolean;

@@ -1,6 +1,6 @@
 import { Component, createSignal, JSX } from "solid-js";
 import { VirtualizerHandle, VList } from "virtua/solid";
-import { blocker, separateValueAndUnit } from "./utils";
+import { blocker, separateValueAndUnit } from "../utils";
 import { ScrollToIndexOpts } from "virtua";
 import { animate, motionValue } from "motion";
 import { insert } from "solid-js/web";
@@ -13,7 +13,7 @@ export enum Sender {
 
 export type ChatMessage = {
   sender: Sender;
-  content: any;
+  content?: any;
 };
 
 type ChatBubble = ChatMessage & {
@@ -129,9 +129,10 @@ const ChatMessageBubble: Component<ChatMessageBubbleProps> = (props) => {
           "justify-content": "center",
           "align-items": "center",
           "transition-property": "opacity, scale, filter, border-radius",
-          "transition-duration": "0.2s, 0.2s, 0.2s, 0.15s",
+          "transition-duration": "0.2s",
           "transition-timing-function": "cubic-bezier(0.5, 0, 0, 1)",
           "will-change": "scale, filter",
+          "overflow-wrap": "anywhere",
           ...props.style,
         }}
       >
@@ -316,7 +317,7 @@ const ChatMessageBox: Component<ChatMessageBoxProps> = (props) => {
     if (vlist) {
       const pos = motionValue(vlist.scrollOffset);
       animate(pos, position, {
-        duration: duration ?? 0.2,
+        duration: duration ?? 0.4,
         ease: [0.5, 0, 0, 1],
         onUpdate: (value) => vlist?.scrollTo(value),
       });
@@ -327,7 +328,7 @@ const ChatMessageBox: Component<ChatMessageBoxProps> = (props) => {
     if (vlist) {
       const pos = motionValue(vlist.scrollOffset);
       animate(pos, vlist.scrollSize, {
-        duration: duration ?? 0.2,
+        duration: duration ?? 0.4,
         ease: [0.5, 0, 0, 1],
         onUpdate: (value) => vlist?.scrollTo(value),
       });
