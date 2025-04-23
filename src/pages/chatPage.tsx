@@ -32,7 +32,7 @@ const ChatPage: Component<ChatPageProps> = (props) => {
 
   let append: (info: ChatMessage, open?: boolean) => number;
   let remove: (index: number) => void;
-  let set: (index: number, content: any, snap?: boolean) => void;
+  let set: (index: number, content: any, align?: boolean) => void;
   let open: (index: number) => void;
   let close: (index: number) => void;
   let getList: () => ReadonlyArray<ChatMessage>;
@@ -61,6 +61,7 @@ const ChatPage: Component<ChatPageProps> = (props) => {
           resolve();
         }, 80)
       );
+    markdownMessage.over();
   };
   const handleKeydown = (e: KeyboardEvent) => {
     if (e.key === "S" && e.shiftKey) testStream();
@@ -109,7 +110,7 @@ const ChatPage: Component<ChatPageProps> = (props) => {
           fontSize="1.125rem"
           paddingBottom="16rem"
           snapOffset={64}
-          getListOps={(a, r, s, o, c, l) => {
+          getListOps={(a, r, s, o, c, _, l) => {
             append = a;
             remove = r;
             set = s;

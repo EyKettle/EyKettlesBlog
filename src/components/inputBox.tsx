@@ -4,6 +4,7 @@ interface InputBoxProps {
   placeholder?: string;
   value?: string;
   multiline?: boolean;
+  class?: string;
   style?: JSX.CSSProperties;
   onFocus?: (
     event: FocusEvent & {
@@ -38,6 +39,7 @@ const InputBox: Component<InputBoxProps> = (props) => {
     <input
       ref={(e) => (element = e)}
       type="text"
+      class={props.class}
       style={{
         border: "none",
         "font-size": "1.125rem",

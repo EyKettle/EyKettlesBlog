@@ -4,6 +4,7 @@ import { Button } from "../button";
 interface ChatInputBoxProps {
   showed?: boolean;
   fontSize?: string;
+  class?: string;
   style?: JSX.CSSProperties;
   placeHolder?: string;
   submitLabel?: string;
@@ -41,7 +42,7 @@ interface ChatInputBoxProps {
   bindKey?: {
     submit: string;
   };
-  getRef?: (outerBox: HTMLDivElement, textArea: HTMLTextAreaElement) => void;
+  ref?: (outerBox: HTMLDivElement, textArea: HTMLTextAreaElement) => void;
 }
 
 const ChatInputBox: Component<ChatInputBoxProps> = (props) => {
@@ -50,8 +51,8 @@ const ChatInputBox: Component<ChatInputBoxProps> = (props) => {
   let element: HTMLDivElement;
 
   onMount(() => {
-    if (props.getRef)
-      props.getRef(element, element.firstChild as HTMLTextAreaElement);
+    if (props.ref)
+      props.ref(element, element.firstChild as HTMLTextAreaElement);
   });
 
   createEffect(() => {
@@ -85,6 +86,7 @@ const ChatInputBox: Component<ChatInputBoxProps> = (props) => {
     <div
       aria-disabled={!props.showed}
       ref={(e) => (element = e)}
+      class={props.class}
       style={{
         display: "flex",
         "flex-direction": "column",

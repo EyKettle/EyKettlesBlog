@@ -15,6 +15,7 @@ interface SquircleProps {
   fillColor?: string;
   outlineWidth?: string | FourSides;
   outlineColor?: string;
+  class?: string;
   style?: JSX.CSSProperties;
 }
 
@@ -22,6 +23,7 @@ const Squircle: Component<SquircleProps> = (props) => {
   return (
     <div
       ref={props.ref}
+      class={props.class}
       style={{
         background: "paint(squircle)",
         "--squircle-radius": props.cornerRadius,

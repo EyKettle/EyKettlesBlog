@@ -6,7 +6,7 @@ import { createRoot, createSignal } from "solid-js";
 export const createMarkdownMessage = (
   operations: {
     append: (info: ChatMessage, open?: boolean) => number;
-    set: (index: number, content: any, snap?: boolean) => void;
+    set: (index: number, content: any, align?: boolean) => void;
     close: (index: number) => void;
     alignBottom: (sudden?: boolean) => void;
   },

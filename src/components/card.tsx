@@ -37,6 +37,7 @@ interface CardProps {
         hover?: Shadow;
         active?: Shadow;
       };
+  class?: string;
   style?: JSX.CSSProperties;
   disabled?: boolean;
   interactType?: "hover" | "click";
@@ -414,6 +415,7 @@ export const Card: Component<CardProps> = (props) => {
       </Show>
       <div
         ref={(e) => (appearanceDiv = e)}
+        class={props.class}
         style={{
           display: "flex",
           "flex-grow": 1,
@@ -433,6 +435,8 @@ export const Card: Component<CardProps> = (props) => {
           "transition-duration": "0.15s",
           "transition-timing-function": "cubic-bezier(0.2, 0, 0, 1)",
           "will-change": "transform",
+          overflow: "hidden",
+          "overflow-wrap": "anywhere",
           ...props.style,
         }}
       >

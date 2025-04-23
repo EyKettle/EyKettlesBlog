@@ -29,6 +29,7 @@ enum BubblePosition {
 interface ChatMessageBubbleProps {
   children: ChatMessage;
   fontSize?: string;
+  class?: string;
   style?: JSX.CSSProperties;
   position: BubblePosition;
   ref?: (appearanceRef: HTMLDivElement, elementRef: HTMLDivElement) => void;
@@ -123,9 +124,11 @@ const ChatMessageBubble: Component<ChatMessageBubbleProps> = (props) => {
       }}
     >
       <div
+        class={props.class}
         style={{
           display: "inline-flex",
           "text-align": "start",
+          "flex-direction": "column",
           "justify-content": "center",
           "align-items": "center",
           "transition-property": "opacity, scale, filter, border-radius",
@@ -146,7 +149,9 @@ interface ChatMessageBoxProps {
   ref?: (vlist: VirtualizerHandle) => void;
   initData?: ChatMessage[];
   fontSize?: string;
+  class?: string;
   style?: JSX.CSSProperties;
+  bubbleClass?: string;
   bubbleStyle?: JSX.CSSProperties;
   paddingTop?: string;
   paddingBottom?: string;
@@ -155,9 +160,10 @@ interface ChatMessageBoxProps {
   getListOps?: (
     append: (info: ChatMessage, open?: boolean) => number,
     remove: (index: number) => void,
-    set: (index: number, content: any, snap?: boolean) => void,
+    set: (index: number, content: any, align?: boolean) => void,
     open: (index: number) => void,
     close: (index: number) => void,
+    clear: () => void,
     getList: () => ReadonlyArray<ChatMessage>
   ) => void;
   getScrollOps?: (
@@ -286,6 +292,7 @@ const ChatMessageBox: Component<ChatMessageBoxProps> = (props) => {
   const remove = (index: number) => {
     msgList.splice(index, 1);
     memoBubble.delete(index);
+    animationQueue.delete(index);
     submitUpdate();
   };
   const set = (index: number, content: any, snap?: boolean) => {
@@ -309,8 +316,14 @@ const ChatMessageBox: Component<ChatMessageBoxProps> = (props) => {
   const close = (index: number) => {
     memoBubble.delete(index);
   };
+  const clear = () => {
+    msgList = [];
+    memoBubble.clear();
+    animationQueue.clear();
+    submitUpdate();
+  };
   const getList = (): ReadonlyArray<ChatMessage> => msgList;
-  props.getListOps?.(append, remove, set, open, close, getList);
+  props.getListOps?.(append, remove, set, open, close, clear, getList);
 
   const scrollTo = (position: number, duration?: number) => {
     if (duration === 0) vlist?.scrollTo(position);
@@ -356,6 +369,7 @@ const ChatMessageBox: Component<ChatMessageBoxProps> = (props) => {
         if (vlist) props.ref?.(vlist);
       }}
       data={renderList()}
+      class={props.class}
       style={{
         "font-size": `${props.fontSize ?? "1rem"}`,
         "user-select": "text",
@@ -390,6 +404,7 @@ const ChatMessageBox: Component<ChatMessageBoxProps> = (props) => {
             position={item.pos}
             fontSize={props.fontSize}
             children={item}
+            class={props.bubbleClass}
             style={props.bubbleStyle}
           />
         );

@@ -121,6 +121,9 @@
 .chat-markdown {
   display: inline;
 
+  * {
+    overflow-wrap: anywhere;
+  }
   h1 {
     display: grid;
     justify-content: center;
