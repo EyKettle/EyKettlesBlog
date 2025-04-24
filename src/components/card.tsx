@@ -47,6 +47,9 @@ interface CardProps {
 export const Card: Component<CardProps> = (props) => {
   if (!props.interactType) props.interactType = "click";
 
+  let appearanceDiv: HTMLDivElement;
+  let shadowBox: HTMLDivElement;
+
   let isTouch = false;
 
   let pressColor = "var(--color-surface-active)";
@@ -64,14 +67,11 @@ export const Card: Component<CardProps> = (props) => {
 
   const resetStyle = () => {
     requestAnimationFrame(() => {
-      if (!appearanceDiv) return;
       appearanceDiv.style.scale = "1";
-      if (shadowBox) {
-        shadowBox.style.translate = "0 0.0625rem";
-        shadowBox.style.filter = "blur(0.0625rem)";
-        shadowBox.style.opacity = "0.6";
-        shadowBox.style.scale = "1";
-      }
+      shadowBox.style.translate = "0 0.0625rem";
+      shadowBox.style.filter = "blur(0.0625rem)";
+      shadowBox.style.opacity = "0.6";
+      shadowBox.style.scale = "1";
       appearanceDiv.style.borderColor = "var(--color-border-default)";
       appearanceDiv.parentElement!.style.zIndex = "1";
       appearanceDiv.style.backgroundColor = "var(--color-surface-light)";
@@ -82,14 +82,7 @@ export const Card: Component<CardProps> = (props) => {
     });
   };
 
-  let appearanceDiv: HTMLDivElement | null = null;
-  let shadowBox: HTMLDivElement | null = null;
   onMount(() => {
-    if (!appearanceDiv) {
-      console.warn("Element not found");
-      return;
-    }
-
     const parent = appearanceDiv.parentElement!.parentElement;
     if (!parent) return;
 
@@ -170,7 +163,6 @@ export const Card: Component<CardProps> = (props) => {
       element.style.transform = `perspective(64rem) rotateY(${rotateY}deg) rotateX(${rotateX}deg)`;
       isFrameScheduled = false;
       if (props.effect === "all") {
-        if (!shadowBox) return;
         const rotateYRad = (rotateY * Math.PI) / 180;
         const rotateXRad = (rotateX * Math.PI) / 180;
         const scaleX = Math.abs(Math.cos(rotateYRad));
@@ -231,10 +223,9 @@ export const Card: Component<CardProps> = (props) => {
         "-moz-user-select": "none",
       }}
       on:mouseenter={() => {
-        if (props.disabled || isTouch || !appearanceDiv) return;
+        if (props.disabled || isTouch) return;
         if (props.effect && EFFECT_MAP.float.has(props.effect)) {
           appearanceDiv.style.scale = "1.1";
-          if (!shadowBox) return;
           shadowBox.style.translate = "0 0.625rem";
           shadowBox.style.filter = "blur(0.25rem)";
         }
@@ -246,13 +237,7 @@ export const Card: Component<CardProps> = (props) => {
         if (!props.disabled && !isTouch) resetStyle();
       }}
       on:mousedown={(e) => {
-        if (
-          props.disabled ||
-          props.interactType === "hover" ||
-          isTouch ||
-          !appearanceDiv
-        )
-          return;
+        if (props.disabled || props.interactType === "hover" || isTouch) return;
         if (e.button === 0) {
           appearanceDiv.style.backgroundColor = pressColor;
           if (props.effect && props.effect !== "none") {
@@ -260,14 +245,12 @@ export const Card: Component<CardProps> = (props) => {
               handleRotate(appearanceDiv, e.clientX, e.clientY);
               if (props.effect === "3d") {
                 appearanceDiv.style.scale = "0.95";
-                if (!shadowBox) return;
                 shadowBox.style.opacity = "0";
                 shadowBox.style.scale = "0.95";
               }
             }
             if (EFFECT_MAP.float.has(props.effect)) {
               appearanceDiv.style.scale = "1.05";
-              if (!shadowBox) return;
               shadowBox.style.translate = "0 0.375rem";
               shadowBox.style.filter = "blur(0.125rem)";
             }
@@ -279,8 +262,7 @@ export const Card: Component<CardProps> = (props) => {
           isTouch = false;
           return;
         }
-        if (props.disabled || props.interactType === "hover" || !appearanceDiv)
-          return;
+        if (props.disabled || props.interactType === "hover") return;
         if (e.button === 0) {
           appearanceDiv.style.backgroundColor = "var(--color-surface-hover)";
           if (props.effect && props.effect !== "none") {
@@ -288,14 +270,12 @@ export const Card: Component<CardProps> = (props) => {
               appearanceDiv.style.transform = "";
               if (props.effect === "3d") {
                 appearanceDiv.style.scale = "1";
-                if (!shadowBox) return;
                 shadowBox.style.opacity = "0.6";
                 shadowBox.style.scale = "1";
               }
             }
             if (EFFECT_MAP.float.has(props.effect)) {
               appearanceDiv.style.scale = "1.1";
-              if (!shadowBox) return;
               shadowBox.style.translate = "0 0.625rem";
               shadowBox.style.filter = "blur(0.25rem)";
             }
@@ -303,19 +283,12 @@ export const Card: Component<CardProps> = (props) => {
         }
       }}
       on:mousemove={(e) => {
-        if (
-          props.disabled ||
-          props.interactType === "hover" ||
-          isTouch ||
-          !appearanceDiv
-        )
-          return;
+        if (props.disabled || props.interactType === "hover" || isTouch) return;
         if (e.buttons === 1) {
           if (props.effect === "all") {
             handleRotate(appearanceDiv, e.clientX, e.clientY);
             appearanceDiv.style.backgroundColor = pressColor;
             appearanceDiv.style.scale = "1.05";
-            if (!shadowBox) return;
             shadowBox.style.translate = "0 0.375rem";
             shadowBox.style.filter = "blur(0.125rem)";
           }
@@ -323,8 +296,7 @@ export const Card: Component<CardProps> = (props) => {
       }}
       on:touchstart={(e) => {
         isTouch = true;
-        if (props.disabled || props.interactType === "hover" || !appearanceDiv)
-          return;
+        if (props.disabled || props.interactType === "hover") return;
         if (props.effect !== "3d") {
           appearanceDiv.style.borderColor = "var(--color-border-active)";
         }
@@ -342,7 +314,6 @@ export const Card: Component<CardProps> = (props) => {
             if (props.effect === "3d") {
               appearanceDiv.style.backgroundColor = pressColor;
               appearanceDiv.style.scale = "0.95";
-              if (!shadowBox) return;
               shadowBox.style.opacity = "0";
               shadowBox.style.scale = "0.95";
             }
@@ -359,7 +330,6 @@ export const Card: Component<CardProps> = (props) => {
         if (
           !props.disabled &&
           props.interactType === "click" &&
-          appearanceDiv &&
           props.effect === "all"
         ) {
           const rect = appearanceDiv.getBoundingClientRect();
@@ -372,7 +342,6 @@ export const Card: Component<CardProps> = (props) => {
             appearanceDiv.style.backgroundColor = "var(--color-surface-hover)";
             appearanceDiv.style.borderColor = "var(--color-border-active)";
             appearanceDiv.style.scale = "1.05";
-            if (!shadowBox) return;
             shadowBox.style.translate = "0 0.375rem";
             shadowBox.style.filter = "blur(0.125rem)";
             handleRotate(

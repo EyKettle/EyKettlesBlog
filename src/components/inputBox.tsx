@@ -6,6 +6,7 @@ interface InputBoxProps {
   multiline?: boolean;
   class?: string;
   style?: JSX.CSSProperties;
+  hide?: boolean;
   onFocus?: (
     event: FocusEvent & {
       currentTarget: HTMLInputElement;
@@ -38,7 +39,7 @@ const InputBox: Component<InputBoxProps> = (props) => {
   return (
     <input
       ref={(e) => (element = e)}
-      type="text"
+      type={props.hide ? "password" : "text"}
       class={props.class}
       style={{
         border: "none",
@@ -55,8 +56,8 @@ const InputBox: Component<InputBoxProps> = (props) => {
         cursor: "text",
         ...props.style,
       }}
-      placeholder={props.placeholder || ""}
-      value={props.value || ""}
+      placeholder={props.placeholder ?? ""}
+      value={props.value ?? ""}
       on:mouseenter={() => {
         if (!element || element === document.activeElement) return;
         element.style.boxShadow = "0 0 0 0.0625rem var(--color-theme-accent)";
