@@ -13,7 +13,10 @@ import ChatMessageBox, {
 import { animate } from "motion";
 import ChatInputBox from "../components/chat/chatInputBox";
 import { backButton } from "../controls/templates";
-import { createMarkdownMessage } from "../components/chat/MessageUtils";
+import {
+  createMarkdownMessage,
+  streamMarkdownMessage,
+} from "../components/chat/MessageUtils";
 
 interface ChatPageProps {
   translator: any;
@@ -43,16 +46,17 @@ const ChatPage: Component<ChatPageProps> = (props) => {
       content: msg,
     });
   };
-  let scrollToBottom: () => void;
-  let alignBottom: (sudden?: boolean) => void;
+  let scrollToBottom: (duration?: number) => void;
+  let alignCheck: () => boolean;
 
   const [showInput, setShowInput] = createSignal(true);
 
   const testStream = async () => {
-    const markdownMessage = createMarkdownMessage(
-      { append, set, close, alignBottom },
+    const markdownMessage = streamMarkdownMessage(
+      { append, set, close, alignCheck, scrollToBottom },
       Sender.Other
     );
+    markdownMessage.start();
     const content = (await import("../articles/new.md?raw")).default;
     for (let i = 0; i < content.length; i += 3)
       await new Promise<void>((resolve) =>
@@ -109,7 +113,7 @@ const ChatPage: Component<ChatPageProps> = (props) => {
         <ChatMessageBox
           fontSize="1.125rem"
           paddingBottom="16rem"
-          snapOffset={64}
+          alignOffset={64}
           getListOps={(a, r, s, o, c, _, l) => {
             append = a;
             remove = r;
@@ -120,7 +124,7 @@ const ChatPage: Component<ChatPageProps> = (props) => {
           }}
           getScrollOps={(t, b, p, s, e, i, a) => {
             scrollToBottom = b;
-            alignBottom = a;
+            alignCheck = a;
           }}
           showupMotion={(bubble) =>
             new Promise<void>((resolve) => {
@@ -165,13 +169,11 @@ const ChatPage: Component<ChatPageProps> = (props) => {
             <Button
               icon={showInput() ? ">" : "<"}
               type="ghost"
-              iconStyle={[
-                {
-                  "font-size": "1.25rem",
-                  rotate: "90deg",
-                  translate: `2px ${showInput() ? "" : "-"}0.0625rem`,
-                },
-              ]}
+              iconStyle={{
+                "font-size": "1.25rem",
+                rotate: "90deg",
+                translate: `2px ${showInput() ? "" : "-"}0.0625rem`,
+              }}
               style={{
                 width: "4rem",
               }}
@@ -183,7 +185,6 @@ const ChatPage: Component<ChatPageProps> = (props) => {
             if (show) {
               box.style.height = "14rem";
               box.style.gap = "0.5rem";
-              textArea.disabled = false;
               textArea.style.pointerEvents = "auto";
               textArea.style.height = "auto";
               (box.lastChild?.lastChild as HTMLDivElement).tabIndex = 0;
@@ -194,7 +195,6 @@ const ChatPage: Component<ChatPageProps> = (props) => {
             } else {
               box.style.height = "4.8125rem";
               box.style.gap = "0";
-              textArea.disabled = true;
               textArea.style.pointerEvents = "none";
               textArea.style.height = "0";
               (box.lastChild?.lastChild as HTMLDivElement).tabIndex = -1;

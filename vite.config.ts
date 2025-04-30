@@ -2,9 +2,18 @@ import { defineConfig } from "vite";
 import solidPlugin from "vite-plugin-solid";
 import devtools from "solid-devtools/vite";
 import postcssPresetEnv from "postcss-preset-env";
+import { createSvgIconsPlugin } from "vite-plugin-svg-icons-ng";
+import path from "node:path";
+import prismjs from "vite-plugin-prismjs";
 
 export default defineConfig({
   plugins: [
+    createSvgIconsPlugin({
+      iconDirs: [path.resolve(process.cwd(), "src/icons")],
+    }),
+    prismjs({
+      languages: "all",
+    }),
     devtools({
       autoname: true,
       locator: {

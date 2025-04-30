@@ -20,6 +20,7 @@ import {
 } from "../localStorage";
 import { Article, getInfos } from "../articles/methods";
 import { backButton } from "../controls/templates";
+import Code from "../components/code";
 
 interface ArticlePageProps {
   translator: any;
@@ -118,7 +119,7 @@ const ArticlePage: Component<ArticlePageProps> = (props) => {
   };
   props.getMethods(setArticle, savePosition, loadPosition);
 
-  let debounceTimer: number | undefined;
+  let debounceTimer: NodeJS.Timeout | undefined;
   let lastSaveTime = 0;
   const debounceDelay = 1000;
   const handleScroll = () => {
@@ -187,8 +188,7 @@ const ArticlePage: Component<ArticlePageProps> = (props) => {
                 style={{ opacity: 0.6 }}
                 fill="var(--color-theme-text)"
               >
-                <path d="M16,2c-7.73,0-14,6.27-14,14s6.27,14,14,14,14-6.27,14-14S23.73,2,16,2ZM16,28c-6.62,0-12-5.38-12-12s5.38-12,12-12,12,5.38,12,12-5.38,12-12,12Z" />
-                <path d="M21,16h-4v-8c0-.55-.45-1-1-1s-1,.45-1,1v9c0,.55.45,1,1,1h5c.55,0,1-.45,1-1s-.45-1-1-1Z" />
+                <use href="#icon-time" />
               </svg>
               <label
                 style={{
@@ -288,6 +288,16 @@ const ArticlePage: Component<ArticlePageProps> = (props) => {
                   class="markdown-body"
                   remarkPlugins={[remarkGfm]}
                   children={content()}
+                  components={{
+                    code(props) {
+                      if (props.inline) return <code>{props.children}</code>;
+                      return (
+                        <Code class={props.class ?? ""}>
+                          {props.children as string}
+                        </Code>
+                      );
+                    },
+                  }}
                 />
               </Suspense>
             </Show>

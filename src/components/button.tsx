@@ -2,16 +2,17 @@ import {
   type Component,
   createEffect,
   createSignal,
-  For,
   JSX,
+  Match,
   onCleanup,
   onMount,
   Show,
+  Switch,
 } from "solid-js";
 
 interface ButtonProps {
-  icon?: string;
-  iconColors?: string[];
+  icon?: string | Element;
+  iconColors?: string;
   label?: string;
   type?: "button" | "ghost";
   rounded?: boolean;
@@ -25,7 +26,7 @@ interface ButtonProps {
   borderRadius?: string;
   class?: string;
   style?: JSX.CSSProperties;
-  iconStyle?: JSX.CSSProperties[];
+  iconStyle?: JSX.CSSProperties;
   disabled?: boolean;
   onClick?: () => void;
   getAnimates?: (press: () => void, release: () => void) => void;
@@ -36,7 +37,7 @@ export const Button: Component<ButtonProps> = (props) => {
   let isTouch = false;
 
   const [defaultStyle, setDefaultStyle] = createSignal({
-    fontSize: "1.05rem",
+    fontSize: "1.125rem",
   });
 
   const onEnterDown = (e: KeyboardEvent) => {
@@ -109,21 +110,21 @@ export const Button: Component<ButtonProps> = (props) => {
       switch (props.size) {
         case "medium":
           element.style.minHeight = element.style.minWidth = "3rem";
-          element.style.padding = "1rem";
+          element.style.padding = "0.75rem 1rem";
           setDefaultStyle({ fontSize: "1.25rem" });
           if (props.rounded || props.borderRadius) break;
           element.style.borderRadius = "0.75rem";
           break;
         case "large":
           element.style.minHeight = element.style.minWidth = "3.5rem";
-          element.style.padding = "1.5rem";
+          element.style.padding = "1rem 1.5rem";
           setDefaultStyle({ fontSize: "1.75rem" });
           if (props.rounded || props.borderRadius) break;
           element.style.borderRadius = "1.25rem";
           break;
       }
     } else {
-      element.style.padding = "0.75rem";
+      element.style.padding = "0.5rem 0.75rem";
       if (!props.rounded && !props.borderRadius) {
         element.style.borderRadius = "0.5rem";
       }
@@ -148,10 +149,8 @@ export const Button: Component<ButtonProps> = (props) => {
         "grid-template-columns": `${props.icon && defaultStyle().fontSize} ${
           props.label && "auto"
         }`,
-        "flex-shrink": 0,
         "align-items": "center",
-        "vertical-align": "sub",
-        "line-height": "1",
+        "vertical-align": "middle",
         "min-height": "2.5rem",
         "min-width": "2.5rem",
         "font-size": defaultStyle().fontSize,
@@ -197,30 +196,20 @@ export const Button: Component<ButtonProps> = (props) => {
         if (!props.disabled && !isTouch) props.onClick?.();
       }}
     >
-      <Show when={props.icon}>
-        <div
-          style={{
-            display: "grid",
-            "place-items": "center",
-            "white-space": "nowrap",
-          }}
-        >
-          <For each={Array.from(props.icon ?? "")}>
-            {(char, index) => (
-              <span
-                style={{
-                  "font-family": "var(--font-icon)",
-                  zoom: index() === 0 ? 0.95 : 1,
-                  color: props.iconColors ? props.iconColors[index()] : "unset",
-                  ...props.iconStyle?.at(index()),
-                }}
-              >
-                {char}
-              </span>
-            )}
-          </For>
-        </div>
-      </Show>
+      <Switch>
+        <Match when={typeof props.icon === "string"}>
+          <span
+            style={{
+              "font-family": "var(--font-icon)",
+              color: props.iconColors,
+              ...props.iconStyle,
+            }}
+          >
+            {props.icon}
+          </span>
+        </Match>
+        <Match when={typeof props.icon === "object"}>{props.icon}</Match>
+      </Switch>
       <Show when={props.label}>
         <span
           style={{

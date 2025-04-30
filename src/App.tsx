@@ -181,7 +181,6 @@ const App: Component = () => {
           style={{
             "z-index": 11,
             "margin-inline": "1.5rem",
-            "padding-bottom": "0.125rem",
           }}
         >
           {t("header.title")}

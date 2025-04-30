@@ -10,6 +10,7 @@ export const backButton = (callback: () => void) => (
     style={{
       height: "80px",
       width: "80px",
+      "flex-shrink": 0,
     }}
   />
 );

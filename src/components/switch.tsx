@@ -5,7 +5,6 @@ import {
   For,
   JSX,
   onCleanup,
-  onMount,
 } from "solid-js";
 
 export type SwitchItem = {
@@ -28,6 +27,10 @@ interface SwitchProps {
   itemClass?: string;
   itemStyle?: JSX.CSSProperties;
   onChange?: (index: number) => void;
+  getOps?: (
+    switchTo: (index: number, noAction?: boolean) => void,
+    getSelected: () => number
+  ) => void;
 }
 
 interface SwitchItemProps {
@@ -37,7 +40,6 @@ interface SwitchItemProps {
   active: boolean;
   callback: (index: number) => void;
   event: () => void;
-  hooks: (reset: () => void) => void;
   fontSize?: string;
   class?: string;
   style?: JSX.CSSProperties;
@@ -65,7 +67,6 @@ const SwitchItem: Component<SwitchItemProps> = (props) => {
     element.style.borderTopWidth = "0";
     element.style.cursor = "pointer";
   };
-  props.hooks(reset);
 
   const applyMousedown = () => {
     element.style.backgroundColor = "var(--color-switch-press)";
@@ -103,7 +104,7 @@ const SwitchItem: Component<SwitchItemProps> = (props) => {
     else element.tabIndex = 0;
   });
 
-  onMount(() => {
+  createEffect(() => {
     if (props.active) {
       element.style.color = "var(--color-switch-onActive)";
       element.style.backgroundColor = "var(--color-switch-active)";
@@ -141,7 +142,7 @@ const SwitchItem: Component<SwitchItemProps> = (props) => {
         "place-items": "center",
         border: "none",
         padding: "0.5rem 1rem",
-        "font-size": `${props.fontSize ?? "1.05rem"}`,
+        "font-size": props.fontSize ?? "1.125rem",
         "background-color": defaultStyle.backgroundColor,
         "border-radius": "0.5rem",
         "border-width": 0,
@@ -208,15 +209,14 @@ const SwitchItem: Component<SwitchItemProps> = (props) => {
 
 export const Switch: Component<SwitchProps> = (props) => {
   const [activeIndex, setActiveIndex] = createSignal(props.default ?? 0);
-  const handleSwitch = (index: number) => {
-    const prev = activeIndex();
+  const handleSwitch = (index: number) => switchTo(index);
+
+  const switchTo = (index: number, noAction?: boolean) => {
     setActiveIndex(index);
-    resetHandles[prev]();
-    props.onChange?.(index);
+    if (!noAction) props.onChange?.(index);
   };
-  let resetHandles: (() => void)[] = Array(props.children.length).fill(() =>
-    console.warn("Switch item not found")
-  );
+  const getSelected = () => activeIndex();
+  props.getOps?.(switchTo, getSelected);
 
   return (
     <div
@@ -226,15 +226,12 @@ export const Switch: Component<SwitchProps> = (props) => {
         "min-height": "2.5rem",
         gap: "0.4rem",
         padding: "0.5rem",
-        "background-color": `${
-          props.backgroundColor ?? "var(--color-surface-light)"
-        }`,
+        "background-color":
+          props.backgroundColor ?? "var(--color-surface-light)",
         "border-radius": "1rem",
         "border-style": "solid",
-        "border-color": `${
-          props.border?.color ?? "var(--color-border-default)"
-        }`,
-        "border-width": `${props.border?.width ?? "0.0625rem"}`,
+        "border-color": props.border?.color ?? "var(--color-border-default)",
+        "border-width": props.border?.width ?? "0.0625rem",
         "box-shadow": "0 0.0625rem 0 var(--color-shadow-auto)",
         ...props.style,
       }}
@@ -247,9 +244,6 @@ export const Switch: Component<SwitchProps> = (props) => {
             callback={handleSwitch}
             event={item.onClick}
             active={index() === activeIndex()}
-            hooks={(r) => {
-              resetHandles[index()] = r;
-            }}
             disabled={props.disabled}
             fontSize={props.fontSize}
             class={props.itemClass}
