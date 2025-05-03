@@ -1,9 +1,12 @@
+strong {
+  color: var(--color-theme-text-solid);
+}
+
 .markdown-body {
-  display: inline;
+  display: grid;
 
   h1 {
-    display: grid;
-    justify-content: center;
+    justify-self: center;
   }
   h1,
   h2 {
@@ -16,7 +19,7 @@
   p {
     margin-inline: 0;
     padding-block: 0 !important;
-    line-height: 2;
+    line-height: 1.5;
   }
 
   hr {
@@ -70,7 +73,7 @@
       appearance: none;
       align-self: flex-start;
       vertical-align: middle;
-      translate: 0 -2px;
+      translate: 0 -0.0625rem;
       height: 1rem;
       width: 1rem;
       margin: 0;
@@ -85,8 +88,9 @@
       font-family: var(--font-icon);
       content: "\e001";
       font-weight: bold;
-      display: grid;
-      place-items: center;
+      display: flex;
+      justify-content: center;
+      align-items: center;
       height: 100%;
       width: 100%;
     }
@@ -97,6 +101,7 @@
 
   pre {
     overflow: scroll;
+    text-wrap: wrap;
     padding: 0.5rem;
     background-color: var(--color-surface-default);
     border: var(--color-border-default) solid 0.0625rem;
@@ -119,14 +124,13 @@
 }
 
 .chat-markdown {
-  display: inline;
+  display: grid;
 
   * {
     overflow-wrap: anywhere;
   }
   h1 {
-    display: grid;
-    justify-content: center;
+    justify-self: center;
   }
   h1,
   h2 {
@@ -137,9 +141,9 @@
   }
 
   p {
-    margin-inline: 0;
+    margin: 0;
     padding-block: 0 !important;
-    line-height: 2;
+    line-height: 1.5;
   }
 
   hr {
@@ -158,18 +162,30 @@
     color: var(--color-theme-accent);
   }
 
-  ul {
+  ul,
+  ol {
+    margin-left: 0.25rem;
     margin-block: 0.5rem;
     padding-inline: 0;
+    ol,
     ul {
+      margin-left: 1.25rem;
+      padding-left: 0;
       margin-block: 0;
-      padding-left: 1.25rem;
       padding-right: 0;
     }
-
     li {
-      line-height: 1.8;
+      line-height: 1.5;
+    }
+  }
+
+  ul {
+    li {
+      line-height: 1.5;
       list-style: none;
+    }
+    li:not(:has(input[type="checkbox"])) {
+      padding-left: 1.25rem;
     }
     li:not(:has(input[type="checkbox"]))::before {
       content: "";
@@ -178,9 +194,8 @@
       display: inline-block;
       height: 0.375rem;
       width: 0.375rem;
-      margin-inline: 0.3125rem 0.5625rem;
       vertical-align: middle;
-      translate: 0 -0.0625rem;
+      translate: -0.9375rem -0.0625rem;
     }
   }
 
@@ -193,7 +208,7 @@
       appearance: none;
       align-self: flex-start;
       vertical-align: middle;
-      translate: 0 -2px;
+      translate: 0 -0.0625rem;
       height: 1rem;
       width: 1rem;
       margin: 0;
@@ -208,8 +223,9 @@
       font-family: var(--font-icon);
       content: "\e001";
       font-weight: bold;
-      display: grid;
-      place-items: center;
+      display: flex;
+      justify-content: center;
+      align-items: center;
       height: 100%;
       width: 100%;
     }
@@ -220,8 +236,9 @@
 
   pre {
     overflow: scroll;
+    text-wrap: wrap;
     padding: 0.5rem;
-    background-color: var(--color-surface-default);
+    background-color: var(--color-msg-tip-back);
     border: var(--color-border-default) solid 0.0625rem;
     border-radius: 0.5rem;
   }
@@ -238,5 +255,30 @@
     background-color: var(--color-surface-default);
     border: var(--color-border-active) solid 0.0625rem;
     border-radius: 0.5rem;
+  }
+
+  table {
+    margin-block: 0.5rem;
+    background-color: var(--color-msg-tip-back);
+    border-radius: 0.75rem;
+    overflow: hidden;
+    thead {
+      tr :first-child {
+        border-top-left-radius: 10px;
+      }
+      tr :last-child {
+        border-top-right-radius: 10px;
+      }
+    }
+    th {
+      padding: 8px;
+      background-color: var(--color-surface-dark);
+    }
+    td {
+      padding: 4px;
+    }
+    tbody > * {
+      border-color: red;
+    }
   }
 }

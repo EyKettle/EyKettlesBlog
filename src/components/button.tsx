@@ -28,12 +28,12 @@ interface ButtonProps {
   style?: JSX.CSSProperties;
   iconStyle?: JSX.CSSProperties;
   disabled?: boolean;
-  onClick?: () => void;
+  onClick?: (element: HTMLButtonElement) => void;
   getAnimates?: (press: () => void, release: () => void) => void;
 }
 
 export const Button: Component<ButtonProps> = (props) => {
-  let element: HTMLButtonElement | null = null;
+  let element: HTMLButtonElement;
   let isTouch = false;
 
   const [defaultStyle, setDefaultStyle] = createSignal({
@@ -41,30 +41,27 @@ export const Button: Component<ButtonProps> = (props) => {
   });
 
   const onEnterDown = (e: KeyboardEvent) => {
-    if (e.key === "Enter" && !props.disabled && element) {
+    if (e.key === "Enter" && !props.disabled) {
       e.preventDefault();
       element.style.scale = "0.95";
     }
   };
   const onEnterUp = (e: KeyboardEvent) => {
-    if (e.key === "Enter" && !props.disabled && element) {
+    if (e.key === "Enter" && !props.disabled) {
       element.style.scale = "1";
-      props.onClick?.();
+      props.onClick?.(element);
     }
   };
 
   const applyMousedown = () => {
-    if (element)
-      element.style.backgroundColor = `var(--color-${props.type}-active)`;
+    element.style.backgroundColor = `var(--color-${props.type}-active)`;
   };
   const applyMouseleave = () => {
-    if (element)
-      element.style.backgroundColor = `var(--color-${props.type}-default)`;
+    element.style.backgroundColor = `var(--color-${props.type}-default)`;
   };
   props.getAnimates?.(applyMousedown, applyMouseleave);
 
   createEffect(() => {
-    if (!element) return;
     if (props.disabled) {
       element.tabIndex = -1;
     } else {
@@ -73,10 +70,6 @@ export const Button: Component<ButtonProps> = (props) => {
   });
 
   onMount(() => {
-    if (!element) {
-      console.warn("Button element just disappeared?");
-      return;
-    }
     if (!props.type) props.type = "button";
     if (props.type === "button") {
       element.style.borderStyle = "solid";
@@ -135,7 +128,6 @@ export const Button: Component<ButtonProps> = (props) => {
   });
 
   onCleanup(() => {
-    if (!element) return;
     element.removeEventListener("keydown", onEnterDown);
     element.removeEventListener("keyup", onEnterUp);
   });
@@ -158,7 +150,7 @@ export const Button: Component<ButtonProps> = (props) => {
         "transition-duration": "0.3s",
         "transition-timing-function": "cubic-bezier(0, 0, 0, 1)",
         "will-change": "scale",
-        cursor: "pointer",
+        cursor: props.disabled ? "unset" : "pointer",
         ...props.style,
       }}
       on:mouseenter={(e) => {
@@ -193,7 +185,7 @@ export const Button: Component<ButtonProps> = (props) => {
           e.currentTarget.style.backgroundColor = `var(--color-${props.type}-default)`;
       }}
       on:click={() => {
-        if (!props.disabled && !isTouch) props.onClick?.();
+        if (!props.disabled && !isTouch) props.onClick?.(element);
       }}
     >
       <Switch>
@@ -202,6 +194,7 @@ export const Button: Component<ButtonProps> = (props) => {
             style={{
               "font-family": "var(--font-icon)",
               color: props.iconColors,
+              "user-select": "none",
               ...props.iconStyle,
             }}
           >

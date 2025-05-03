@@ -292,9 +292,7 @@ const ArticlePage: Component<ArticlePageProps> = (props) => {
                     code(props) {
                       if (props.inline) return <code>{props.children}</code>;
                       return (
-                        <Code class={props.class ?? ""}>
-                          {props.children as string}
-                        </Code>
+                        <Code language={props.class?.slice(9) ?? ""}>{props.children}</Code>
                       );
                     },
                   }}

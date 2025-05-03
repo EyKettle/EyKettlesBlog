@@ -13,10 +13,7 @@ import ChatMessageBox, {
 import { animate } from "motion";
 import ChatInputBox from "../components/chat/chatInputBox";
 import { backButton } from "../controls/templates";
-import {
-  createMarkdownMessage,
-  streamMarkdownMessage,
-} from "../components/chat/MessageUtils";
+import { streamMarkdownMessage } from "../components/chat/MessageUtils";
 
 interface ChatPageProps {
   translator: any;
@@ -146,7 +143,7 @@ const ChatPage: Component<ChatPageProps> = (props) => {
                 },
                 {
                   type: "spring",
-                  duration: 0.4,
+                  duration: 0.5,
                   bounce: 0.3,
                 }
               ).then(resolve);

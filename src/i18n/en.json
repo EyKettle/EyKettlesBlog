@@ -52,7 +52,9 @@
     "pageTip2": "Support custom switch animation",
     "pageTip3": "It will still glitch if click too fast",
     "loading": "Loading Component",
-    "enterChatPage": "Enter Chat Test Page"
+    "enterChatPage": "Enter Chat Test Page",
+    "testPopup": "Test popup transition",
+    "testTransition": "Test transition page switch"
   },
   "chatPage": {
     "systemTip": "A page for chat component testing.\nNo data storage.",

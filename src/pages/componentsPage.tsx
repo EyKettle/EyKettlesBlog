@@ -1,14 +1,14 @@
-import { Component, JSX } from "solid-js";
+import { Component, createRoot, JSX } from "solid-js";
 import { Button } from "../components/button";
 import { Card } from "../components/card";
 import { PageContainer } from "../components/pageContainer";
 import { Switch } from "../components/switch";
 import InputBox from "../components/inputBox";
 import Loading from "../components/loading";
-import { animateMini } from "motion";
+import { animate, animateMini } from "motion";
 import Squircle from "../components/squircle";
-import MemoVlist from "../components/memoVlist";
 import { backButton } from "../controls/templates";
+import { transitionPopup } from "../components/utils";
 
 interface componentsPageProps {
   translator: any;
@@ -27,8 +27,34 @@ const ComponentsPage: Component<componentsPageProps> = (props) => {
   } as JSX.CSSProperties;
   let switchTo: (_index: number, _param?: string) => void;
 
+  let pageRoot: HTMLDivElement;
+  const popup = createRoot((dispose) => {
+    dispose();
+    return (
+      <div
+        style={{
+          position: "absolute",
+          display: "grid",
+          "place-items": "center",
+          overflow: "hidden",
+        }}
+      >
+        <svg
+          style={{
+            fill: "var(--color-theme-text)",
+            zoom: 0.6,
+            "will-change": "scale filter",
+          }}
+        >
+          <use href="#icon-time" />
+        </svg>
+      </div>
+    );
+  }) as HTMLElement;
+
   return (
     <div
+      ref={(e) => (pageRoot = e)}
       style={{
         display: "flex",
         "flex-direction": "column",
@@ -245,6 +271,81 @@ const ComponentsPage: Component<componentsPageProps> = (props) => {
             <strong style={{ color: "white" }}>Squircle Test</strong>
           </Squircle>
         </div>
+        <Button
+          label={t("library.testPopup")}
+          size="medium"
+          onClick={(e) => {
+            const close = transitionPopup(
+              e,
+              popup,
+              {
+                height: 128,
+                width: 128,
+              },
+              {
+                background: "var(--color-surface-hover)",
+                borderRadius: "1.5rem",
+                boxShadow: "0 8px 18px var(--color-shadow)",
+              },
+              { x: true },
+              {
+                start: () => {
+                  animateMini(
+                    popup.children[0],
+                    {
+                      opacity: [0, 1],
+                      filter: ["blur(8px)", "blur(0)"],
+                    },
+                    {
+                      duration: 0.3,
+                      ease: [0.5, 0, 0, 1],
+                    }
+                  );
+                  animate(
+                    popup.children[0],
+                    {
+                      scale: [0.6, 1],
+                    },
+                    {
+                      type: "spring",
+                      duration: 0.6,
+                      bounce: 0.4,
+                    }
+                  );
+                },
+                end: () => {
+                  animateMini(
+                    popup.children[0],
+                    {
+                      opacity: [1, 0],
+                      filter: ["blur(0)", "blur(8px)"],
+                    },
+                    {
+                      duration: 0.15,
+                      ease: [0.5, 0, 0, 1],
+                    }
+                  );
+                  animate(
+                    popup.children[0],
+                    {
+                      scale: [1, 0.2],
+                    },
+                    {
+                      duration: 0.2,
+                      ease: [0.5, 0, 0, 1],
+                    }
+                  );
+                },
+              }
+            )?.close;
+            if (!close) return;
+            const handle = () => {
+              close();
+              popup.removeEventListener("click", handle);
+            };
+            popup.addEventListener("click", handle);
+          }}
+        />
         <Button
           icon={"\ue0ab"}
           label={t("library.enterChatPage")}

@@ -49,7 +49,7 @@ const ChatMessageBubble: Component<ChatMessageBubbleProps> = (props) => {
         appearance.style.borderRadius = 1.0625 * fontSize.value + fontSize.unit;
         appearance.style.minHeight = 1.5 * fontSize.value + fontSize.unit;
         appearance.style.paddingBlock = 0.25 * fontSize.value + fontSize.unit;
-        appearance.style.paddingInline = 0.6 * fontSize.value + fontSize.unit;
+        appearance.style.paddingInline = 0.625 * fontSize.value + fontSize.unit;
         if (props.position === BubblePosition.Start)
           appearance.style.marginTop = "0.25rem";
 
@@ -202,7 +202,11 @@ const ChatMessageBox: Component<ChatMessageBoxProps> = (props) => {
     );
   };
   const submitUpdate = (scroll?: boolean, sudden?: boolean) => {
-    const willAlign = alignCheck();
+    const willAlign =
+      props.alignOffset &&
+      vlist &&
+      vlist.scrollSize - (vlist.scrollOffset + vlist.viewportSize) <=
+        props.alignOffset;
     setRenderList([
       blocker(props.paddingTop),
       ...msgList,

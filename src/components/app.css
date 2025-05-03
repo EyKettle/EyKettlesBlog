@@ -89,6 +89,7 @@ body {
 
   --color-theme-surface: rgba(255, 255, 255, 0.8);
   --color-theme-text: rgba(0, 0, 0, 0.8);
+  --color-theme-text-solid: black;
   --color-theme-accent: rgba(22, 77, 49, 0.8);
   --color-theme-accent-background: #99cc99;
   --color-theme-accent-background-translucent: rgba(153, 204, 153, 0.3);
@@ -156,6 +157,7 @@ html {
   body {
     --color-theme-surface: rgba(0, 0, 0, 0.8);
     --color-theme-text: rgba(255, 255, 255, 0.8);
+    --color-theme-text-solid: white;
     --color-theme-accent: rgba(65, 155, 110, 0.8);
     --color-theme-accent-background: #234d34;
     --color-theme-accent-background-translucent: rgba(35, 77, 52, 0.3);
@@ -226,6 +228,10 @@ html {
 span {
   display: inline-grid;
   align-items: center;
+}
+
+pre span {
+  all: unset;
 }
 
 input::placeholder {
