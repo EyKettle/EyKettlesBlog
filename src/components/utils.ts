@@ -1,3 +1,4 @@
+import { JSX } from "solid-js";
 import { animate, animateMini, AnimationOptions } from "motion";
 
 export function separateValueAndUnit(
@@ -18,6 +19,36 @@ export const blocker = (height?: string, width?: string) => {
   if (height) div.style.height = height;
   if (width) div.style.width = width;
   return div;
+};
+
+export const buttonSize = (size: "large" | "medium" | "normal") => {
+  let style: JSX.CSSProperties = {};
+  switch (size) {
+    case "large":
+      style["font-size"] = "1.75rem";
+      style["min-height"] = "3.5rem";
+      style["min-width"] = "3.5rem";
+      style.padding = "1rem 1.5rem";
+      style["border-radius"] = "1.25rem";
+      break;
+    case "medium":
+      style["font-size"] = "1.25rem";
+      style["min-height"] = "3rem";
+      style["min-width"] = "3rem";
+      style.padding = "0.75rem 1rem";
+      style["border-radius"] = "0.75rem";
+      break;
+  }
+  return style;
+};
+
+export const roundButton = (size?: string) => {
+  let style: JSX.CSSProperties = {
+    height: size,
+    width: size,
+    "border-radius": "50%",
+  };
+  return style;
 };
 
 export type reverseFn = (animationOption: AnimationOptions) => Promise<void>;

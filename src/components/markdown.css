@@ -179,6 +179,10 @@ strong {
     }
   }
 
+  ol {
+    margin-left: 1.25rem;
+  }
+
   ul {
     li {
       line-height: 1.5;

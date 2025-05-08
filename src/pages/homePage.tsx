@@ -2,6 +2,7 @@ import { Component, Show } from "solid-js";
 import { Card } from "../components/card";
 import { Pages } from "../App";
 import { Button } from "../components/button";
+import { buttonSize } from "../components/utils";
 
 interface HomePageProps {
   translator: any;
@@ -59,7 +60,7 @@ const HomePage: Component<HomePageProps> = (props) => {
         icon={"\ue0ab"}
         label={t("home.enterLibrary")}
         type="ghost"
-        size="medium"
+        style={buttonSize("medium")}
         onClick={() => props.operations.switchTo(Pages.ComponentLibrary)}
       />
       <Show when={props.showDarkModeTip}>

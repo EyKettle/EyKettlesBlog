@@ -13,7 +13,7 @@ import styles from "./App.module.css";
 
 import * as i18n from "@solid-primitives/i18n";
 import { fetchDictionary, Locale, locales } from "./i18n/lang";
-import { animateMini } from "motion";
+import { waapi } from "animejs";
 
 import { Switch } from "./components/switch";
 import { PageContainer } from "./components/pageContainer";
@@ -283,7 +283,7 @@ const App: Component = () => {
             ]}
             homeIndex={Pages.Home}
             defaultIndex={config.pageIndex}
-            getMethods={(s, i) => {
+            getOps={(s, i) => {
               switchTo = (index: number, param?: string) => {
                 config.pageIndex = index;
                 saveConfig(config);
@@ -299,71 +299,40 @@ const App: Component = () => {
             }}
             switchMotion={(oldPage, newPage, isForward) =>
               new Promise((resolve) => {
-                newPage.style.scale = isForward ? "0.8" : "1.6";
-                newPage.style.opacity = "0";
-                newPage.style.filter = "blur(0.75rem)";
-                animateMini(
-                  newPage,
-                  {
-                    scale: 1,
-                  },
-                  {
-                    duration: 0.3,
-                    ease: [0.5, 0, 0, 1],
-                  }
-                ).then(resolve);
-                animateMini(
-                  newPage,
-                  {
-                    opacity: 1,
-                    filter: "blur(0)",
-                  },
-                  {
-                    duration: 0.15,
-                    ease: [0.5, 0, 0.8, 1],
-                  }
-                );
-                animateMini(
-                  oldPage,
-                  {
-                    scale: isForward ? "1.6" : "0.8",
-                  },
-                  {
-                    duration: 0.3,
-                    ease: [0.5, 0, 0, 1],
-                  }
-                );
-                animateMini(
-                  oldPage,
-                  {
-                    opacity: 0,
-                    filter: "blur(0.75rem)",
-                  },
-                  {
-                    duration: 0.15,
-                    ease: [0.5, 0, 0.8, 1],
-                  }
-                );
+                waapi.animate(newPage, {
+                  scale: [isForward ? 0.8 : 1.6, 1],
+                  duration: 300,
+                  ease: "out(3)",
+                  onComplete: () => resolve(),
+                });
+                waapi.animate(newPage, {
+                  opacity: [0, 1],
+                  filter: ["blur(0.75rem)", "blur(0)"],
+                  duration: 150,
+                });
+                waapi.animate(oldPage, {
+                  scale: isForward ? 1.6 : 0.8,
+                  duration: 300,
+                  ease: "out(3)",
+                });
+                waapi.animate(oldPage, {
+                  opacity: 0,
+                  filter: "blur(0.75rem)",
+                  duration: 150,
+                });
               })
             }
             loadedMotion={(container) => {
-              container.style.transform = "translateY(12rem)";
               container.style.opacity = "0";
-              container.style.filter = "blur(1rem)";
               new Promise<void>((resolve) => {
                 setTimeout(() => {
-                  animateMini(
-                    container,
-                    {
-                      transform: "translateY(0)",
-                      opacity: 1,
-                      filter: "blur(0)",
-                    },
-                    {
-                      duration: 0.3,
-                      ease: [0.5, 0, 0, 1],
-                    }
-                  );
+                  waapi.animate(container, {
+                    y: ["12rem", "0"],
+                    opacity: [0, 1],
+                    filter: ["blur(1rem)", "blur(0)"],
+                    duration: 400,
+                    ease: "out(4)",
+                  });
                   resolve();
                 }, 200);
               });

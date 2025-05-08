@@ -10,6 +10,7 @@ type PageInfo = {
 };
 
 interface PageContainerProps {
+  ref?: (element: HTMLDivElement) => void;
   children: JSXElement[];
   pageInfos: PageInfo[];
   class?: string;
@@ -26,7 +27,7 @@ interface PageContainerProps {
   homeIndex?: number;
   defaultIndex: number;
   routeMode?: "none" | "spa" | "fakeRouter";
-  getMethods: (
+  getOps: (
     switchTo: (index: number, param?: string, replace?: boolean) => void,
     getFrontIndex: () => number
   ) => void;
@@ -162,7 +163,7 @@ export const PageContainer: Component<PageContainerProps> = (props) => {
   };
 
   const getFrontIndex = () => frontIndex;
-  props.getMethods(handleSwitch, getFrontIndex);
+  props.getOps(handleSwitch, getFrontIndex);
 
   const handleScroll = (e: Event) => {
     if (e.target instanceof HTMLDivElement) scrolledItems.add(e.target);
@@ -210,7 +211,10 @@ export const PageContainer: Component<PageContainerProps> = (props) => {
 
   return (
     <div
-      ref={(e) => (container = e)}
+      ref={(e) => {
+        container = e;
+        props.ref?.(e);
+      }}
       class={props.class}
       style={{
         height: "100%",

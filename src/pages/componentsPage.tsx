@@ -8,7 +8,7 @@ import Loading from "../components/loading";
 import { animate, animateMini } from "motion";
 import Squircle from "../components/squircle";
 import { backButton } from "../controls/templates";
-import { transitionPopup } from "../components/utils";
+import { buttonSize, transitionPopup } from "../components/utils";
 
 interface componentsPageProps {
   translator: any;
@@ -170,7 +170,7 @@ const ComponentsPage: Component<componentsPageProps> = (props) => {
                     break;
                 }
               }}
-              getMethods={(s) => (switchTo = s)}
+              getOps={(s) => (switchTo = s)}
               switchMotion={(
                 oldPage,
                 newPage,
@@ -273,7 +273,7 @@ const ComponentsPage: Component<componentsPageProps> = (props) => {
         </div>
         <Button
           label={t("library.testPopup")}
-          size="medium"
+          style={buttonSize("medium")}
           onClick={(e) => {
             const close = transitionPopup(
               e,
@@ -349,8 +349,7 @@ const ComponentsPage: Component<componentsPageProps> = (props) => {
         <Button
           icon={"\ue0ab"}
           label={t("library.enterChatPage")}
-          size="medium"
-          style={{ "margin-top": "2rem" }}
+          style={{ "margin-top": "2rem", ...buttonSize("medium") }}
           onClick={props.operations.enterChatPage}
         />
       </div>

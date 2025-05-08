@@ -1,10 +1,11 @@
-import { Component, createEffect, JSXElement } from "solid-js";
+import { Component, createEffect, JSX, JSXElement } from "solid-js";
 import prism from "prismjs";
 
 interface CodeProps {
   children?: JSXElement;
   raw?: string;
   language: string;
+  style?: JSX.CSSProperties;
 }
 
 const Code: Component<CodeProps> = (props) => {
@@ -24,6 +25,7 @@ const Code: Component<CodeProps> = (props) => {
           props.language
         )
       }
+      style={props.style}
     >
       {props.children}
     </code>

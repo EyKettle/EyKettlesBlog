@@ -2,8 +2,8 @@ import { Component, createSignal, JSX } from "solid-js";
 import { VirtualizerHandle, VList } from "virtua/solid";
 import { blocker, separateValueAndUnit } from "../utils";
 import { ScrollToIndexOpts } from "virtua";
-import { animate, motionValue } from "motion";
 import { insert } from "solid-js/web";
+import { animate } from "animejs";
 
 export enum Sender {
   System,
@@ -131,9 +131,6 @@ const ChatMessageBubble: Component<ChatMessageBubbleProps> = (props) => {
           "flex-direction": "column",
           "justify-content": "center",
           "align-items": "center",
-          "transition-property": "opacity, scale, filter, border-radius",
-          "transition-duration": "0.2s",
-          "transition-timing-function": "cubic-bezier(0.5, 0, 0, 1)",
           "will-change": "filter, opacity, border-radius, transform, scale",
           "overflow-wrap": "anywhere",
           ...props.style,
@@ -180,6 +177,13 @@ interface ChatMessageBoxProps {
 
 const ChatMessageBox: Component<ChatMessageBoxProps> = (props) => {
   let vlist: VirtualizerHandle | undefined;
+  let pos = {
+    offsetY: 0,
+    y: 0,
+    add(offset: number) {
+      pos.offsetY += offset;
+    },
+  };
   let msgList: ChatBubble[] = props.initData
     ? props.initData.map((raw, index) => ({
         pos: getPos(props.initData!, index, raw),
@@ -196,7 +200,7 @@ const ChatMessageBox: Component<ChatMessageBoxProps> = (props) => {
     return (
       props.alignOffset !== undefined &&
       vlist !== undefined &&
-      vlist.scrollSize - (vlist.scrollOffset + vlist.viewportSize) <=
+      vlist.scrollSize - (pos.offsetY + vlist.viewportSize) <=
         props.alignOffset &&
       !scrolling
     );
@@ -205,7 +209,7 @@ const ChatMessageBox: Component<ChatMessageBoxProps> = (props) => {
     const willAlign =
       props.alignOffset &&
       vlist &&
-      vlist.scrollSize - (vlist.scrollOffset + vlist.viewportSize) <=
+      vlist.scrollSize - (pos.offsetY + vlist.viewportSize) <=
         props.alignOffset;
     setRenderList([
       blocker(props.paddingTop),
@@ -332,30 +336,28 @@ const ChatMessageBox: Component<ChatMessageBoxProps> = (props) => {
   props.getListOps?.(append, remove, set, open, close, clear, getList);
 
   const scrollTo = (position: number, duration?: number) => {
+    if (!vlist || pos.y === position) return;
+    pos.offsetY = position;
     if (duration === 0) vlist?.scrollTo(position);
-    if (vlist) {
-      const pos = motionValue(vlist.scrollOffset);
-      animate(pos, position, {
-        duration: duration ?? 0.4,
-        ease: [0.5, 0, 0, 1],
-        onUpdate: (value) => vlist?.scrollTo(value),
+    else {
+      animate(pos, {
+        y: [vlist.scrollOffset, position],
+        duration: duration ?? 200,
+        ease: "out(4)",
+        onUpdate: () => vlist?.scrollTo(pos.y),
       });
     }
   };
   const scrollToBottom = (duration?: number) => {
-    if (duration === 0) vlist?.scrollTo(vlist.scrollOffset);
-    if (vlist) {
-      const pos = motionValue(vlist.scrollOffset);
-      animate(pos, vlist.scrollSize, {
-        duration: duration ?? 0.4,
-        ease: [0.5, 0, 0, 1],
-        onUpdate: (value) => vlist?.scrollTo(value),
-      });
-    }
+    if (duration === 0) vlist?.scrollToIndex(renderList().length - 1);
+    else
+      setTimeout(() => {
+        if (vlist) scrollTo(vlist.scrollSize - vlist.viewportSize, duration);
+      }, 20);
   };
   let scrolling = false;
   const isScrolling = () => scrolling;
-  const getPosition = (): number => (vlist ? vlist.scrollOffset : 0);
+  const getPosition = (): number => (vlist ? pos.offsetY : 0);
   const getStartIndex = (): number => (vlist ? vlist.findStartIndex() : 0);
   const getEndIndex = (): number => (vlist ? vlist.findEndIndex() : 0);
   const scrollToIndex = (index: number, opts?: ScrollToIndexOpts) =>
@@ -384,7 +386,10 @@ const ChatMessageBox: Component<ChatMessageBoxProps> = (props) => {
         "user-select": "text",
         ...props.style,
       }}
-      onScroll={() => (scrolling = true)}
+      onScroll={(o) => {
+        scrolling = true;
+        pos.add(o);
+      }}
       onScrollEnd={() => (scrolling = false)}
     >
       {(item, index) => {

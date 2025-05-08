@@ -1,29 +1,35 @@
 import { Component, createRoot } from "solid-js";
 
 export enum Icons {
-  "default",
+  Default = "default",
 }
 
 interface SvgIconProps {
   name: Icons;
+  size?: number;
+  fill?: string;
 }
 
 const SvgIcon: Component<SvgIconProps> = (props) => {
   return (
-    <svg>
-      <use href={props.name.toString()} />
+    <svg
+      height={props.size}
+      width={props.size}
+      fill={props.fill ?? "var(--color-theme-text)"}
+    >
+      <use href={`#icon-${props.name}`} />
     </svg>
   );
 };
 
-export const svgIcon = (name: Icons) => {
+export const svgIcon = (name: Icons, size?: number, fill?: string) => {
   return createRoot((dispose) => {
     dispose();
     return (
-      <svg>
-        <use href={name.toString()} />
+      <svg height={size} width={size} fill={fill ?? "var(--color-theme-text)"}>
+        <use href={`#icon-${name}`} />
       </svg>
-    );
+    ) as Element;
   });
 };
 

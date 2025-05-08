@@ -10,10 +10,10 @@ import ChatMessageBox, {
   ChatMessage,
   Sender,
 } from "../components/chat/chatMessageBox";
-import { animate } from "motion";
 import ChatInputBox from "../components/chat/chatInputBox";
 import { backButton } from "../controls/templates";
 import { streamMarkdownMessage } from "../components/chat/MessageUtils";
+import { animate, createSpring } from "animejs";
 
 interface ChatPageProps {
   translator: any;
@@ -125,28 +125,19 @@ const ChatPage: Component<ChatPageProps> = (props) => {
           }}
           showupMotion={(bubble) =>
             new Promise<void>((resolve) => {
-              animate(
-                bubble,
-                {
-                  opacity: [0, 1],
-                  filter: ["blur(0.5rem)", "blur(0)"],
-                },
-                {
-                  duration: 0.3,
-                  ease: [0.5, 0, 0, 1],
-                }
-              );
-              animate(
-                bubble,
-                {
-                  scale: [0.6, 1],
-                },
-                {
-                  type: "spring",
-                  duration: 0.5,
-                  bounce: 0.3,
-                }
-              ).then(resolve);
+              animate(bubble, {
+                opacity: [0, 1],
+                filter: ["blur(0.5rem)", "blur(0rem)"],
+                duration: 200,
+              });
+              animate(bubble, {
+                scale: [0.6, 1],
+                ease: createSpring({
+                  stiffness: 400,
+                  damping: 26,
+                }),
+                onComplete: () => resolve(),
+              });
             })
           }
         />
@@ -173,8 +164,8 @@ const ChatPage: Component<ChatPageProps> = (props) => {
               }}
               style={{
                 width: "4rem",
+                "border-radius": "1.375rem",
               }}
-              borderRadius="1.375rem"
               onClick={() => setShowInput(!showInput())}
             />
           )}
