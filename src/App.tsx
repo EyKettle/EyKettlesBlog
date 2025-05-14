@@ -331,7 +331,7 @@ const App: Component = () => {
                     opacity: [0, 1],
                     filter: ["blur(1rem)", "blur(0)"],
                     duration: 400,
-                    ease: "out(4)",
+                    ease: "cubicBezier(0.5, 0, 0, 1)",
                   });
                   resolve();
                 }, 200);

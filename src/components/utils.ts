@@ -1,5 +1,6 @@
 import { JSX } from "solid-js";
 import { animate, animateMini, AnimationOptions } from "motion";
+import { VirtualizerHandle } from "virtua/solid";
 
 export function separateValueAndUnit(
   cssValue: string
@@ -49,6 +50,39 @@ export const roundButton = (size?: string) => {
     "border-radius": "50%",
   };
   return style;
+};
+
+export const alignInfo = (
+  alignOffset: number,
+  vlist: VirtualizerHandle,
+  pos: any,
+  scrolling: boolean
+) => {
+  new Promise<void>((resolve) => {
+    alignOffset !== undefined &&
+      vlist !== undefined &&
+      console.log(
+        "目标点",
+        pos.offsetY,
+        "位移",
+        vlist.scrollOffset,
+        vlist.scrollSize,
+        pos.offsetY + vlist.viewportSize,
+        scrolling,
+        "结果",
+        alignOffset !== undefined &&
+          vlist !== undefined &&
+          vlist.scrollSize - (pos.offsetY + vlist.viewportSize) <=
+            alignOffset &&
+          !scrolling
+      );
+    setTimeout(() => {
+      alignOffset !== undefined &&
+        vlist !== undefined &&
+        console.log(vlist.scrollSize);
+      resolve();
+    }, 20);
+  });
 };
 
 export type reverseFn = (animationOption: AnimationOptions) => Promise<void>;

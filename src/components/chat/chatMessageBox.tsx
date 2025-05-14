@@ -153,6 +153,7 @@ interface ChatMessageBoxProps {
   paddingTop?: string;
   paddingBottom?: string;
   alignOffset?: number;
+  onScroll?: (scrollTop: number) => void;
   showupMotion?: (element: HTMLDivElement) => Promise<void>;
   getListOps?: (
     append: (info: ChatMessage, open?: boolean) => number,
@@ -171,7 +172,8 @@ interface ChatMessageBoxProps {
     getEndIndex: () => number,
     scrollToIndex: (index: number, opts?: ScrollToIndexOpts) => void,
     alignCheck: () => boolean,
-    isScrolling: () => boolean
+    isScrolling: () => boolean,
+    alignWith: (fun: () => void, duration?: number) => void
   ) => void;
 }
 
@@ -179,10 +181,7 @@ const ChatMessageBox: Component<ChatMessageBoxProps> = (props) => {
   let vlist: VirtualizerHandle | undefined;
   let pos = {
     offsetY: 0,
-    y: 0,
-    add(offset: number) {
-      pos.offsetY += offset;
-    },
+    y: undefined,
   };
   let msgList: ChatBubble[] = props.initData
     ? props.initData.map((raw, index) => ({
@@ -205,12 +204,13 @@ const ChatMessageBox: Component<ChatMessageBoxProps> = (props) => {
       !scrolling
     );
   };
+  const alignWith = (fun: () => void, duration?: number) => {
+    const willAlign = alignCheck();
+    fun();
+    if (willAlign) scrollToBottom(duration);
+  };
   const submitUpdate = (scroll?: boolean, sudden?: boolean) => {
-    const willAlign =
-      props.alignOffset &&
-      vlist &&
-      vlist.scrollSize - (pos.offsetY + vlist.viewportSize) <=
-        props.alignOffset;
+    const willAlign = alignCheck();
     setRenderList([
       blocker(props.paddingTop),
       ...msgList,
@@ -336,21 +336,28 @@ const ChatMessageBox: Component<ChatMessageBoxProps> = (props) => {
   props.getListOps?.(append, remove, set, open, close, clear, getList);
 
   const scrollTo = (position: number, duration?: number) => {
-    if (!vlist || pos.y === position) return;
+    if (!vlist || pos.offsetY === position) return;
     pos.offsetY = position;
+    props.onScroll?.(pos.offsetY);
     if (duration === 0) vlist?.scrollTo(position);
     else {
       animate(pos, {
         y: [vlist.scrollOffset, position],
         duration: duration ?? 200,
-        ease: "out(4)",
-        onUpdate: () => vlist?.scrollTo(pos.y),
+        ease: "cubicBezier(0.5, 0, 0, 1)",
+        onUpdate: () => vlist?.scrollTo(pos.y!),
+        onComplete() {
+          pos.y = undefined;
+        },
       });
     }
   };
   const scrollToBottom = (duration?: number) => {
-    if (duration === 0) vlist?.scrollToIndex(renderList().length - 1);
-    else
+    if (duration === 0) {
+      vlist?.scrollToIndex(renderList().length - 1);
+      pos.offsetY = vlist!.scrollOffset;
+      props.onScroll?.(pos.offsetY);
+    } else
       setTimeout(() => {
         if (vlist) scrollTo(vlist.scrollSize - vlist.viewportSize, duration);
       }, 20);
@@ -370,62 +377,74 @@ const ChatMessageBox: Component<ChatMessageBoxProps> = (props) => {
     getEndIndex,
     scrollToIndex,
     alignCheck,
-    isScrolling
+    isScrolling,
+    alignWith
   );
 
   return (
-    <VList
-      ref={(e) => {
-        vlist = e;
-        if (vlist) props.ref?.(vlist);
-      }}
-      data={renderList()}
-      class={props.class}
-      style={{
-        "font-size": props.fontSize ?? "1rem",
-        "user-select": "text",
-        ...props.style,
-      }}
-      onScroll={(o) => {
-        scrolling = true;
-        pos.add(o);
-      }}
-      onScrollEnd={() => (scrolling = false)}
-    >
-      {(item, index) => {
-        const realIndex = index - 1;
-        const memo = memoBubble.get(realIndex)?.ref;
-        if (item instanceof HTMLDivElement) return item;
-        return memo ? (
-          memo
-        ) : (
-          <ChatMessageBubble
-            ref={(a) => {
-              const target = memoBubble.get(realIndex);
-              const element = a.parentElement as HTMLDivElement;
-              if (target) {
-                target.ref = element;
-                if (animationQueue.has(realIndex)) {
-                  animationQueue.delete(realIndex);
-                  if (props.showupMotion) {
-                    props.showupMotion(a).then(() => {
-                      if (target.keep && index < msgList.length - 2) {
-                        memoBubble.delete(index);
-                      }
-                    });
+    <>
+      <VList
+        ref={(e) => {
+          vlist = e;
+          if (vlist) props.ref?.(vlist);
+        }}
+        data={renderList()}
+        class={props.class}
+        style={{
+          "font-size": props.fontSize ?? "1rem",
+          "user-select": "text",
+          ...props.style,
+        }}
+        onScroll={(offset) => {
+          if (!pos.y) {
+            scrolling = true;
+            pos.offsetY = offset;
+            props.onScroll?.(pos.offsetY);
+          }
+        }}
+        onScrollEnd={() => {
+          if (!scrolling) {
+            pos.offsetY = vlist!.scrollOffset;
+            props.onScroll?.(pos.offsetY);
+          }
+          scrolling = false;
+        }}
+      >
+        {(item, index) => {
+          const realIndex = index - 1;
+          const memo = memoBubble.get(realIndex)?.ref;
+          if (item instanceof HTMLDivElement) return item;
+          return memo ? (
+            memo
+          ) : (
+            <ChatMessageBubble
+              ref={(a) => {
+                const target = memoBubble.get(realIndex);
+                const element = a.parentElement as HTMLDivElement;
+                if (target) {
+                  target.ref = element;
+                  if (animationQueue.has(realIndex)) {
+                    animationQueue.delete(realIndex);
+                    if (props.showupMotion) {
+                      props.showupMotion(a).then(() => {
+                        if (target.keep && index < msgList.length - 2) {
+                          memoBubble.delete(index);
+                        }
+                      });
+                    }
                   }
                 }
-              }
-            }}
-            position={item.pos}
-            fontSize={props.fontSize}
-            children={item}
-            class={props.bubbleClass}
-            style={props.bubbleStyle}
-          />
-        );
-      }}
-    </VList>
+              }}
+              position={item.pos}
+              fontSize={props.fontSize}
+              children={item}
+              class={props.bubbleClass}
+              style={props.bubbleStyle}
+            />
+          );
+        }}
+      </VList>
+    </>
   );
 };
 

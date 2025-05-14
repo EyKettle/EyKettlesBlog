@@ -110,6 +110,10 @@ body {
   --color-shadow: rgba(0, 0, 0, 0.1);
   --color-shadow-auto: none;
 
+  --color-scrollbar-thumb: hsla(0, 0%, 0%, 0.1);
+  --color-scrollbar-thumb-hover: hsla(0, 0%, 0%, 0.2);
+  --color-scrollbar-thumb-active: hsla(0, 0%, 0%, 0.15);
+
   --color-button-default: var(--color-surface-light);
   --color-button-hover: white;
   --color-button-active: #ddd;
@@ -177,6 +181,10 @@ html {
 
     --color-shadow: rgba(0, 0, 0, 0.3);
     --color-shadow-auto: var(--color-shadow);
+
+    --color-scrollbar-thumb: hsla(0, 0%, 100%, 0.1);
+    --color-scrollbar-thumb-hover: hsla(0, 0%, 100%, 0.2);
+    --color-scrollbar-thumb-active: hsla(0, 0%, 100%, 0.15);
 
     --color-button-default: #2e2e2e;
     --color-button-hover: #3c3c3c;
