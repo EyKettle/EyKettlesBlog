@@ -349,7 +349,7 @@ const ComponentsPage: Component<componentsPageProps> = (props) => {
         <Button
           icon={"\ue0ab"}
           label={t("library.enterChatPage")}
-          style={{ "margin-top": "2rem", ...buttonSize("medium") }}
+          style={{ ...buttonSize("medium"), "margin-top": "2rem" }}
           onClick={props.operations.enterChatPage}
         />
       </div>

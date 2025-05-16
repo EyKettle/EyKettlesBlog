@@ -1,6 +1,5 @@
 import { createSignal, onMount, type Component } from "solid-js";
 import { Card } from "../components/card";
-import { Button } from "../components/button";
 import { VirtualizerHandle, VList } from "virtua/solid";
 import { Article, getInfos } from "../articles/methods";
 import Blocker from "../components/blocker";

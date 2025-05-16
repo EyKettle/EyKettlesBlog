@@ -254,7 +254,11 @@ const App: Component = () => {
                         articleInfo = articles.find(
                           (a) => a.fileName === config.currentArticle
                         );
-                        window.location.hash = articleInfo?.fileName || "???";
+                        window.location.pathname =
+                          (window.location.pathname.slice(1).split("/").at(0) ??
+                            "") +
+                          "/" +
+                          (articleInfo?.fileName ?? "???");
                       });
                     loadArticle();
                     updateTitle(Pages.Article);

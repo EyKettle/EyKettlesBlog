@@ -7,9 +7,9 @@ export const backButton = (callback: () => void) => (
     type="ghost"
     onClick={callback}
     style={{
-      "flex-shrink": 0,
       ...buttonSize("large"),
       ...roundButton("80px"),
+      "flex-shrink": 0,
     }}
   />
 );

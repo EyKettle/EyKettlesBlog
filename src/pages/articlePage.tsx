@@ -21,6 +21,7 @@ import {
 import { Article, getInfos } from "../articles/methods";
 import { backButton } from "../controls/templates";
 import Code from "../components/code";
+import Artalk from "artalk";
 
 interface ArticlePageProps {
   translator: any;
@@ -37,6 +38,8 @@ interface ArticlePageProps {
 
 const ArticlePage: Component<ArticlePageProps> = (props) => {
   const t = props.translator;
+  let comments: HTMLDivElement;
+  let artalk: Artalk | undefined;
 
   const [articleInfo, setArticleInfo] = createSignal<Article | null>(null);
   const [isProper, setProper] = createSignal(true);
@@ -64,7 +67,7 @@ const ArticlePage: Component<ArticlePageProps> = (props) => {
       const fileContent =
         fileName === "new"
           ? (await import("../articles/new.md?raw")).default
-          : await fetch(`./articles/${fileName}.md`).then((res) => res.text());
+          : await fetch(`/articles/${fileName}.md`).then((res) => res.text());
       if (fileContent) {
         setProper(true);
         setContent(fileContent);
@@ -87,6 +90,15 @@ const ArticlePage: Component<ArticlePageProps> = (props) => {
       }
       if (isProper()) {
         loadPosition();
+        artalk?.destroy();
+        artalk = Artalk.init({
+          el: comments,
+          server: "https://artalk.eykettle.top",
+          pageKey: "Article/" + info.fileName,
+          pageTitle: "[EyKettleBlog] 文章 - " + info.title,
+          site: "eykettle_blog",
+          noComment: "从未有人踏足此地",
+        });
       } else {
         console.warn("Lost article position by improper loading");
       }
@@ -141,6 +153,7 @@ const ArticlePage: Component<ArticlePageProps> = (props) => {
   });
   onCleanup(() => {
     pageContent && pageContent.removeEventListener("scroll", handleScroll);
+    artalk?.destroy();
   });
 
   return (
@@ -292,7 +305,9 @@ const ArticlePage: Component<ArticlePageProps> = (props) => {
                     code(props) {
                       if (props.inline) return <code>{props.children}</code>;
                       return (
-                        <Code language={props.class?.slice(9) ?? ""}>{props.children}</Code>
+                        <Code language={props.class?.slice(9) ?? ""}>
+                          {props.children}
+                        </Code>
                       );
                     },
                   }}
@@ -300,6 +315,13 @@ const ArticlePage: Component<ArticlePageProps> = (props) => {
               </Suspense>
             </Show>
           </Card>
+          <div
+            ref={(e) => (comments = e)}
+            style={{
+              "margin-top": "3rem",
+              "max-width": "calc(100vw - 6.75rem)",
+            }}
+          />
         </Show>
       </div>
     </div>

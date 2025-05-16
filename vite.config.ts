@@ -1,6 +1,5 @@
 import { defineConfig } from "vite";
 import solidPlugin from "vite-plugin-solid";
-import devtools from "solid-devtools/vite";
 import postcssPresetEnv from "postcss-preset-env";
 import { createSvgIconsPlugin } from "vite-plugin-svg-icons-ng";
 import path from "node:path";
@@ -13,14 +12,6 @@ export default defineConfig({
     }),
     prismjs({
       languages: "all",
-    }),
-    devtools({
-      autoname: true,
-      locator: {
-        targetIDE: "vscode",
-        componentLocation: true,
-        jsxLocation: true,
-      },
     }),
     solidPlugin(),
   ],

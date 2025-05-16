@@ -100,7 +100,7 @@ export const PageContainer: Component<PageContainerProps> = (props) => {
       historyPosition = indexHistory.length - 1;
       if (!first) {
         let url = props.pageInfos[index].name;
-        if (param) url += "#" + param;
+        if (param) url += "/" + param;
         if (replace) {
           window.history.replaceState(historyPosition, "", "/" + url);
         } else {
@@ -128,8 +128,9 @@ export const PageContainer: Component<PageContainerProps> = (props) => {
       console.warn(container, "LocationChange triggered without FakeRouter.");
       return;
     }
-    const path = window.location.pathname.slice(1);
-    const param = window.location.hash.slice(1);
+    const rawPath = window.location.pathname.slice(1).split("/");
+    const path = rawPath.at(0);
+    const param = rawPath.at(1);
     if (!first && path === "") return;
     const index =
       path === "" && first
@@ -137,7 +138,7 @@ export const PageContainer: Component<PageContainerProps> = (props) => {
         : props.pageInfos.findIndex((page) => page.name === path);
     if (props.homeIndex && index !== props.homeIndex) first = false;
     if (index >= 0 && index < pages.length)
-      handleSwitch(index, param === "" ? undefined : param, replace, first);
+      handleSwitch(index, param, replace, first);
   };
 
   const goBackward = () => {

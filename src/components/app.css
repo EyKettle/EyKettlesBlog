@@ -114,13 +114,13 @@ body {
   --color-scrollbar-thumb-hover: hsla(0, 0%, 0%, 0.2);
   --color-scrollbar-thumb-active: hsla(0, 0%, 0%, 0.15);
 
-  --color-button-default: var(--color-surface-light);
-  --color-button-hover: white;
-  --color-button-active: #ddd;
+  --color-button-default: hsla(0, 0%, 100%, 0.5);
+  --color-button-hover: hsla(0, 0%, 100%, 0.85);
+  --color-button-active: hsla(0, 0%, 90%, 0.85);
   --color-button-main-default: #94dab5;
   --color-button-main-hover: #bbeed3;
   --color-button-main-active: #83b89c;
-  --color-button-main-text: var(--color-theme-accent-text);
+  --color-button-main-text: rgba(10, 49, 29, 0.9);
   --color-ghost-default: transparent;
   --color-ghost-hover: rgba(0, 0, 0, 0.08);
   --color-ghost-active: rgba(0, 0, 0, 0.16);
@@ -142,6 +142,10 @@ body {
   --color-chat-own-text-default: var(--color-theme-accent-text);
   --color-chat-other-back-default: var(--color-surface-hover);
   --color-chat-other-text-default: var(--color-theme-text);
+
+  --style-press-shadow: inset 0 1px 0 var(--color-border-down);
+  --transition-back-default: background-color 0.3s;
+  --transition-back-hover: background-color 0.15s;
 
   transition: all 0.2s;
   height: 100%;
@@ -186,12 +190,13 @@ html {
     --color-scrollbar-thumb-hover: hsla(0, 0%, 100%, 0.2);
     --color-scrollbar-thumb-active: hsla(0, 0%, 100%, 0.15);
 
-    --color-button-default: #2e2e2e;
-    --color-button-hover: #3c3c3c;
-    --color-button-active: #2a2a2a;
+    --color-button-default: hsla(0, 0%, 100%, 0.08);
+    --color-button-hover: hsla(0, 0%, 100%, 0.12);
+    --color-button-active: hsla(0, 0%, 40%, 0.12);
     --color-button-main-default: #1c4933;
     --color-button-main-hover: #22573d;
     --color-button-main-active: #193f2d;
+    --color-button-main-text: rgba(199, 255, 227, 0.9);
     --color-ghost-default: transparent;
     --color-ghost-hover: rgba(255, 255, 255, 0.05);
     --color-ghost-active: rgba(255, 255, 255, 0.1);
@@ -271,5 +276,481 @@ textarea {
   }
   100% {
     rotate: 360deg;
+  }
+}
+
+.artalk {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+
+  * {
+    color: var(--color-theme-text);
+    font-size: 1rem;
+    text-align: start;
+  }
+
+  .atk-hide {
+    display: none;
+  }
+
+  .atk-main-editor {
+    z-index: 2;
+    position: relative;
+    border-radius: 1rem;
+    padding: 0.5rem;
+    background-color: var(--color-surface-hover);
+    border: 1px solid var(--color-border-default);
+    box-shadow: 0 0.0625rem 0.0625rem var(--color-shadow);
+  }
+  .atk-notify-wrap {
+    position: absolute;
+    width: calc(100% - 1rem);
+    justify-content: center;
+    translate: 0 -5px;
+    pointer-events: none;
+    display: grid;
+    gap: 0.25rem;
+  }
+  .atk-notify {
+    width: fit-content;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.5rem;
+  }
+
+  .atk-header {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    input {
+      padding: 0.5rem;
+      background-color: transparent;
+      transition: box-shadow 0.2s;
+    }
+    input:focus {
+      box-shadow: 0 2px 0 var(--color-theme-accent);
+    }
+  }
+
+  .atk-textarea-wrap {
+    display: grid;
+    height: 8rem;
+    padding: 0.5rem;
+    textarea {
+      resize: none;
+      height: 100% !important;
+      outline: none;
+    }
+  }
+
+  .atk-bottom {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: end;
+  }
+  .atk-bottom-left {
+    display: flex;
+    gap: 0.5rem;
+    .atk-state-btn::before {
+      margin-right: 0.5rem;
+      content: "⨉";
+      opacity: 0.6;
+    }
+    .atk-state-btn {
+      display: flex;
+      padding-inline: 1rem;
+      height: 100%;
+      border-radius: 0.5rem;
+      background-color: var(--color-surface-default);
+      transition: var(--transition-back-default);
+      cursor: pointer;
+      span {
+        display: inline;
+      }
+      .atk-text {
+        color: var(--color-theme-text-solid);
+      }
+    }
+    .atk-state-btn:hover {
+      background-color: var(--color-ghost-hover);
+      transition: var(--transition-back-hover);
+    }
+    .atk-state-btn:active {
+      background-color: var(--color-ghost-active);
+    }
+  }
+  .atk-plug-btn-wrap::after {
+    content: "Artalk";
+    margin-left: 1rem;
+    opacity: 0.2;
+    font-weight: bold;
+  }
+  .atk-plug-btn-wrap {
+    display: flex;
+    gap: 0.25rem;
+    span {
+      height: 2.5rem;
+      width: 2.5rem;
+      border-radius: 0.5rem;
+      cursor: pointer;
+      transition: var(--transition-back-default);
+      i {
+        display: grid;
+        place-items: center;
+        translate: 0 -1px;
+      }
+      svg {
+        height: 1rem;
+        width: 1rem;
+      }
+    }
+    span.active {
+      background-color: var(--color-ghost-active);
+      box-shadow: var(--style-press-shadow);
+      i {
+        translate: 0 0;
+      }
+    }
+    span:hover {
+      background-color: var(--color-ghost-hover);
+      transition: var(--transition-back-hover);
+    }
+    span:active {
+      background-color: var(--color-ghost-active);
+    }
+  }
+
+  .atk-send-btn {
+    font-size: 1.125rem;
+    padding: 0.5rem 2rem;
+    border-radius: 0.5rem;
+    color: var(--color-button-main-text);
+    background-color: var(--color-button-main-default);
+    cursor: pointer;
+    transition: var(--transition-back-default);
+  }
+  .atk-send-btn:hover {
+    background-color: var(--color-button-main-hover);
+    transition: var(--transition-back-hover);
+  }
+  .atk-send-btn:active {
+    background-color: var(--color-button-main-active);
+  }
+
+  .atk-list {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    .atk-loading {
+      display: none !important;
+    }
+  }
+
+  .atk-list-header {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .atk-comment-count-num {
+    font-size: 1.25rem;
+    color: var(--color-theme-text-solid);
+    font-weight: bold;
+  }
+
+  .atk-dropdown-wrap {
+    display: flex;
+    position: relative;
+    gap: 1rem;
+    padding: 0.5rem 1rem;
+    border-radius: 1rem;
+    background-color: var(--color-surface-hover);
+    cursor: pointer;
+    .atk-dropdown {
+      display: none;
+      position: absolute;
+      margin: 0;
+      top: 100%;
+      left: 0;
+      width: 100%;
+      z-index: 3;
+      border-radius: 0 1rem 1rem 1rem;
+      padding: 0.5rem;
+      background-color: var(--color-surface-hover);
+      box-shadow: 0 1rem 1rem var(--color-shadow);
+      list-style: none;
+      gap: 0.25rem;
+      cursor: default;
+      span {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 0.5rem;
+        border-radius: 0.5rem;
+        transition: var(--transition-back-default);
+        cursor: pointer;
+      }
+      span:hover {
+        background-color: var(--color-ghost-hover);
+        transition: var(--transition-back-hover);
+      }
+      span:active {
+        background-color: var(--color-ghost-active);
+      }
+      .active span {
+        box-shadow: var(--style-press-shadow);
+        background-color: var(--color-theme-accent-background);
+        /* pointer-events: none; */
+        cursor: default;
+      }
+    }
+  }
+  .atk-dropdown-wrap:hover {
+    border-radius: 1rem 1rem 0 0;
+    .atk-arrow-down-icon::before {
+      rotate: -90deg;
+    }
+    .atk-dropdown {
+      display: grid;
+    }
+  }
+  .atk-arrow-down-icon::before {
+    content: ">";
+    rotate: 90deg;
+    display: grid;
+    transition: rotate 0.3s;
+  }
+
+  .atk-right-action {
+    display: flex;
+    gap: 0.5rem;
+    span {
+      color: var(--color-theme-accent-text);
+      padding-inline: 1rem;
+      border-radius: 1rem;
+      transition: var(--transition-back-default);
+      cursor: pointer;
+    }
+    span:hover {
+      background-color: var(--color-ghost-hover);
+      transition: var(--transition-back-hover);
+    }
+    span:active {
+      background-color: var(--color-ghost-active);
+    }
+    .atk-on {
+      display: flex;
+      gap: 0.5rem;
+      div {
+        color: var(--color-theme-accent-text);
+      }
+    }
+    .atk-on::after {
+      content: "(夜晚闪瞎眼)";
+      opacity: 0.4;
+    }
+  }
+
+  .atk-list-comments-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+  .atk-comment {
+    display: grid;
+    grid-template-columns: 4rem 1fr;
+    gap: 1rem;
+    .atk-main {
+      display: grid;
+      gap: 0.5rem;
+    }
+    .atk-nick {
+      font-weight: bold;
+      color: var(--color-theme-text-solid);
+    }
+    .atk-date {
+      margin-left: 0.5rem;
+      opacity: 0.6;
+    }
+    .atk-header {
+      display: flex;
+      gap: 0.5rem;
+    }
+    .atk-avatar {
+      height: 4rem;
+      border-radius: 1rem;
+      overflow: hidden;
+      background-color: var(--color-surface-hover);
+      img {
+        height: 4rem;
+        width: 4rem;
+      }
+    }
+    p {
+      margin: 0;
+    }
+    .atk-actions {
+      display: flex;
+      gap: 0.25rem;
+      span {
+        padding: 0.25rem 0.5rem;
+        border-radius: 0.5rem;
+        opacity: 0.4;
+        cursor: pointer;
+        transition: opacity 0.3s, var(--transition-back-default);
+      }
+      span:hover {
+        opacity: 1;
+        background-color: var(--color-ghost-hover);
+        transition: opacity 0.15s, var(--transition-back-hover);
+      }
+      span:active {
+        opacity: 1;
+        background-color: var(--color-ghost-active);
+      }
+    }
+  }
+  .atk-comment-children {
+    display: grid;
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+  .atk-reply-at {
+    display: flex;
+    gap: 0.25rem;
+    border-radius: 0.25rem;
+    padding-inline: 0.25rem;
+    background-color: var(--color-surface-hover);
+    outline: 4px solid var(--color-surface-hover);
+    .atk-arrow::before {
+      content: "↩";
+    }
+    span {
+      opacity: 0.6;
+    }
+  }
+
+  .atk-list-no-comment {
+    font-style: italic;
+    font-size: 1.5rem;
+    height: 12rem;
+    display: grid;
+    place-items: center;
+    opacity: 0.6;
+  }
+
+  .atk-list-footer {
+    display: none;
+  }
+}
+
+.atk-loading-spinner {
+  svg {
+    overflow: visible;
+  }
+  circle {
+    r: 40;
+    stroke-width: 12;
+    stroke-linecap: round;
+    stroke: var(--color-theme-accent);
+    transform-origin: 50px 50px;
+    animation: loadingRotate 1s cubic-bezier(0.2, 0.1, 0.8, 0.9) infinite,
+      loadingPath 0.5s cubic-bezier(0.4, 0, 0.6, 1) infinite alternate;
+  }
+}
+
+.atk-unread-badge {
+  color: var(--color-theme-accent-text);
+  background-color: var(--color-theme-accent-background);
+  border-radius: 50%;
+  padding: 0 !important;
+  height: 1.5rem;
+  width: 1.5rem;
+  text-align: center;
+  align-content: center;
+  pointer-events: none;
+}
+
+.atk-layer-wrap {
+  .atk-layer-mask {
+    position: fixed;
+    inset: 0;
+    background-color: #0000004d;
+  }
+  .atk-sidebar-layer {
+    position: fixed;
+    top: 0;
+    right: 0;
+    height: 100%;
+    width: 45%;
+    z-index: 11;
+    background-color: var(--color-surface-default);
+    border: 1px solid var(--color-border-default);
+    box-shadow: 0 0 2rem var(--color-shadow);
+    transform: translate(100%);
+    transition: transform 0.3s;
+    .atk-loading {
+      display: grid;
+      place-items: center;
+      height: 100%;
+      svg {
+        height: 1.5rem;
+      }
+    }
+  }
+  iframe,
+  .atk-sidebar-iframe-wrap,
+  .atk-sidebar-inner {
+    height: 100%;
+    width: 100%;
+  }
+}
+
+.atk-layer-dialog-wrap {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  .atk-layer-dialog {
+    background-color: var(--color-surface-hover);
+    border-radius: 1rem;
+    border: 1px solid var(--color-border-default);
+    box-shadow: 0 1rem 2rem var(--color-shadow);
+    padding: 1rem;
+    div {
+      display: grid;
+      gap: 0.5rem;
+      margin-bottom: 0.5rem;
+    }
+    input {
+      border-radius: 0.5rem;
+      font-size: 1rem;
+      padding: 0.5rem;
+      background-color: var(--color-input-default);
+    }
+    .atk-layer-dialog-actions {
+      margin-bottom: 0;
+      grid-template-columns: 1fr 1fr;
+      button {
+        padding-block: 0.5rem;
+        border-radius: 0.5rem;
+        background-color: var(--color-button-default);
+        transition: var(--transition-back-default);
+        cursor: pointer;
+      }
+      button:hover {
+        background-color: var(--color-button-hover);
+        transition: var(--transition-back-hover);
+      }
+      button:active {
+        background-color: var(--color-button-active);
+      }
+      :first-child {
+        background-color: var(--color-button-main-default);
+      }
+      :first-child:hover {
+        background-color: var(--color-button-main-hover);
+      }
+      :first-child:active {
+        background-color: var(--color-button-main-active);
+      }
+    }
   }
 }

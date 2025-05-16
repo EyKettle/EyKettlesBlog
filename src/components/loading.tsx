@@ -30,7 +30,7 @@ const Loading: Component<LoadingProps> = (props) => {
           stroke-width="12"
           stroke-linecap="round"
           style={{
-            "transform-origin": "50% 50%",
+            "transform-origin": "center",
             animation:
               "loadingRotate 1s cubic-bezier(0.2, 0.1, 0.8, 0.9) infinite, loadingPath 0.5s cubic-bezier(0.4, 0, 0.6, 1) infinite alternate",
           }}
