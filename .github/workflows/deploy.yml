@@ -28,7 +28,10 @@ jobs:
         with:
           node-version: lts/*
 
-      - name: Install step
+      - name: Install pnpm
+        run: "npm i pnpm"
+
+      - name: Install dependencies
         run: "pnpm i"
 
       - name: Build step
