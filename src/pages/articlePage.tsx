@@ -58,6 +58,7 @@ const ArticlePage: Component<ArticlePageProps> = (props) => {
         setArticleInfo(null);
         return;
       }
+      artalk?.destroy();
       setArticleInfo(info);
       const { fileName } = info;
       if (frontFile === fileName) {
@@ -90,7 +91,6 @@ const ArticlePage: Component<ArticlePageProps> = (props) => {
       }
       if (isProper()) {
         loadPosition();
-        artalk?.destroy();
         artalk = Artalk.init({
           el: comments,
           server: "https://artalk.eykettle.top",
@@ -318,7 +318,7 @@ const ArticlePage: Component<ArticlePageProps> = (props) => {
             ref={(e) => (comments = e)}
             style={{
               "margin-top": "3rem",
-              "width": "90vw",
+              width: "90vw",
             }}
           />
         </Show>
