@@ -97,7 +97,6 @@ const ArticlePage: Component<ArticlePageProps> = (props) => {
           pageKey: "Article/" + info.fileName,
           pageTitle: "[EyKettleBlog] 文章 - " + info.title,
           site: "eykettle_blog",
-          noComment: "从未有人踏足此地",
         });
       } else {
         console.warn("Lost article position by improper loading");
@@ -319,7 +318,7 @@ const ArticlePage: Component<ArticlePageProps> = (props) => {
             ref={(e) => (comments = e)}
             style={{
               "margin-top": "3rem",
-              "max-width": "calc(100vw - 6.75rem)",
+              "width": "90vw",
             }}
           />
         </Show>

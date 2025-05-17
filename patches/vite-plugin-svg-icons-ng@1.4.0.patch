@@ -1,0 +1,13 @@
+diff --git a/dist/index.mjs b/dist/index.mjs
+index 870524c717152a04d8794849d12c319f338695a7..8ed320dcd98f574f1f68d979f98a869dca3e0d5c 100644
+--- a/dist/index.mjs
++++ b/dist/index.mjs
+@@ -28,7 +28,7 @@ const ERR_CUSTOM_DOM_ID_SYNTAX = `[${PLUGIN_NAME}]: 'customDomId' must be a vali
+ const ERR_SVGO_EXCEPTION = (file, error) => `[${PLUGIN_NAME}]: SVGO optimize failure, skip this file (${file}), caused by:
+ ${error}`;
+ const SPRITE_TEMPLATE = (symbols, customDomId, inject) => `if (typeof window !== 'undefined') {
+-  function load() {
++  let load = () => {
+     var body = document.body;
+     var el = document.getElementById('${customDomId}');
+     if (!el) {

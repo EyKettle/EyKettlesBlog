@@ -1,6 +1,6 @@
 {
   "name": "eykettles-manual",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Kettle's blog website.",
   "type": "module",
   "scripts": {
@@ -35,5 +35,10 @@
     "virtua": "^0.39.3"
   },
   "main": "index.js",
-  "author": "EyKettle"
+  "author": "EyKettle",
+  "pnpm": {
+    "patchedDependencies": {
+      "vite-plugin-svg-icons-ng@1.4.0": "patches/vite-plugin-svg-icons-ng@1.4.0.patch"
+    }
+  }
 }
