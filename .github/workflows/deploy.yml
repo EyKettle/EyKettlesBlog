@@ -73,6 +73,27 @@ jobs:
           sha1sum "$PATCH_FILE"
           echo "--------------------------------------------------"
 
+      - name: Debug - Check Git index content on CI runner
+        run: |
+          echo "--- Git Index Content (from object db) ---"
+          git cat-file -p HEAD:patches/vite-plugin-svg-icons-ng@1.4.0.patch
+          echo "-----------------------------------------"
+
+      - name: Debug - Check patch file line endings on CI runner filesystem
+        run: |
+          PATCH_FILE="patches/vite-plugin-svg-icons-ng@1.4.0.patch"
+          echo "--- Checking file on filesystem: $PATCH_FILE ---"
+          # 使用 file 命令检查文件类型 (应为 ASCII text)
+          file "$PATCH_FILE"
+          # 使用 cat -v 显示非打印字符，^M 表示 CR
+          echo "--- Content with visible control chars ---"
+          cat -v "$PATCH_FILE"
+          echo "------------------------------------------"
+          # 再次计算哈希
+          echo "--- Recalculating SHA1 hash of file on filesystem ---"
+          sha1sum "$PATCH_FILE"
+          echo "-----------------------------------------------------"
+
       - name: Install dependencies
         run: pnpm install
 
