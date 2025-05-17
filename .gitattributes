@@ -1,1 +1,1 @@
-patches/*.patch binary
+patches/*.patch text eol=lf
