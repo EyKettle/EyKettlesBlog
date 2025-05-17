@@ -33,21 +33,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: lts/*
-      - name: Workaround - Force LF line endings for patch file on CI
-        run: |
-          PATCH_FILE="patches/vite-plugin-svg-icons-ng@1.4.0.patch"
-          echo "--- Forcing LF content from Git object db ---"
-          # 使用 git show 获取仓库中的 LF 内容
-          git show HEAD:"$PATCH_FILE" > "$PATCH_FILE.lf"
-          # 覆盖掉 Git checkout 产生的 CRLF 文件
-          mv "$PATCH_FILE.lf" "$PATCH_FILE"
-          echo "--- Verifying file after workaround ---"
-          file "$PATCH_FILE" # 应该显示 ASCII text
-          cat -v "$PATCH_FILE" # 应该不显示 ^M
-          echo "---------------------------------------"
-          echo "--- Recalculating SHA1 hash after workaround ---"
-          sha1sum "$PATCH_FILE" # 这次计算的是 LF 文件的哈希
-          echo "------------------------------------------------"
 
       - name: Install dependencies
         run: pnpm install
