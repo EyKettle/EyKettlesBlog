@@ -34,6 +34,45 @@ jobs:
         with:
           node-version: lts/*
 
+      - name: Debug - Print pnpm version
+        run: pnpm --version
+
+      - name: Debug - Print Git core config
+        run: |
+          echo "--- Git Config ---"
+          git config --list
+          echo "------------------"
+
+      - name: Debug - Print package.json content
+        run: |
+          echo "--- package.json ---"
+          cat package.json
+          echo "--------------------"
+
+      - name: Debug - Print pnpm-lock.yaml content
+        run: |
+          echo "--- pnpm-lock.yaml ---"
+          cat pnpm-lock.yaml
+          echo "----------------------"
+
+      - name: Debug - List patches directory content
+        run: |
+          echo "--- patches/ content ---"
+          ls -la patches/
+          echo "------------------------"
+
+      - name: Debug - Print patch file content and calculate hash on CI runner
+        run: |
+          PATCH_FILE="patches/vite-plugin-svg-icons-ng@1.4.0.patch" # 确保文件名正确
+          echo "--- Content of $PATCH_FILE on CI ---"
+          cat "$PATCH_FILE"
+          echo "------------------------------------"
+          echo "--- Calculating SHA1 hash of $PATCH_FILE on CI ---"
+          # pnpm lock file hash starting with 7h... is base32 encoded SHA1 hash (20 bytes)
+          # Use sha1sum and then potentially convert or compare byte representation if needed, but simple comparison might reveal difference.
+          sha1sum "$PATCH_FILE"
+          echo "--------------------------------------------------"
+
       - name: Install dependencies
         run: pnpm install
 
