@@ -2,26 +2,20 @@
 <html lang="zh-CN">
   <head>
     <meta charset="utf-8" />
-    <script>
-      (async function () {
-        try {
-          if (!("paintWorklet" in CSS))
-            await import("https://unpkg.com/css-paint-polyfill");
-          await CSS.paintWorklet.addModule("/css-houdini-squircle.js");
-        } catch (error) {
-          console.error("Worklet 加载失败: ", error);
-        }
-      })();
-    </script>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#164d31cc" />
-    <link rel="shortcut icon" type="image/ico" href="/src/assets/favicon.ico" />
+    <meta name="theme-color" content="#eee" />
+    <meta
+      name="theme-color"
+      content="#262626"
+      media="(prefers-color-scheme: dark)"
+    />
+    <link rel="icon" type="image/svg+xml" href="/src/assets/favicon.svg" />
     <link rel="stylesheet" href="/src/components/app.css" />
     <link href="/src/components/prism.css" rel="stylesheet" />
     <title>电水壶使用手册</title>
     <meta name="description" content="电水壶的博客网站" />
   </head>
-  <body>
+  <body style="--progress: 30%">
     <noscript>LOST JAVASCRIPT</noscript>
     <div id="root" style="height: 100%; overflow: hidden">
       <div

@@ -2,9 +2,9 @@
 
 ## 前置包
 
-- `npm i postcss postcss-preset-env`
-- `npm i -D vite-plugin-svg-icons-ng`
-- `npm i -D prismjs @types/prismjs vite-plugin-prismjs`
+- `pnpm i postcss postcss-preset-env`
+- `pnpm i -d vite-plugin-svg-icons-ng`
+- `pnpm i -d prismjs @types/prismjs vite-plugin-prismjs`
 
 ## 修改配置
 

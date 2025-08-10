@@ -28,7 +28,12 @@ async function handler(req: Request): Promise<Response> {
     }
   } else {
     try {
-      return await serveFile(req, path.join(Deno.cwd(), "index.html"));
+      let html = await Deno.readTextFile(path.join(Deno.cwd(), "index.html"));
+      html = html.replace(
+        "--progress: 30%",
+        `--progress: ${Deno.env.get("PROGRESS") ?? ""}`
+      );
+      return new Response(html, { headers: { "Content-Type": "text/html" } });
     } catch (error) {
       console.error("Error serving index.html: ", error);
       return new Response("Website disappeared", { status: 404 });

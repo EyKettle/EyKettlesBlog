@@ -247,7 +247,7 @@ const ComponentsPage: Component<componentsPageProps> = (props) => {
           </div>
         </div>
         <div style={styleOfSection}>
-          <InputBox multiline={true} placeholder={t("library.input")} />
+          <InputBox placeholder={t("library.input")} />
         </div>
         <div style={styleOfSection}>
           <Loading text={t("library.loading")} />

@@ -1,3 +1,19 @@
+.page {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 1rem;
+  transition: var(--transition-long);
+}
+
+.base-page {
+  height: 100%;
+  width: 100%;
+  align-items: center;
+  gap: 0.5rem;
+}
+
 @property --squircle-radius {
   syntax: "<length>";
   inherits: false;
@@ -154,20 +170,42 @@ body {
   --transition-back-default: background-color 0.3s;
   --transition-back-hover: background-color 0.15s;
 
+  --color-back-primary: white;
+  
+  --transition-short: all 0.15s, clip-path 0s;
+  --transition-press: all 0.15s, clip-path 0s, scale 0.04s;
+  --transition-long: all 0.4s cubic-bezier(0.5, 0, 0, 1), clip-path 0s;
+
+  --radius-small: 0.25rem;
+  --radius-regular: 0.5rem;
+  --radius-medium: 0.75rem;
+  --radius-large: 1rem;
+
+  --font-tiny: 0.75rem;
+  --font-small: 0.875rem;
+  --font-regular: 1rem;
+  --font-medium: 1.125rem;
+  --font-large: 1.25rem;
+
+  --padding-regular: 0.5rem 0.8125rem;
+  --padding-medium: 0.75rem 1.1875rem;
+  --padding-large: 0.8125rem 1.3125rem;
+  --padding-input: 0.75rem 0.8125rem;
+
   transition: all 0.2s;
   height: 100%;
   overflow: hidden;
 }
 
 html {
-  background-color: #f3f3f3;
+  background-color: #eee;
   height: 100%;
   overflow: hidden;
 }
 
 @media (prefers-color-scheme: dark) {
   html {
-    background-color: #202020;
+    background-color: #262626;
   }
   body {
     --color-theme-surface: rgba(0, 0, 0, 0.8);
@@ -220,6 +258,8 @@ html {
     --color-msg-warn-text: #e9c679;
     --color-msg-info-back: #0c2d5e;
     --color-msg-info-text: #86b4e9;
+
+    --color-back-primary: hsl(0, 0%, 20%);
   }
 }
 

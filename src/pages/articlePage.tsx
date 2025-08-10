@@ -90,7 +90,6 @@ const ArticlePage: Component<ArticlePageProps> = (props) => {
         saveConfig(newConfig);
       }
       if (isProper()) {
-        loadPosition();
         artalk = Artalk.init({
           el: comments,
           server: "https://artalk.eykettle.top",
@@ -98,6 +97,7 @@ const ArticlePage: Component<ArticlePageProps> = (props) => {
           pageTitle: "[EyKettleBlog] 文章 - " + info.title,
           site: "eykettle_blog",
         });
+        loadPosition();
       } else {
         console.warn("Lost article position by improper loading");
       }

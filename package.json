@@ -29,6 +29,7 @@
     "artalk": "^2.9.1",
     "figma-squircle": "^1.1.0",
     "motion": "^12.11.4",
+    "pretty-squircle": "^1.0.4",
     "remark-gfm": "^4.0.1",
     "solid-js": "^1.9.6",
     "solid-markdown": "^2.0.14",

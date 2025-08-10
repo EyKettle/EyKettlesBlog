@@ -31,6 +31,9 @@ importers:
       motion:
         specifier: ^12.11.4
         version: 12.12.1
+      pretty-squircle:
+        specifier: ^1.0.4
+        version: 1.0.4
       remark-gfm:
         specifier: ^4.0.1
         version: 4.0.1
@@ -1399,6 +1402,9 @@ packages:
   postcss@8.5.3:
     resolution: {integrity: sha512-dle9A3yYxlBSrt8Fu+IpjGT8SY8hN0mlaA6GY8t0P5PjIOZemULz/E2Bnm/2dcUOena75OTNkHI76uZBNUUq3A==}
     engines: {node: ^10 || ^12 || >=14}
+
+  pretty-squircle@1.0.4:
+    resolution: {integrity: sha512-MbcpvxjbUoNH8AB+teCsIxz/7BxuX5mKXjJsnn/qc58E7/UIIhvDx6j/1rxWqiJeoFHAK5FfS2Q122X4c2QpEQ==}
 
   prismjs@1.30.0:
     resolution: {integrity: sha512-DEvV2ZF2r2/63V+tK8hQvrR2ZGn10srHbXviTlcv7Kpzw8jWiNTqbVgjO3IY8RxrrOUF8VPMQQFysYYYv0YZxw==}
@@ -3089,6 +3095,8 @@ snapshots:
       nanoid: 3.3.11
       picocolors: 1.1.1
       source-map-js: 1.2.1
+
+  pretty-squircle@1.0.4: {}
 
   prismjs@1.30.0: {}
 
