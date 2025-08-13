@@ -15,8 +15,20 @@ const WipPage = () => {
         opacity: "0",
         transform: "scale(0.6)",
         transition: "none",
+        "--progress": "0",
       }}
       ref={(e) => {
+        fetch("/api", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            get: ["PROGRESS"],
+          }),
+        }).then(async (result) => {
+          const data = await result.json();
+          e.style.setProperty("--progress", data.PROGRESS);
+        });
+
         setTimeout(() => {
           animate(e, {
             opacity: 1,

@@ -1,23 +1,21 @@
 import { Component, JSX, Show } from "solid-js";
 
-interface LoadingProps {
+interface Props {
   text?: string;
   class?: string;
   style?: JSX.CSSProperties;
+  color?: string;
 }
-
-const Loading: Component<LoadingProps> = (props) => {
+const Loading: Component<Props> = (p) => {
   return (
     <div
-      class={props.class}
+      class={p.class}
       style={{
         gap: "1rem",
         display: "flex",
         "justify-content": "center",
         "align-items": "center",
-        height: "100%",
-        width: "100%",
-        ...props.style,
+        ...p.style,
       }}
     >
       <svg width="40" height="40" viewBox="0 0 100 100">
@@ -26,7 +24,7 @@ const Loading: Component<LoadingProps> = (props) => {
           cy="50"
           r="40"
           fill="none"
-          stroke="var(--color-theme-accent)"
+          stroke={p.color ?? "var(--primary)"}
           stroke-width="12"
           stroke-linecap="round"
           style={{
@@ -36,11 +34,10 @@ const Loading: Component<LoadingProps> = (props) => {
           }}
         />
       </svg>
-      <Show when={props.text}>
-        <div style={{ "font-size": "1.5rem" }}>{props.text}</div>
+      <Show when={p.text}>
+        <div style={{ "font-size": "1.5rem" }}>{p.text}</div>
       </Show>
     </div>
   );
 };
-
 export default Loading;

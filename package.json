@@ -33,6 +33,7 @@
     "remark-gfm": "^4.0.1",
     "solid-js": "^1.9.6",
     "solid-markdown": "^2.0.14",
+    "solid-transition-group": "^0.3.0",
     "virtua": "^0.39.3"
   },
   "main": "index.js",

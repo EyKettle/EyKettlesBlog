@@ -1,179 +1,147 @@
-import {
-  type Component,
-  createEffect,
-  JSX,
-  Match,
-  onCleanup,
-  onMount,
-  Show,
-  Switch,
-} from "solid-js";
+import { Component, createSignal, JSX, onMount, Show } from "solid-js";
+import { DOMElement } from "solid-js/jsx-runtime";
+import { dynamicSquircle } from "../utils";
+import Loading from "./loading";
 
-interface ButtonProps {
-  icon?: string | Element;
-  iconColors?: string;
-  label?: string;
-  type?: "button" | "ghost";
-  color?: string;
-  backgroundColor?: {
-    default: string;
-    hover: string;
-    active: string;
-  };
-  class?: string;
+export type ButtonOperator = {
+  press: () => void;
+  release: () => void;
+  click: () => void;
+};
+
+export type ButtonSize = "regular" | "medium" | "large";
+export type ButtonType = undefined | "ghost" | "diverse" | "stress" | "primary";
+
+interface Props {
   style?: JSX.CSSProperties;
-  iconStyle?: JSX.CSSProperties;
-  disabled?: boolean;
-  onClick?: (element: HTMLButtonElement) => void;
-  getAnimates?: (press: () => void, release: () => void) => void;
+  label?: string;
+  size?: ButtonSize;
+  type?: ButtonType;
+  disable?: boolean;
+  color?: string;
+  loading?: boolean;
+  loadingColor?: string;
+  onClick?: (
+    event: MouseEvent & {
+      currentTarget: HTMLButtonElement;
+      target: DOMElement;
+    }
+  ) => void;
+  ref?: (operator: ButtonOperator, element: HTMLButtonElement) => void;
 }
 
-export const Button: Component<ButtonProps> = (props) => {
-  let element: HTMLButtonElement;
-  let isTouch = false;
+const Button: Component<Props> = (p) => {
+  let el: HTMLButtonElement;
 
-  const onEnterDown = (e: KeyboardEvent) => {
-    if (e.key === "Enter" && !props.disabled) {
-      e.preventDefault();
-      element.style.scale = "0.95";
-    }
-  };
-  const onEnterUp = (e: KeyboardEvent) => {
-    if (e.key === "Enter" && !props.disabled) {
-      element.style.scale = "1";
-      props.onClick?.(element);
-    }
-  };
-
-  const applyMousedown = () => {
-    element.style.backgroundColor = `var(--color-${props.type}-active)`;
-  };
-  const applyMouseleave = () => {
-    element.style.backgroundColor = `var(--color-${props.type}-default)`;
-  };
-  props.getAnimates?.(applyMousedown, applyMouseleave);
-
-  createEffect(() => {
-    if (props.disabled) {
-      element.tabIndex = -1;
-    } else {
-      element.tabIndex = 0;
-    }
-  });
-
+  const [path, setPath] = createSignal("");
+  const observer = new ResizeObserver((e) => dynamicSquircle(e, setPath));
   onMount(() => {
-    if (!props.type) props.type = "button";
-    if (props.type === "button") {
-      element.style.borderStyle = "solid";
-      element.style.borderWidth = "0";
-      element.style.borderTopColor = "var(--color-border-up)";
-      element.style.borderTopWidth = "0.0625rem";
-      element.style.borderBottomColor = "var(--color-border-down)";
-      element.style.borderBottomWidth = "0.0625rem";
-    }
-    if (props.backgroundColor) {
-      element.style.setProperty(
-        `--color-${props.type}-default`,
-        props.backgroundColor.default
-      );
-      element.style.setProperty(
-        `--color-${props.type}-hover`,
-        props.backgroundColor.hover
-      );
-      element.style.setProperty(
-        `--color-${props.type}-active`,
-        props.backgroundColor.active
-      );
-    }
-    element.style.backgroundColor = `var(--color-${props.type}-default)`;
-    element.style.color = props.color ? props.color : "var(--color-theme-text)";
-
-    element.addEventListener("keydown", onEnterDown);
-    element.addEventListener("keyup", onEnterUp);
-  });
-
-  onCleanup(() => {
-    element.removeEventListener("keydown", onEnterDown);
-    element.removeEventListener("keyup", onEnterUp);
+    observer.observe(el);
   });
 
   return (
     <button
-      ref={(e) => (element = e)}
-      class={props.class}
+      ref={(e) => {
+        el = e;
+        p.ref?.(
+          {
+            press: () => el.classList.add("press", "hover"),
+            release: () => el.classList.remove("press", "hover"),
+            click: () => {
+              p.onClick?.({
+                ...new MouseEvent("keyup"),
+                currentTarget: el,
+                target: el,
+              });
+            },
+          },
+          e
+        );
+      }}
+      class={`button-${p.type ?? "default"}${p.disable ? " disable" : ""}`}
       style={{
-        padding: "0.5rem 1rem",
-        "border-radius": "0.5rem",
-        display: "inline-grid",
-        "grid-template-columns": `${props.icon !== undefined && "auto"} ${
-          props.label !== undefined && "auto"
+        "clip-path": `path('${path()}')`,
+        "border-radius": `${
+          p.size === "large"
+            ? "var(--radius-large)"
+            : p.size === "medium"
+            ? "var(--radius-medium)"
+            : "var(--radius-regular)"
         }`,
-        "column-gap": "0.5rem",
-        "align-items": "center",
-        "vertical-align": "middle",
-        "min-height": "2.5rem",
-        "min-width": "2.5rem",
-        "font-size": "1.125rem",
-        "transition-property": "background-color, scale",
-        "transition-duration": "0.3s",
-        "transition-timing-function": "cubic-bezier(0, 0, 0, 1)",
-        "will-change": "scale",
-        cursor: props.disabled ? "unset" : "pointer",
-        ...props.style,
+        "font-size": `${
+          p.size === "large"
+            ? "var(--font-large)"
+            : p.size === "medium"
+            ? "var(--font-medium)"
+            : "var(--font-regular)"
+        }`,
+        padding: `${
+          p.size === "large"
+            ? "var(--padding-large)"
+            : p.size === "medium"
+            ? "var(--padding-medium)"
+            : "var(--padding-regular)"
+        }`,
+        "pointer-events": `${p.disable ? "none" : "unset"}`,
+        ...p.style,
       }}
-      on:mouseenter={(e) => {
-        if (!props.disabled && !isTouch)
-          e.currentTarget.style.backgroundColor = `var(--color-${props.type}-hover)`;
+      disabled={p.disable}
+      onClick={p.onClick}
+      onMouseEnter={() => el.classList.add("hover")}
+      onMouseLeave={() => el.classList.remove("press", "hover")}
+      onMouseDown={() => el.classList.add("press")}
+      onMouseUp={() => el.classList.remove("press")}
+      onTouchStart={() => el.classList.add("hover", "press")}
+      onTouchEnd={() => el.classList.remove("hover", "press")}
+      onFocus={() => el.classList.add("hover")}
+      onBlur={() => el.classList.remove("press", "hover")}
+      onKeyDown={(e) => {
+        if (e.key === "Enter") el.classList.add("press");
       }}
-      on:mouseleave={() => {
-        if (!props.disabled && !isTouch) applyMouseleave();
-      }}
-      on:mousedown={(e) => {
-        if (!props.disabled && !isTouch && e.button === 0) applyMousedown();
-      }}
-      on:mouseup={(e) => {
-        if (isTouch) {
-          isTouch = false;
-          return;
-        }
-        if (!props.disabled && e.button === 0)
-          e.currentTarget.style.backgroundColor = `var(--color-${props.type}-hover)`;
-      }}
-      on:touchstart={(e) => {
-        isTouch = true;
-        if (!props.disabled)
-          e.currentTarget.style.backgroundColor = `var(--color-${props.type}-hover)`;
-      }}
-      on:touchend={(e) => {
-        if (!props.disabled)
-          e.currentTarget.style.backgroundColor = `var(--color-${props.type}-default)`;
-      }}
-      on:blur={(e) => {
-        if (!props.disabled)
-          e.currentTarget.style.backgroundColor = `var(--color-${props.type}-default)`;
-      }}
-      on:click={() => {
-        if (!props.disabled && !isTouch) props.onClick?.(element);
+      onKeyUp={(e) => {
+        if (e.key === "Enter") el.classList.remove("press");
       }}
     >
-      <Switch>
-        <Match when={typeof props.icon === "string"}>
-          <span
-            style={{
-              "font-family": "var(--font-icon)",
-              color: props.iconColors,
-              "user-select": "none",
-              ...props.iconStyle,
-            }}
-          >
-            {props.icon}
-          </span>
-        </Match>
-        <Match when={typeof props.icon === "object"}>{props.icon}</Match>
-      </Switch>
-      <Show when={props.label}>
-        <span style={{ "user-select": "none" }}>{props.label}</span>
+      <span
+        style={{
+          display: "block",
+          scale: `${p.loading ? "0.2" : ""}`,
+          opacity: `${p.loading ? "0" : ""}`,
+          transition: "var(--transition-short)",
+          "font-size": `${
+            p.size === "large"
+              ? "var(--font-large)"
+              : p.size === "medium"
+              ? "var(--font-medium)"
+              : "var(--font-regular)"
+          }`,
+          color: `${p.color}`,
+        }}
+      >
+        {p.label}
+      </span>
+      <Show when={p.loading}>
+        <Loading
+          color={
+            p.loadingColor
+              ? p.loadingColor
+              : p.type === "primary"
+              ? "var(--onPrimary)"
+              : p.type === "stress"
+              ? "var(--onSecondary)"
+              : undefined
+          }
+          style={{
+            height: "1.25rem",
+            width: "1.25rem",
+            position: "absolute",
+            inset: "0",
+            "justify-self": "center",
+            "align-self": "center",
+          }}
+        />
       </Show>
     </button>
   );
 };
+export default Button;
