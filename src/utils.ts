@@ -20,6 +20,7 @@ export const dynamicSquircle = (
       height: blockSize,
       width: inlineSize,
       cornerRadius: parseFloat(getComputedStyle(e[0].target).borderRadius),
+      cornerSmoothing: 0.8,
     })
   );
 };

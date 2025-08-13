@@ -22,31 +22,30 @@ async function handler(req: Request): Promise<Response> {
   const url = new URL(req.url);
   const pathname = url.pathname;
 
-  if (pathname.startsWith("api")) {
+  if (
+    req.method === "POST" &&
+    req.headers.get("Content-Type")?.includes("application/json")
+  ) {
     const headers = {
       "Content-Type": "application/json",
       "Cache-Control": "no-store",
     };
-
     try {
       const body = await req.json();
       const results: Record<string, string | null> = {};
       if (Array.isArray(body.get)) {
-        for (const key in body.get) {
-          if (typeof key === "string") results[key] = Deno.env.get(key) ?? null;
-        }
+        body.get.forEach((item: unknown) => {
+          if (typeof item === "string")
+            results[item] = Deno.env.get(item) ?? null;
+        });
       }
-
       if (Array.isArray(body.set)) {
-        for (const item in body.set) {
-          if (item && typeof item === "string") {
-            for (const [k, v] of Object.entries(item)) {
-              if (typeof v === "string") Deno.env.set(k, v);
-            }
+        for (const item of body.set) {
+          for (const [k, v] of Object.entries(item)) {
+            if (typeof v === "string") Deno.env.set(k, v);
           }
         }
       }
-
       return new Response(JSON.stringify(results), { headers });
     } catch (error) {
       return new Response(JSON.stringify({ error: parseError(error) }), {
